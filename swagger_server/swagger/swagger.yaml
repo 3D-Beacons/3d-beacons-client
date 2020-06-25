@@ -1,0 +1,866 @@
+openapi: 3.0.1
+info:
+  title: ELIXIR 3D Beacons API
+  description: OpenAPI 3 description of ELIXIR 3D-Beacons service. The service returns
+    a list of homology models, PDB structures and the target sequence for a UniProtKB
+    Accession.
+  version: "1.0"
+servers:
+- url: https://3dbeacons.org/{basePath}
+  description: 3D Beacons server
+  variables:
+    basePath:
+      default: uniprot
+paths:
+  /uniprot/{qualifier}.json:
+    get:
+      operationId: uniprot_qualifier_json_get
+      parameters:
+      - name: qualifier
+        in: path
+        description: UniProtKB accession number (AC) or entry name (ID)
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: provider
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - swissmodel
+          - genome3d
+          - pdb
+      - name: template
+        in: query
+        description: Template is 4 letter PDB code, or 4 letter code with assembly
+          ID and chain for SMTL entries
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: range
+        in: query
+        description: Specify a UniProt sequence residue range
+        required: false
+        style: form
+        explode: true
+        schema:
+          pattern: ^[0-9]+-[0-9]+$
+          type: string
+      responses:
+        "200":
+          description: Response includes query parameter, UniProt sequence summary
+            and list of structures which may be empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/result'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /uniprot/{qualifier}.pdb:
+    get:
+      operationId: uniprot_qualifier_pdb_get
+      parameters:
+      - name: qualifier
+        in: path
+        description: UniProtKB accession number (AC) or entry name (ID)
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: sort
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - seqid
+          - seqsim
+      - name: provider
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - swissmodel
+          - genome3d
+          - pdb
+      - name: template
+        in: query
+        description: Template is 4 letter PDB code, or 4 letter code with assembly
+          ID and chain for SMTL entries
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: range
+        in: query
+        description: Specify a UniProt sequence residue range
+        required: false
+        style: form
+        explode: true
+        schema:
+          pattern: ^[0-9]+-[0-9]+$
+          type: string
+      responses:
+        "200":
+          description: Single PDB format coordinates as attachment
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+                x-content-type: application/json
+        "404":
+          description: If no model or structure exists for given UniProt qualifier
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /sequence/{sequence}.json:
+    get:
+      operationId: sequence_sequence_json_get
+      parameters:
+      - name: sequence
+        in: path
+        description: Amino acid sequence
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: provider
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - swissmodel
+          - genome3d
+          - pdb
+      - name: template
+        in: query
+        description: Template is 4 letter PDB code, or 4 letter code with assembly
+          ID and chain for SMTL entries
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Response includes query parameter, sequence summary and list
+            of structures which may be empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/result'
+        "501":
+          description: If endpoint is not implemented
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    result:
+      type: object
+      properties:
+        uniprot_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/result_uniprot_entries'
+        structures:
+          type: array
+          items:
+            $ref: '#/components/schemas/result_structures'
+      example:
+        uniprot_entries:
+        - ac: ac
+          sequence_length: 0
+          id: id
+        - ac: ac
+          sequence_length: 0
+          id: id
+        structures:
+        - oligo-state: oligo-state
+          coverage: 5.962133916683182377482808078639209270477294921875
+          bound_ligands:
+          - null
+          - null
+          qmean_avg_local_score: 5.63737665663332876420099637471139430999755859375
+          pubmed_ids:
+          - pubmed_ids
+          - pubmed_ids
+          chains:
+          - chain_id: chain_id
+            segments:
+            - template:
+                preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+                last_updated: last_updated
+                provider: provider
+                experimental_method: experimental_method
+                resolution: 2.3021358869347654518833223846741020679473876953125
+              seqres:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 9
+                to: 3
+              residues:
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              uniprot:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 2
+                to: 4
+                uniprot_md5: uniprot_md5
+            - template:
+                preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+                last_updated: last_updated
+                provider: provider
+                experimental_method: experimental_method
+                resolution: 2.3021358869347654518833223846741020679473876953125
+              seqres:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 9
+                to: 3
+              residues:
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              uniprot:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 2
+                to: 4
+                uniprot_md5: uniprot_md5
+          - chain_id: chain_id
+            segments:
+            - template:
+                preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+                last_updated: last_updated
+                provider: provider
+                experimental_method: experimental_method
+                resolution: 2.3021358869347654518833223846741020679473876953125
+              seqres:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 9
+                to: 3
+              residues:
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              uniprot:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 2
+                to: 4
+                uniprot_md5: uniprot_md5
+            - template:
+                preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+                last_updated: last_updated
+                provider: provider
+                experimental_method: experimental_method
+                resolution: 2.3021358869347654518833223846741020679473876953125
+              seqres:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 9
+                to: 3
+              residues:
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              uniprot:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 2
+                to: 4
+                uniprot_md5: uniprot_md5
+          created: created
+          identity: 6.02745618307040320615897144307382404804229736328125
+          similarity: 1.46581298050294517310021547018550336360931396484375
+          in_complex_with:
+          - chain_id: chain_id
+            description: description
+            interacting_PDB_residues:
+            - residue_label: residue_label
+              residue_index: residue_index
+            - residue_label: residue_label
+              residue_index: residue_index
+          - chain_id: chain_id
+            description: description
+            interacting_PDB_residues:
+            - residue_label: residue_label
+              residue_index: residue_index
+            - residue_label: residue_label
+              residue_index: residue_index
+          coordinates: coordinates
+          qmean_version: qmean_version
+        - oligo-state: oligo-state
+          coverage: 5.962133916683182377482808078639209270477294921875
+          bound_ligands:
+          - null
+          - null
+          qmean_avg_local_score: 5.63737665663332876420099637471139430999755859375
+          pubmed_ids:
+          - pubmed_ids
+          - pubmed_ids
+          chains:
+          - chain_id: chain_id
+            segments:
+            - template:
+                preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+                last_updated: last_updated
+                provider: provider
+                experimental_method: experimental_method
+                resolution: 2.3021358869347654518833223846741020679473876953125
+              seqres:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 9
+                to: 3
+              residues:
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              uniprot:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 2
+                to: 4
+                uniprot_md5: uniprot_md5
+            - template:
+                preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+                last_updated: last_updated
+                provider: provider
+                experimental_method: experimental_method
+                resolution: 2.3021358869347654518833223846741020679473876953125
+              seqres:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 9
+                to: 3
+              residues:
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              uniprot:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 2
+                to: 4
+                uniprot_md5: uniprot_md5
+          - chain_id: chain_id
+            segments:
+            - template:
+                preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+                last_updated: last_updated
+                provider: provider
+                experimental_method: experimental_method
+                resolution: 2.3021358869347654518833223846741020679473876953125
+              seqres:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 9
+                to: 3
+              residues:
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              uniprot:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 2
+                to: 4
+                uniprot_md5: uniprot_md5
+            - template:
+                preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+                last_updated: last_updated
+                provider: provider
+                experimental_method: experimental_method
+                resolution: 2.3021358869347654518833223846741020679473876953125
+              seqres:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 9
+                to: 3
+              residues:
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              - residue:
+                  uniprot_resnum: 1
+                  pdb_resnum: 1
+                  qmean: 7.3862819483858839220147274318151175975799560546875
+              uniprot:
+                aligned_sequence: aligned_sequence
+                description: description
+                from: 2
+                to: 4
+                uniprot_md5: uniprot_md5
+          created: created
+          identity: 6.02745618307040320615897144307382404804229736328125
+          similarity: 1.46581298050294517310021547018550336360931396484375
+          in_complex_with:
+          - chain_id: chain_id
+            description: description
+            interacting_PDB_residues:
+            - residue_label: residue_label
+              residue_index: residue_index
+            - residue_label: residue_label
+              residue_index: residue_index
+          - chain_id: chain_id
+            description: description
+            interacting_PDB_residues:
+            - residue_label: residue_label
+              residue_index: residue_index
+            - residue_label: residue_label
+              residue_index: residue_index
+          coordinates: coordinates
+          qmean_version: qmean_version
+    result_uniprot_entries:
+      type: object
+      properties:
+        sequence_length:
+          type: integer
+        ac:
+          type: string
+        id:
+          type: string
+      example:
+        ac: ac
+        sequence_length: 0
+        id: id
+    result_interacting_PDB_residues:
+      type: object
+      properties:
+        residue_label:
+          type: string
+        residue_index:
+          type: string
+      example:
+        residue_label: residue_label
+        residue_index: residue_index
+    result_in_complex_with:
+      type: object
+      properties:
+        chain_id:
+          type: string
+        description:
+          type: string
+        interacting_PDB_residues:
+          type: array
+          items:
+            $ref: '#/components/schemas/result_interacting_PDB_residues'
+      example:
+        chain_id: chain_id
+        description: description
+        interacting_PDB_residues:
+        - residue_label: residue_label
+          residue_index: residue_index
+        - residue_label: residue_label
+          residue_index: residue_index
+    result_template:
+      type: object
+      properties:
+        last_updated:
+          type: string
+        provider:
+          type: string
+        experimental_method:
+          type: string
+        resolution:
+          type: number
+        preferred_assembly_id:
+          type: number
+      example:
+        preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+        last_updated: last_updated
+        provider: provider
+        experimental_method: experimental_method
+        resolution: 2.3021358869347654518833223846741020679473876953125
+    result_seqres:
+      type: object
+      properties:
+        aligned_sequence:
+          type: string
+        description:
+          type: string
+        from:
+          type: integer
+        to:
+          type: integer
+      example:
+        aligned_sequence: aligned_sequence
+        description: description
+        from: 9
+        to: 3
+    result_uniprot:
+      type: object
+      properties:
+        uniprot_md5:
+          type: string
+        aligned_sequence:
+          type: string
+        description:
+          type: string
+        from:
+          type: integer
+        to:
+          type: integer
+      example:
+        aligned_sequence: aligned_sequence
+        description: description
+        from: 2
+        to: 4
+        uniprot_md5: uniprot_md5
+    result_residue:
+      type: object
+      properties:
+        qmean:
+          type: number
+        pdb_resnum:
+          type: integer
+        uniprot_resnum:
+          type: integer
+      example:
+        uniprot_resnum: 1
+        pdb_resnum: 1
+        qmean: 7.3862819483858839220147274318151175975799560546875
+    result_residues:
+      type: object
+      properties:
+        residue:
+          $ref: '#/components/schemas/result_residue'
+      example:
+        residue:
+          uniprot_resnum: 1
+          pdb_resnum: 1
+          qmean: 7.3862819483858839220147274318151175975799560546875
+    result_segments:
+      type: object
+      properties:
+        template:
+          $ref: '#/components/schemas/result_template'
+        seqres:
+          $ref: '#/components/schemas/result_seqres'
+        uniprot:
+          $ref: '#/components/schemas/result_uniprot'
+        residues:
+          type: array
+          items:
+            $ref: '#/components/schemas/result_residues'
+      example:
+        template:
+          preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+          last_updated: last_updated
+          provider: provider
+          experimental_method: experimental_method
+          resolution: 2.3021358869347654518833223846741020679473876953125
+        seqres:
+          aligned_sequence: aligned_sequence
+          description: description
+          from: 9
+          to: 3
+        residues:
+        - residue:
+            uniprot_resnum: 1
+            pdb_resnum: 1
+            qmean: 7.3862819483858839220147274318151175975799560546875
+        - residue:
+            uniprot_resnum: 1
+            pdb_resnum: 1
+            qmean: 7.3862819483858839220147274318151175975799560546875
+        uniprot:
+          aligned_sequence: aligned_sequence
+          description: description
+          from: 2
+          to: 4
+          uniprot_md5: uniprot_md5
+    result_chains:
+      type: object
+      properties:
+        chain_id:
+          type: string
+        segments:
+          type: array
+          items:
+            $ref: '#/components/schemas/result_segments'
+      example:
+        chain_id: chain_id
+        segments:
+        - template:
+            preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+            last_updated: last_updated
+            provider: provider
+            experimental_method: experimental_method
+            resolution: 2.3021358869347654518833223846741020679473876953125
+          seqres:
+            aligned_sequence: aligned_sequence
+            description: description
+            from: 9
+            to: 3
+          residues:
+          - residue:
+              uniprot_resnum: 1
+              pdb_resnum: 1
+              qmean: 7.3862819483858839220147274318151175975799560546875
+          - residue:
+              uniprot_resnum: 1
+              pdb_resnum: 1
+              qmean: 7.3862819483858839220147274318151175975799560546875
+          uniprot:
+            aligned_sequence: aligned_sequence
+            description: description
+            from: 2
+            to: 4
+            uniprot_md5: uniprot_md5
+        - template:
+            preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+            last_updated: last_updated
+            provider: provider
+            experimental_method: experimental_method
+            resolution: 2.3021358869347654518833223846741020679473876953125
+          seqres:
+            aligned_sequence: aligned_sequence
+            description: description
+            from: 9
+            to: 3
+          residues:
+          - residue:
+              uniprot_resnum: 1
+              pdb_resnum: 1
+              qmean: 7.3862819483858839220147274318151175975799560546875
+          - residue:
+              uniprot_resnum: 1
+              pdb_resnum: 1
+              qmean: 7.3862819483858839220147274318151175975799560546875
+          uniprot:
+            aligned_sequence: aligned_sequence
+            description: description
+            from: 2
+            to: 4
+            uniprot_md5: uniprot_md5
+    result_structures:
+      type: object
+      properties:
+        created:
+          type: string
+        identity:
+          type: number
+        similarity:
+          type: number
+        oligo-state:
+          type: string
+        coverage:
+          type: number
+        qmean_version:
+          type: string
+        qmean_avg_local_score:
+          type: number
+        coordinates:
+          type: string
+        pubmed_ids:
+          type: array
+          items:
+            type: string
+        in_complex_with:
+          type: array
+          items:
+            $ref: '#/components/schemas/result_in_complex_with'
+        bound_ligands:
+          type: array
+          items:
+            $ref: '#/components/schemas/result_in_complex_with'
+        chains:
+          type: array
+          items:
+            $ref: '#/components/schemas/result_chains'
+      example:
+        oligo-state: oligo-state
+        coverage: 5.962133916683182377482808078639209270477294921875
+        bound_ligands:
+        - null
+        - null
+        qmean_avg_local_score: 5.63737665663332876420099637471139430999755859375
+        pubmed_ids:
+        - pubmed_ids
+        - pubmed_ids
+        chains:
+        - chain_id: chain_id
+          segments:
+          - template:
+              preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+              last_updated: last_updated
+              provider: provider
+              experimental_method: experimental_method
+              resolution: 2.3021358869347654518833223846741020679473876953125
+            seqres:
+              aligned_sequence: aligned_sequence
+              description: description
+              from: 9
+              to: 3
+            residues:
+            - residue:
+                uniprot_resnum: 1
+                pdb_resnum: 1
+                qmean: 7.3862819483858839220147274318151175975799560546875
+            - residue:
+                uniprot_resnum: 1
+                pdb_resnum: 1
+                qmean: 7.3862819483858839220147274318151175975799560546875
+            uniprot:
+              aligned_sequence: aligned_sequence
+              description: description
+              from: 2
+              to: 4
+              uniprot_md5: uniprot_md5
+          - template:
+              preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+              last_updated: last_updated
+              provider: provider
+              experimental_method: experimental_method
+              resolution: 2.3021358869347654518833223846741020679473876953125
+            seqres:
+              aligned_sequence: aligned_sequence
+              description: description
+              from: 9
+              to: 3
+            residues:
+            - residue:
+                uniprot_resnum: 1
+                pdb_resnum: 1
+                qmean: 7.3862819483858839220147274318151175975799560546875
+            - residue:
+                uniprot_resnum: 1
+                pdb_resnum: 1
+                qmean: 7.3862819483858839220147274318151175975799560546875
+            uniprot:
+              aligned_sequence: aligned_sequence
+              description: description
+              from: 2
+              to: 4
+              uniprot_md5: uniprot_md5
+        - chain_id: chain_id
+          segments:
+          - template:
+              preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+              last_updated: last_updated
+              provider: provider
+              experimental_method: experimental_method
+              resolution: 2.3021358869347654518833223846741020679473876953125
+            seqres:
+              aligned_sequence: aligned_sequence
+              description: description
+              from: 9
+              to: 3
+            residues:
+            - residue:
+                uniprot_resnum: 1
+                pdb_resnum: 1
+                qmean: 7.3862819483858839220147274318151175975799560546875
+            - residue:
+                uniprot_resnum: 1
+                pdb_resnum: 1
+                qmean: 7.3862819483858839220147274318151175975799560546875
+            uniprot:
+              aligned_sequence: aligned_sequence
+              description: description
+              from: 2
+              to: 4
+              uniprot_md5: uniprot_md5
+          - template:
+              preferred_assembly_id: 7.061401241503109105224211816675961017608642578125
+              last_updated: last_updated
+              provider: provider
+              experimental_method: experimental_method
+              resolution: 2.3021358869347654518833223846741020679473876953125
+            seqres:
+              aligned_sequence: aligned_sequence
+              description: description
+              from: 9
+              to: 3
+            residues:
+            - residue:
+                uniprot_resnum: 1
+                pdb_resnum: 1
+                qmean: 7.3862819483858839220147274318151175975799560546875
+            - residue:
+                uniprot_resnum: 1
+                pdb_resnum: 1
+                qmean: 7.3862819483858839220147274318151175975799560546875
+            uniprot:
+              aligned_sequence: aligned_sequence
+              description: description
+              from: 2
+              to: 4
+              uniprot_md5: uniprot_md5
+        created: created
+        identity: 6.02745618307040320615897144307382404804229736328125
+        similarity: 1.46581298050294517310021547018550336360931396484375
+        in_complex_with:
+        - chain_id: chain_id
+          description: description
+          interacting_PDB_residues:
+          - residue_label: residue_label
+            residue_index: residue_index
+          - residue_label: residue_label
+            residue_index: residue_index
+        - chain_id: chain_id
+          description: description
+          interacting_PDB_residues:
+          - residue_label: residue_label
+            residue_index: residue_index
+          - residue_label: residue_label
+            residue_index: residue_index
+        coordinates: coordinates
+        qmean_version: qmean_version
+
