@@ -45,7 +45,7 @@ setup(
     description="Tool to manage local 3D Beacon install",
     long_description=long_description,
     packages=find_packages(
-        exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+        exclude=["*.tests", "*.tests.*", "tests.*", "tests", "*molstar*", "*gemmi*"]),
     version=version,
     install_requires=[
         # Include dependencies here
