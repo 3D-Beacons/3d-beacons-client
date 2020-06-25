@@ -104,3 +104,4 @@ ENV/
 
 # JetBrains
 .idea
+bio3dbeacons.db
