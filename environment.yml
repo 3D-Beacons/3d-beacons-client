@@ -1,3 +1,3 @@
-name: bio3dbeacon_cli
+name: bio3dbeacon
 dependencies:
-  - python=3.6
+  - python=3.7
