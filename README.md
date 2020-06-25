@@ -1,10 +1,12 @@
-# bio3dbeacon_cli
+# bio3dbeacon
 
 Tool to manage local 3D Beacon install
 
+[![Build Status](https://travis-ci.com/3D-Beacons/3d-beacons-client.svg?branch=master)](https://travis-ci.com/3D-Beacons/3d-beacons-client)
+
 ## Project Features
 
-* [bio3dbeacon_cli](http://Bio3DBeaconCLI.readthedocs.io/)
+* [bio3dbeacon](http://Bio3DBeaconCLI.readthedocs.io/)
 * a starter [Click](http://click.pocoo.org/5/) command-line application
 * automated unit tests you can run with [pytest](https://docs.pytest.org/en/latest/)
 * a [Sphinx](http://www.sphinx-doc.org/en/master/) documentation project
@@ -37,26 +39,4 @@ Below are some handy resource links.
 
 * **Ian Sillitoe** - *Initial work* - [github](https://github.com/isillitoe)
 
-See also the list of [contributors](https://github.com/isillitoe/bio3dbeacon_cli/contributors) who participated in this project.
-
-## LicenseMIT License
-
-Copyright (c) isillitoe
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+See also the list of [contributors](https://github.com/3D-Beacons/3d-beacons-client/contributors) who participated in this project.
