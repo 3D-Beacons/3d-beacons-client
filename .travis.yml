@@ -8,4 +8,8 @@ install:
   - pip install -e .
 # command to run tests
 script:
-  - pytest
+  - "pytest --cov=cathpy"
+before_install:
+  - "pip install pytest-cov codecov"
+after_success:
+  - "codecov"
