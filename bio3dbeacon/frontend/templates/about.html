@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="head mt-5">
+    <h1>About 3D Beacons</h1>
+    <p class="lead">Frequently asked questions about this
+        3D Beacon Client software and the larger 3D Beacons Network.
+    </p>
+</div>
+
+<hr>
+
+<section class="data-form-container my-3">
+
+    <ul class="nav nav-pills mb-3" id="aboutTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="about-client-tab" data-toggle="tab" href="#about-client" role="tab"
+                aria-controls="about-client" aria-selected="true">3D Beacon Client</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="about-network-tab" data-toggle="tab" href="#about-network" role="tab"
+                aria-controls="about-network" aria-selected="true">3D Beacon Network</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="about-resources-tab" data-toggle="tab" href="#about-resources" role="tab"
+                aria-controls="about-resources" aria-selected="true">Resources</a>
+        </li>
+    </ul>
+
+    <hr>
+
+    <div class="">
+        <div class="tab-content" id="aboutClientContent">
+            <div class="tab-pane fade show active" id="about-client" role="tabpanel" aria-labelledby="about-client-tab">
+
+                <h4>Installation</h4>
+
+                <p>TODO</p>
+
+                <h4>Running the services</h4>
+
+                <p>TODO</p>
+
+                <h4>Adding Models</h4>
+
+                <p>TODO</p>
+
+                <h4>Updating Models</h4>
+
+                <p>TODO</p>
+
+                <h4>Deleting Models</h4>
+
+                <p>TODO</p>
+            </div>
+            <div class="tab-pane fade" id="about-network" role="tabpanel" aria-labelledby="about-network-tab">
+
+                <h4>What is the 3D Beacon Network?</h4>
+
+                <p>TODO</p>
+            </div>
+            <div class="tab-pane fade" id="about-resources" role="tabpanel" aria-labelledby="about-resources-tab">
+
+                <h4>Resources involved</h4>
+
+                <p>TODO</p>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="head mt-5">
+    <h1>Browse Local Data</h1>
+    <p class="lead">View the models stored in the local 3D Beacon Client database.
+    </p>
+</div>
+
+<section class="data-form-container my-3">
+
+    <ul class="nav nav-pills mb-3" id="browseTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="browse-models-tab" data-toggle="tab" href="#browse-models" role="tab"
+                aria-controls="data-web" aria-selected="true">Models</a>
+        </li>
+    </ul>
+
+    <hr>
+
+    <div class="">
+        <div class="tab-content" id="browseTabContent">
+            <div class="tab-pane fade show active" id="browse-models" role="tabpanel"
+                aria-labelledby="browse-models-tab">
+
+                <p>There are currently {{ models|length }} models in the local database.</p>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Created</th>
+                            <th>Quality (QMEAN Avg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for model in models %}
+                        <tr>
+                            <td>{{ model.original_basename }}</td>
+                            <td>{{ model.created_at }}</td>
+                            <td>{{ model.qmean_avg_local_score }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}

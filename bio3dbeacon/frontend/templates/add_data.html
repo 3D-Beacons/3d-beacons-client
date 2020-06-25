@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="head mt-5">
+    <h1>Add 3D Models</h1>
+    <p class="lead">Predicted models can be added to the local database through these Web pages,
+        on the command line (CLI) tool, or through the API.
+    </p>
+</div>
+
+<section class="data-form-container my-3">
+
+    <ul class="nav nav-pills mb-3" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="data-web-tab" data-toggle="tab" href="#data-web" role="tab"
+                aria-controls="data-web" aria-selected="true">Web</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="data-cli-tab" data-toggle="tab" href="#data-cli" role="tab" aria-controls="data-cli"
+                aria-selected="false">CLI</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="data-api-tab" data-toggle="tab" href="#data-api" role="tab" aria-controls="data-api"
+                aria-selected="false">API</a>
+        </li>
+    </ul>
+
+    <hr>
+
+    <div class="">
+
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="data-web" role="tabpanel" aria-labelledby="data-web-tab">
+                <form>
+                    <h5>1. Provide the 3D coordinates <small>(can be either PDB or mmCIF format)</small></h5>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="pdbfile"><strong>PDB File</strong></label>
+                            <input type="file" class="form-control" id="pdbfile">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="mmciffile"><strong>mmCIF File</strong></label>
+                            <input type="file" class="form-control" id="mmciffile">
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h5>2. Provide information on how the model was created <small>(JSON format)</small></h5>
+                    <div class="form-group">
+                        <label for="jsonfile"><strong>JSON File</strong></label>
+                        <input type="file" class="form-control" id="jsonfile">
+                    </div>
+
+                    <hr>
+                    <div class="text-center">
+                        <button class="btn btn-lg btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="data-cli" role="tabpanel" aria-labelledby="data-cli-tab">
+                <p>Run the following command:</p>
+                <code>
+                $ bio3d-beacon-cli model add --pdbfile model1.pdb --jsonfile model1.json
+                </code>
+            </div>
+            <div class="tab-pane fade" id="data-api" role="tabpanel" aria-labelledby="data-api-tab">
+                <p>Link to the API</p>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="jumbotron mt-3">
+    <h1 class="display-4">3D-Beacon Client</h1>
+    <p class="lead">This is a prototype implemention of a 3D-Beacon client.
+        It provides tools that allow users to add their own predicted 3D models
+        to a local database. Predictions are automatically made available for use
+        within the global 3D-Beacons network.
+    </p>
+    <hr>
+    <p></p>
+    <p class="lead text-center">
+        <a class="btn btn-primary btn-lg" href="/about">Learn more</a>
+    </p>
+</div>
+
+<hr>
+
+<section class="text-center">
+
+    <div class="card-deck">
+        <div class="card">
+            <div class="card-body">
+                <h5>Browse</h5>
+                <p class="card-text">Browse the local database</p>
+            </div>
+            <div class="card-footer">
+                <a href="/browse" class="btn btn-primary">Browse Local Data</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5>Add 3D Models</h5>
+                <p class="card-text">Add predicted 3D models to the local database</p>
+            </div>
+            <div class="card-footer">
+                <a href="/add_data" class="btn btn-primary">Add models</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5>API</h5>
+                <p class="card-text">Look at the 3D-Beacon API</p>
+            </div>
+            <div class="card-footer">
+                <a href="/api" class="btn btn-primary">View API</a>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}
