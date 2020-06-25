@@ -104,4 +104,10 @@ ENV/
 
 # JetBrains
 .idea
+
+#local
 bio3dbeacons.db
+luigi.state
+luigi.pid
+.vscode/settings.json
+work_dir/
