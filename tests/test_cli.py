@@ -9,8 +9,8 @@ This is the test module for the project's command-line interface (CLI)
 module.
 """
 # fmt: off
-import bio3dbeacon_cli.cli as cli
-from bio3dbeacon_cli import __version__
+import bio3dbeacon.cli as cli
+from bio3dbeacon import __version__
 # fmt: on
 from click.testing import CliRunner, Result
 
@@ -43,14 +43,14 @@ def test_verbose_output():
     ), "Verbose logging should be indicated in output."
 
 
-def test_hello_displays_expected_message():
+def test_model_displays_expected_message():
     """
-    Arrange/Act: Run the `version` subcommand.
+    Arrange/Act: Run the `model` subcommand.
     Assert:  The output matches the library version.
     """
     runner: CliRunner = CliRunner()
-    result: Result = runner.invoke(cli.cli, ["hello"])
+    result: Result = runner.invoke(cli.cli, ["model"])
     # fmt: off
-    assert 'bio3d-beacon-cli' in result.output.strip(), \
-        "'Hello' messages should contain the CLI name."
+    assert 'cli' in result.output.strip(), \
+        "'model' messages should contain the CLI name."
     # fmt: on
