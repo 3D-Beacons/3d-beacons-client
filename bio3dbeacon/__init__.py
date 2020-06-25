@@ -4,7 +4,7 @@
 """
 Tool to manage local 3D Beacon install
 
-.. currentmodule:: bio3dbeacon_cli
+.. currentmodule:: bio3dbeacon
 .. moduleauthor:: Ian Sillitoe <i.sillitoe@ucl.ac.uk>
 """
 
