@@ -19,8 +19,8 @@ from luigi.util import requires  # noqa
 
 # local
 from bio3dbeacon import settings
-from bio3dbeacon.app import app
-from bio3dbeacon.database import db
+from bio3dbeacon.app import create_app
+from bio3dbeacon.database import get_db
 from bio3dbeacon.database.models import ModelStructure
 
 LOG = logging.getLogger(__name__)
@@ -29,6 +29,8 @@ LOG = logging.getLogger(__name__)
 # if you change this then all database entries need
 # to be recalculated (which might be what you want)
 DATA_MODEL_VERSION = '1'
+
+app = create_app()
 
 
 def get_uid_from_file(model_file):
@@ -71,6 +73,7 @@ class IngestModelPdb(luigi.Task):
             entry.original_path = original_path
 
         with app.app_context():
+            db = get_db()
             db.session.add(entry)
             shutil.copyfile(original_path, self.output().path)
             db.session.commit()
@@ -112,6 +115,8 @@ class CalculateModelQuality(luigi.Task):
         dt_now = datetime.utcnow()
 
         with app.app_context():
+            db = get_db()
+
             entry = ModelStructure.query.get(self.uid)
             if not entry:
                 raise ValueError(
@@ -196,6 +201,7 @@ class ConvertPdbToMmcif(luigi.Task):
 
         dt_now = datetime.utcnow()
         with app.app_context():
+            db = get_db()
             entry = ModelStructure.query.get(self.uid)
             if not entry:
                 raise ValueError(
