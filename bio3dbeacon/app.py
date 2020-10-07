@@ -34,10 +34,8 @@ def create_app(test_config=None):
     from bio3dbeacon.api.restx import api
     from bio3dbeacon.frontend.frontend import frontend_bp
 
-    api_bp = Blueprint('api', __name__, url_prefix='/api')
-    api.init_app(api_bp)
+    api.init_app(app)
 
-    app.register_blueprint(api_bp)
     app.register_blueprint(frontend_bp)
 
     return app

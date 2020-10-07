@@ -1,12 +1,11 @@
 import logging
-from flask_restx import Resource, fields
+from flask_restx import Namespace, Resource, fields
 
 from bio3dbeacon import settings
-from bio3dbeacon.api.restx import api
 
 LOG = logging.getLogger(__name__)
 
-ns = api.namespace(
+api = Namespace(
     'uniprot', description='Operations relating to a 3D-Beacon UniProtKB query')
 
 uniprot_entry = api.model('UniprotEntry', {
@@ -99,24 +98,24 @@ uniprot_query = api.model('UniprotQuery', {
 })
 
 
-@ns.param('qualifier', 'UniProtKB accession (eg "P00520")', required=True)
-@ns.param('provider', 'Name of the model provider (eg "PDBe", "SWISS-MODEL", "Genome3D")', required=False)
-@ns.param('template', 'Template is 4-letter PDB code, or 4 letter code with assembly ID and chain SMTL entries', required=False)
-@ns.param('range', 'Specify a UniProt sequence residue range', required=False)
+@api.param('qualifier', 'UniProtKB accession (eg "P00520")', required=True)
+@api.param('provider', 'Name of the model provider (eg "PDBe", "SWISS-MODEL", "Genome3D")', required=False)
+@api.param('template', 'Template is 4-letter PDB code, or 4 letter code with assembly ID and chain SMTL entries', required=False)
+@api.param('range', 'Specify a UniProt sequence residue range', required=False)
 class UniprotQuery(Resource):
     pass
 
 
-@ns.route('/<string:qualifier>.json')
-@ns.response(200, 'Found entries matching this query')
-@ns.produces('application/json')
+@api.route('/<string:qualifier>.json')
+@api.response(200, 'Found entries matching this query')
+@api.produces('application/json')
 class UniprotJsonQuery(UniprotQuery):
     """
     Query with UniProtKB accession and return a JSON data structure 
     """
 
-    @ns.doc('Return the results of the query as a data structure in JSON')
-    @ns.marshal_with(uniprot_response)
+    @api.doc('Return the results of the query as a data structure in JSON')
+    @api.marshal_with(uniprot_response)
     def get(self, qualifier, provider=None, template=None, range=None):
         """
         Returns entries matching Uniprot query
@@ -130,17 +129,17 @@ class UniprotJsonQuery(UniprotQuery):
         }
 
 
-@ns.route('/<string:qualifier>.pdb')
-@ns.response(200, 'Found entries matching this query')
-@ns.response(404, 'Failed to find any matches for this query')
-@ns.produces('chemical/x-pdb')
+@api.route('/<string:qualifier>.pdb')
+@api.response(200, 'Found entries matching this query')
+@api.response(404, 'Failed to find any matches for this query')
+@api.produces('chemical/x-pdb')
 class UniprotPdbQuery(UniprotQuery):
     """
     Query with UniProtKB accession and return a PDB data file 
     """
 
-    @ns.doc('Return the results of the query as a PDB file')
-    @ns.marshal_with(fields.String)
+    @api.doc('Return the results of the query as a PDB file')
+    @api.marshal_with(fields.String)
     def get(self, qualifier, provider=None, template=None, range=None):
         """
         Returns entries matching Uniprot query
@@ -150,17 +149,17 @@ class UniprotPdbQuery(UniprotQuery):
         return pdb_str
 
 
-@ns.route('/<string:qualifier>.mmcif')
-@ns.response(200, 'Found entries matching this query')
-@ns.response(404, 'Failed to find any matches for this query')
-@ns.produces('chemical/x-mmcif')
+@api.route('/<string:qualifier>.mmcif')
+@api.response(200, 'Found entries matching this query')
+@api.response(404, 'Failed to find any matches for this query')
+@api.produces('chemical/x-mmcif')
 class UniprotMmcifQuery(UniprotQuery):
     """
     Query with UniProtKB accession and return a mmCIF data file 
     """
 
-    @ns.doc('Return the results of the query as a mmCIF file')
-    @ns.marshal_with(fields.String)
+    @api.doc('Return the results of the query as a mmCIF file')
+    @api.marshal_with(fields.String)
     def get(self, qualifier, provider=None, template=None, range=None):
         """
         Returns entries matching Uniprot query

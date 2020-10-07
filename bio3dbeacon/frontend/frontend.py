@@ -3,7 +3,7 @@ from flask import Blueprint, render_template
 
 from bio3dbeacon.database.models import ModelStructure
 
-frontend_bp = Blueprint('frontend_bp', __name__, url_prefix='/',
+frontend_bp = Blueprint('frontend_bp', __name__,
                         template_folder='templates', static_folder='static')
 
 
