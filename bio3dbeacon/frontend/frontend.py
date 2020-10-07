@@ -8,7 +8,6 @@ frontend_bp = Blueprint('frontend_bp', __name__, url_prefix='/',
 
 
 @frontend_bp.route('/')
-@frontend_bp.route('/index')
 def index():
     return render_template('index.html')
 
