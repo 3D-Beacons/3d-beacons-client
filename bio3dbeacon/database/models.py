@@ -2,8 +2,9 @@
 from datetime import datetime
 
 from sqlalchemy.dialects.postgresql import JSON
+from flask_sqlalchemy import SQLAlchemy
 
-from bio3dbeacon.database import db
+db = SQLAlchemy()
 
 
 class ModelStructure(db.Model):
