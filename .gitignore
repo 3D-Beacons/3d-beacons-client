@@ -111,3 +111,4 @@ luigi.state
 luigi.pid
 .vscode/settings.json
 work_dir/
+.env.prod
