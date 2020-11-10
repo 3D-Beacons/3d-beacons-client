@@ -1,0 +1,31 @@
+# docker-compose -f docker-compose.dev.yml up -d
+
+version: "3.3"
+
+services:
+  redis:
+    restart: always
+    build:
+      context: ./Docker/redis/
+    networks:
+      default:
+        aliases:
+          - redis
+
+  luigi:
+    image: axiom/docker-luigi:latest-alpine
+    networks:
+      default:
+        aliases:
+          - luigi
+
+  db:
+    build: Docker/db
+    restart: always
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=bio3dtest
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testpasswd
+    ports:
+      - "5450:5432"
