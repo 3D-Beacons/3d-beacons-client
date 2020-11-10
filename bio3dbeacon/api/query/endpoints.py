@@ -1,8 +1,6 @@
 import logging
 from flask_restx import Namespace, Resource, fields
 
-from bio3dbeacon import settings
-
 LOG = logging.getLogger(__name__)
 
 api = Namespace(

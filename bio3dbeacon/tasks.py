@@ -18,7 +18,7 @@ import luigi  # noqa
 from luigi.util import requires  # noqa
 
 # local
-from bio3dbeacon import settings
+from bio3dbeacon import config
 from bio3dbeacon.app import create_app
 from bio3dbeacon.database import get_db
 from bio3dbeacon.database.models import ModelStructure
@@ -50,7 +50,7 @@ class IngestModelPdb(luigi.Task):
 
     def output(self):
         uid = str(self.uid)
-        pdb_file = settings.WORK_DIR / uid[:2] / str(uid + '.pdb')
+        pdb_file = config.WORK_DIR / uid[:2] / str(uid + '.pdb')
         target = luigi.LocalTarget(pdb_file)
         target.makedirs()
         return target
@@ -134,8 +134,8 @@ class CalculateModelQuality(luigi.Task):
 
     def _submit(self):
         kwargs = {
-            'url': settings.QMEAN_SUBMIT_URL,
-            'data': {"email": settings.CONTACT_EMAIL},
+            'url': config.QMEAN_SUBMIT_URL,
+            'data': {"email": config.CONTACT_EMAIL},
             'files': {"structure": open(self.pdb_file, 'rb')}
         }
         LOG.debug("submit.post: %s", kwargs)
@@ -183,7 +183,7 @@ class ConvertPdbToMmcif(luigi.Task):
     def convert_pdb_to_mmcif(self, pdb_path, mmcif_path):
         """Converts PDB to mmCIF file"""
 
-        cmd_args = [str(settings.GEMMI_EXE), 'convert',
+        cmd_args = [str(config.GEMMI_EXE), 'convert',
                     '--to', 'mmcif', pdb_path, mmcif_path]
         try:
             subprocess.run(cmd_args, check=True, encoding='utf-8',
@@ -244,7 +244,7 @@ class AddMmcifToMolstar(luigi.Task):
         mmcif_file = self.input()
         bcif_file = self.output()
 
-        cmd_args = ['node', str(settings.MOLSTAR_PREPROCESS_EXE),
+        cmd_args = ['node', str(config.MOLSTAR_PREPROCESS_EXE),
                     '-i', mmcif_file.path, '-ob', bcif_file.path]
         try:
             subprocess.run(cmd_args, check=True, encoding='utf-8',
