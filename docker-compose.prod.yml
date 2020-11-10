@@ -1,0 +1,73 @@
+# docker-compose --env-file ./.env.db.prod -f docker-compose.prod.yml up -d
+
+version: "3.3"
+
+volumes:
+  bio3dbeacons-db-store:
+  bio3dbeacons-www-static:
+  bio3dbeacons-www-logs:
+
+services:
+  redis:
+    restart: always
+    build:
+      context: ./Docker/redis/
+    networks:
+      default:
+        aliases:
+          - redis
+
+  luigi:
+    image: axiom/docker-luigi:latest-alpine
+    networks:
+      default:
+        aliases:
+          - luigi
+
+  db:
+    build: Docker/db
+    restart: always
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - POSTGRES_DB=$POSTGRES_DB
+    ports:
+      - "5441:5432"
+    volumes:
+      - bio3dbeacons-db-store:/var/lib/postgresql/data/
+
+  web:
+    build:
+      context: .
+      dockerfile: ./Docker/app/Dockerfile
+    command: "gunicorn --bind 0.0.0.0:5010 bio3dbeacon.app:create_app()"
+    depends_on:
+      - db
+      - redis
+      - luigi
+    environment:
+      - FLASK_DEBUG=0
+      - FLASK_APP=bio3dbeacon.app:create_app()
+      - ALLOWED_HOSTS=$ALLOWED_HOSTS
+      - DATABASE_TYPE=postgres
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=$POSTGRES_DB
+      - DATABASE_WRITER_USER=$POSTGRES_USER
+      - DATABASE_WRITER_PASSWORD=$POSTGRES_PASSWORD
+    ports:
+      - "5010"
+    volumes:
+      - bio3dbeacons-www-static:/static
+
+  nginx:
+    restart: always
+    build: Docker/nginx
+    depends_on:
+      - web
+    volumes:
+      - bio3dbeacons-www-static:/static
+      - bio3dbeacons-www-logs:/var/log/nginx
+    ports:
+      - "0.0.0.0:5000:80"
