@@ -12,6 +12,11 @@ def index():
     return render_template('index.html')
 
 
+@frontend_bp.route('/apidocs', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def api_root():
+    return render_template('api.html', title='API')
+
+
 @frontend_bp.route('/browse')
 def browse():
     models = ModelStructure.query.all()

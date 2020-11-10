@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block page_styles %}
+<link media="screen" rel="stylesheet" type="text/css" href="/swaggerui/droid-sans.css" />
+<link media="screen" rel="stylesheet" type="text/css" href="/swaggerui/swagger-ui.css" />
+<style>
+    html {
+        box-sizing: border-box;
+        overflow: -moz-scrollbars-vertical;
+        overflow-y: scroll;
+    }
+
+    *,
+    *:before,
+    *:after {
+        box-sizing: inherit;
+    }
+
+    body {
+        margin: 0;
+        background: #fafafa;
+    }
+
+    .swagger-ui .info {
+        margin: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="/swaggerui/swagger-ui-bundle.js"></script>
+<script src="/swaggerui/swagger-ui-standalone-preset.js"></script>
+<script type="text/javascript">
+    window.onload = function () {
+        const ui = window.ui = new SwaggerUIBundle({
+            url: "/api/swagger.json",
+            validatorUrl: "" || null,
+            dom_id: "#swagger-ui",
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset.slice(1), // No Topbar
+            ],
+            plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+            ],
+            displayOperationId: false,
+            displayRequestDuration: false,
+            docExpansion: "list"
+        })
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div id="swagger-ui"></div>
+</div>
+
+{% endblock %}

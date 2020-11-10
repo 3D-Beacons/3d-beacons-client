@@ -12,6 +12,8 @@
     <script src="https://kit.fontawesome.com/c38a5b0cb6.js" crossorigin="anonymous"></script>
     <title>{{ title }}</title>
 
+    {% block page_styles %}{% endblock %}
+
     <style>
         .data-form-container {
             padding: 1.5rem;
@@ -45,7 +47,7 @@
                         <a class="nav-link" href="/browse">Browse</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/api">API</a>
+                        <a class="nav-link" href="/apidocs">API</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/about">About</a>
@@ -77,6 +79,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
+
+    {% block page_scripts %}{% endblock %}
 </body>
 
 </html>
