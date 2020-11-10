@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 
 from flask import Flask, Blueprint
 from flask_migrate import Migrate
@@ -13,7 +14,8 @@ def create_app(test_config=None):
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('settings.py', silent=True)
+        settings_file = Path(__file__).parent / 'settings.py'
+        app.config.from_pyfile(settings_file, silent=False)
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
