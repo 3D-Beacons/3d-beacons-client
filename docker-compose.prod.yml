@@ -29,9 +29,9 @@ services:
     restart: always
     image: postgres:latest
     environment:
-      - POSTGRES_USER=$POSTGRES_USER
-      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_USER=$DATABASE_USER
+      - POSTGRES_PASSWORD=$DATABASE_PASSWORD
+      - POSTGRES_DB=$DATABASE_NAME
     ports:
       - "5441:5432"
     volumes:
@@ -48,14 +48,15 @@ services:
       - luigi
     environment:
       - FLASK_DEBUG=0
+      - FLASK_ENV=production
       - FLASK_APP=bio3dbeacon.app:create_app()
       - ALLOWED_HOSTS=$ALLOWED_HOSTS
       - DATABASE_TYPE=postgres
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
-      - DATABASE_NAME=$POSTGRES_DB
-      - DATABASE_WRITER_USER=$POSTGRES_USER
-      - DATABASE_WRITER_PASSWORD=$POSTGRES_PASSWORD
+      - DATABASE_NAME=$DATABASE_NAME
+      - DATABASE_USER=$DATABASE_USER
+      - DATABASE_PASSWORD=$DATABASE_PASSWORD
     ports:
       - "5010"
     volumes:
@@ -70,4 +71,4 @@ services:
       - bio3dbeacons-www-static:/static
       - bio3dbeacons-www-logs:/var/log/nginx
     ports:
-      - "0.0.0.0:5000:80"
+      - "0.0.0.0:5010:80"
