@@ -9,7 +9,7 @@ frontend_bp = Blueprint('frontend_bp', __name__,
 
 @frontend_bp.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', title='Home')
 
 
 @frontend_bp.route('/apidocs', methods=['GET', 'POST', 'PUT', 'DELETE'])
@@ -23,14 +23,14 @@ def browse():
     for m in models:
         m.original_basename = os.path.basename(m.original_path)
 
-    return render_template('browse.html', models=models)
+    return render_template('browse.html', models=models, title='Browse')
 
 
 @frontend_bp.route('/add_data')
 def add_data():
-    return render_template('add_data.html')
+    return render_template('add_data.html', title='Add Data')
 
 
 @frontend_bp.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('about.html', title='About')
