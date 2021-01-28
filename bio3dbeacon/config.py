@@ -27,10 +27,14 @@ class Config(object):
     SECRET_KEY = config(
         'SECRET_KEY', default='fourteen-ants-marching-over-mushrooms')
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = None
+    SQLALCHEMY_ECHO = False
 
 
 class ProductionConfig(Config):
+    DEBUG = False
+    TESTING = False
+    SQLALCHEMY_ECHO = False
 
     @property
     def SQLALCHEMY_DATABASE_URI(self):
@@ -45,9 +49,11 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    TESTING = False
 
 
 class TestingConfig(Config):
+    DEBUG = True
     TESTING = True
 
 
