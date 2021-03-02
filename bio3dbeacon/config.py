@@ -27,13 +27,6 @@ class Config(object):
     SECRET_KEY = config(
         'SECRET_KEY', default='fourteen-ants-marching-over-mushrooms')
 
-    SQLALCHEMY_DATABASE_URI = None
-    SQLALCHEMY_ECHO = False
-
-
-class ProductionConfig(Config):
-    DEBUG = False
-    TESTING = False
     SQLALCHEMY_ECHO = False
 
     @property
@@ -47,9 +40,16 @@ class ProductionConfig(Config):
         )
 
 
+class ProductionConfig(Config):
+    DEBUG = False
+    TESTING = False
+    SQLALCHEMY_ECHO = False
+
+
 class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
 class TestingConfig(Config):
