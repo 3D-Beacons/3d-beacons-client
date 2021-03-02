@@ -11,15 +11,15 @@ from . import config
 LOG = logging.getLogger(__name__)
 
 
-def create_app(conf=None):
+def create_app():
+    """Creates an instance of Flask app"""
 
-    LOG.debug("Creating app ... (test_config=%s)", conf)
+    LOG.debug("Creating app ...")
 
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
 
-    if conf is None:
-        conf = config.get_current_config()
+    conf = config.get_current_config()
 
     app.config.from_object(conf)
 
@@ -37,8 +37,8 @@ def create_app(conf=None):
         db.init_app(app)
         migrate = Migrate(app, db)
 
-    from bio3dbeacon.api.restx import api
-    from bio3dbeacon.frontend.frontend import frontend_bp
+    from bio3dbeacon.api.restx import api  #  NOQA
+    from bio3dbeacon.frontend.frontend import frontend_bp  # NOQA
 
     api.init_app(app)
 
