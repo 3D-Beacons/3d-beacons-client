@@ -1,14 +1,17 @@
+# core
 import logging
 import os
 import pytest
 import tempfile
 
-from flask_sqlalchemy import SQLAlchemy
+# pip
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 
-from bio3dbeacon.config import TestingConfig
-from bio3dbeacon.app import create_app
-from bio3dbeacon.database import get_db, init_db
+os.environ['FLASK_ENV'] = 'TESTING'
+
+from bio3dbeacon.database import init_db  # NOQA
+from bio3dbeacon.app import create_app  # NOQA
 
 LOG = logging.getLogger(__name__)
 
@@ -25,14 +28,16 @@ def app():
     LOG.info("Creating test app ... ")
 
     # create the app with common test config
-    test_config = TestingConfig()
     db_fd, db_path = tempfile.mkstemp()
 
-    _app = create_app(test_config)
+    _app = create_app()
 
     LOG.debug("APP: db_path = %s", db_path)
 
     _app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+
+    LOG.info("app: %s", _app)
+    LOG.info("app.config: %s", _app.config)
 
     # create the database and load test data
     with _app.app_context():
@@ -54,6 +59,13 @@ def client(app):
 
 
 @pytest.fixture
-def runner(app):
+def cli_runner(app):
     """A test runner for the app's Click commands."""
-    return app.test_cli_runner()
+
+    LOG.info("cli_runner.app: %s", app)
+    cli_runner = app.test_cli_runner()
+
+    LOG.info("cli_runner.app.config: %s", app.config)
+
+    LOG.info("cli_runner.app.cli_runner: %s", cli_runner)
+    return cli_runner
