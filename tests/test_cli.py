@@ -19,37 +19,34 @@ from click.testing import CliRunner, Result
 # http://click.pocoo.org/5/testing/
 
 
-def test_version_displays_library_version():
+def test_version_displays_library_version(cli_runner):
     """
     Arrange/Act: Run the `version` subcommand.
     Assert: The output matches the library version.
     """
-    runner: CliRunner = CliRunner()
-    result: Result = runner.invoke(cli.cli, ["version"])
+    result: Result = cli_runner.invoke(cli.cli, ["version"])
     assert (
         __version__ in result.output.strip()
     ), "Version number should match library version."
 
 
-def test_verbose_output():
+def test_verbose_output(cli_runner):
     """
     Arrange/Act: Run the `version` subcommand with the '-v' flag.
     Assert: The output indicates verbose logging is enabled.
     """
-    runner: CliRunner = CliRunner()
-    result: Result = runner.invoke(cli.cli, ["-v", "version"])
+    result: Result = cli_runner.invoke(cli.cli, ["-v", "version"])
     assert (
         "Verbose" in result.output.strip()
     ), "Verbose logging should be indicated in output."
 
 
-def test_model_displays_expected_message():
+def test_model_displays_expected_message(cli_runner):
     """
     Arrange/Act: Run the `model` subcommand.
     Assert:  The output matches the library version.
     """
-    runner: CliRunner = CliRunner()
-    result: Result = runner.invoke(cli.cli, ["model"])
+    result: Result = cli_runner.invoke(cli.cli, ["model"])
     # fmt: off
     assert 'cli' in result.output.strip(), \
         "'model' messages should contain the CLI name."
