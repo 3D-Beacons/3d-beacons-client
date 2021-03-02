@@ -29,21 +29,25 @@ class Config(object):
 
     SQLALCHEMY_ECHO = False
 
-    @property
-    def SQLALCHEMY_DATABASE_URI(self):
-        return 'postgres://{}:{}@{}:{}/{}'.format(
-            config('DATABASE_USER'),
-            config('DATABASE_PASSWORD'),
-            config('DATABASE_HOST', default='localhost'),
-            config('DATABASE_PORT', default='5432'),
-            config('DATABASE_NAME'),
-        )
+    SQLALCHEMY_DATABASE_URI = None
 
 
 class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     SQLALCHEMY_ECHO = False
+
+    @property
+    def SQLALCHEMY_DATABASE_URI(self):
+        db_uri = config('DATABASE_URI',
+                        default='postgres://{}:{}@{}:{}/{}'.format(
+                            config('DATABASE_USER'),
+                            config('DATABASE_PASSWORD'),
+                            config('DATABASE_HOST', default='localhost'),
+                            config('DATABASE_PORT', default='5432'),
+                            config('DATABASE_NAME'),
+                        ))
+        return db_uri
 
 
 class DevelopmentConfig(Config):
@@ -55,10 +59,6 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     DEBUG = True
     TESTING = True
-
-    @property
-    def SQLALCHEMY_DATABASE_URI(self):
-        return 'sqlite:///:memory:'
 
 
 def get_current_config():
