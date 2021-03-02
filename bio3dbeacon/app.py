@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 from flask import Flask, Blueprint
+from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 from . import config
@@ -12,12 +13,12 @@ LOG = logging.getLogger(__name__)
 
 def create_app(conf=None):
 
-    LOG.info("Creating app ... (test_config=%s)", conf)
+    LOG.debug("Creating app ... (test_config=%s)", conf)
 
-    # create and configure the app---------+
+    # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
 
-    if conf is not None:
+    if conf is None:
         conf = config.get_current_config()
 
     app.config.from_object(conf)
@@ -34,6 +35,7 @@ def create_app(conf=None):
         db = get_db()
         LOG.debug("Creating app ... db.init_app()")
         db.init_app(app)
+        migrate = Migrate(app, db)
 
     from bio3dbeacon.api.restx import api
     from bio3dbeacon.frontend.frontend import frontend_bp
