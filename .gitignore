@@ -112,3 +112,4 @@ luigi.pid
 .vscode/settings.json
 work_dir/
 .env.prod
+docker-compose.yml
