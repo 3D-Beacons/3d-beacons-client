@@ -56,6 +56,10 @@ class TestingConfig(Config):
     DEBUG = True
     TESTING = True
 
+    @property
+    def SQLALCHEMY_DATABASE_URI(self):
+        return 'sqlite:///:memory:'
+
 
 def get_current_config():
     app_mode = config('FLASK_ENV', default='Development').upper()
