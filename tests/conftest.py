@@ -36,9 +36,6 @@ def app():
 
     _app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 
-    LOG.info("app: %s", _app)
-    LOG.info("app.config: %s", _app.config)
-
     # create the database and load test data
     with _app.app_context():
         LOG.debug("Initialising test database ... ")
