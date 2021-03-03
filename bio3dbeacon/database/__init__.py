@@ -2,10 +2,9 @@ import logging
 
 import click
 from flask import g
-from flask import current_app
 from flask.cli import with_appcontext
 
-from .models import db as _db
+from ..app import DB as _db
 
 LOG = logging.getLogger(__name__)
 
