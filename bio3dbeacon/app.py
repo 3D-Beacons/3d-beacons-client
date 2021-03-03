@@ -4,11 +4,15 @@ from pathlib import Path
 
 from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 
 from . import config
 
 LOG = logging.getLogger(__name__)
+
+DB = SQLAlchemy()
+MA = Marshmallow()
 
 
 def create_app():
@@ -34,12 +38,13 @@ def create_app():
 
     with app.app_context():
         LOG.debug("Creating app ... db.init_app()")
-        db = get_db()
-        db.init_app(app)
-        migrate = Migrate(app, db)
+        DB.init_app(app)
 
         LOG.debug("Creating app ... ma.init_app()")
-        ma.init_app(app)
+        MA.init_app(app)
+
+        LOG.debug("Creating app ... Migrate")
+        migrate = Migrate(app, DB)
 
     from bio3dbeacon.api.restx import api  #  NOQA
     from bio3dbeacon.frontend.frontend import frontend_bp  # NOQA
