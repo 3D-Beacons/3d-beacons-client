@@ -30,12 +30,16 @@ def create_app():
         pass
 
     from bio3dbeacon.database import get_db
+    from bio3dbeacon.database.models import ma
 
     with app.app_context():
-        db = get_db()
         LOG.debug("Creating app ... db.init_app()")
+        db = get_db()
         db.init_app(app)
         migrate = Migrate(app, db)
+
+        LOG.debug("Creating app ... ma.init_app()")
+        ma.init_app(app)
 
     from bio3dbeacon.api.restx import api  #  NOQA
     from bio3dbeacon.frontend.frontend import frontend_bp  # NOQA
