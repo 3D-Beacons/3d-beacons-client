@@ -1,0 +1,185 @@
+{
+  "api_version": "2.0",
+  "query": {
+    "ac": "P38398",
+    "provider": [
+      "swissmodel"
+    ]
+  },
+  "query_date": "2021-03-03T11:12:28.610Z",
+  "result": {
+    "crc64": "89C6D83FF56312AF",
+    "md5": "e40f752dedf675e2f7c99142ebb2607a",
+    "sequence": "MDLSALRVEEVQNVINAMQKILECPICLELIKEPVSTKCDHIFCKFCMLKLLNQKKGPSQCPLCKNDITKRSLQESTRFSQLVEELLKIICAFQLDTGLEYANSYNFAKKENNSPEHLKDEVSIIQSMGYRNRAKRLLQSEPENPSLQETSLSVQLSNLGTVRTLRTKQRIQPQKTSVYIELGSDSSEDTVNKATYCSVGDQELLQITPQGTRDEISLDSAKKAACEFSETDVTNTEHHQPSNNDLNTTEKRAAERHPEKYQGSSVSNLHVEPCGTNTHASSLQHENSSLLLTKDRMNVEKAEFCNKSKQPGLARSQHNRWAGSKETCNDRRTPSTEKKVDLNADPLCERKEWNKQKLPCSENPRDTEDVPWITLNSSIQKVNEWFSRSDELLGSDDSHDGESESNAKVADVLDVLNEVDEYSGSSEKIDLLASDPHEALICKSERVHSKSVESNIEDKIFGKTYRKKASLPNLSHVTENLIIGAFVTEPQIIQERPLTNKLKRKRRPTSGLHPEDFIKKADLAVQKTPEMINQGTNQTEQNGQVMNITNSGHENKTKGDSIQNEKNPNPIESLEKESAFKTKAEPISSSISNMELELNIHNSKAPKKNRLRRKSSTRHIHALELVVSRNLSPPNCTELQIDSCSSSEEIKKKKYNQMPVRHSRNLQLMEGKEPATGAKKSNKPNEQTSKRHDSDTFPELKLTNAPGSFTKCSNTSELKEFVNPSLPREEKEEKLETVKVSNNAEDPKDLMLSGERVLQTERSVESSSISLVPGTDYGTQESISLLEVSTLGKAKTEPNKCVSQCAAFENPKGLIHGCSKDNRNDTEGFKYPLGHEVNHSRETSIEMEESELDAQYLQNTFKVSKRQSFAPFSNPGNAEEECATFSAHSGSLKKQSPKVTFECEQKEENQGKNESNIKPVQTVNITAGFPVVGQKDKPVDNAKCSIKGGSRFCLSSQFRGNETGLITPNKHGLLQNPYRIPPLFPIKSFVKTKCKKNLLEENFEEHSMSPEREMGNENIPSTVSTISRNNIRENVFKEASSSNINEVGSSTNEVGSSINEIGSSDENIQAELGRNRGPKLNAMLRLGVLQPEVYKQSLPGSNCKHPEIKKQEYEEVVQTVNTDFSPYLISDNLEQPMGSSHASQVCSETPDDLLDDGEIKEDTSFAENDIKESSAVFSKSVQKGELSRSPSPFTHTHLAQGYRRGAKKLESSEENLSSEDEELPCFQHLLFGKVNNIPSQSTRHSTVATECLSKNTEENLLSLKNSLNDCSNQVILAKASQEHHLSEETKCSASLFSSQCSELEDLTANTNTQDPFLIGSSKQMRHQSESQGVGLSDKELVSDDEERGTGLEENNQEEQSMDSNLGEAASGCESETSVSEDCSGLSSQSDILTTQQRDTMQHNLIKLQQEMAELEAVLEQHGSQPSNSYPSIISDSSALEDLRNPEQSTSEKAVLTSQKSSEYPISQNPEGLSADKFEVSADSSTSKNKEPGVERSSPSKCPSLDDRWYMHSCSGSLQNRNYPSQEELIKVVDVEEQQLEESGPHDLTETSYLPRQDLEGTPYLESGISLFSDDPESDPSEDRAPESARVGNIPSSTSALKVPQLKVAESAQSPAAAHTTDTAGYNAMEESVSREKPELTASTERVNKRMSMVVSGLTPEEFMLVYKFARKHHITLTNLITEETTHVVMKTDAEFVCERTLKYFLGIAGGKWVVSYFWVTQSIKERKMLNEHDFEVRGDVVNGRNHQGPKRARESQDRKIFRGLEICCYGPFTNMPTDQLEWMVQLCGASVVKELSSFTLGTGVHPIVVVQPDAWTEDNGFHAIGQMCEAPVVTREWVLDSVALYQCQELDTYLIPQIPHSHY",
+    "sequence_length": 1863,
+    "structures": [
+      {
+        "chains": [
+          {
+            "id": "A",
+            "segments": [
+              {
+                "smtl": {
+                  "aligned_sequence": "VNKRMSMVVSGLTPEEFMLVYKFARKHHITLTNLITEETTHVVMKTDAEFVCERTLKYFLGIAGGKWVVSYFWVTQSIKERKMLNEHDFEVRGDVVNGRNHQGPKRARESQDRKIFRGLEICCYGPFTNMPTDQLEWMVQLCGASVVKELSSFTLGTGVHPIVVVQPDAWTEDNGFHAIGQMCEAPVVTREWVLDSVALYQCQELDTYLIPQIP",
+                  "description": "Breast cancer type 1 susceptibility protein",
+                  "from": 11,
+                  "to": 224
+                },
+                "uniprot": {
+                  "aligned_sequence": "VNKRMSMVVSGLTPEEFMLVYKFARKHHITLTNLITEETTHVVMKTDAEFVCERTLKYFLGIAGGKWVVSYFWVTQSIKERKMLNEHDFEVRGDVVNGRNHQGPKRARESQDRKIFRGLEICCYGPFTNMPTDQLEWMVQLCGASVVKELSSFTLGTGVHPIVVVQPDAWTEDNGFHAIGQMCEAPVVTREWVLDSVALYQCQELDTYLIPQIP",
+                  "from": 1646,
+                  "to": 1859
+                }
+              }
+            ]
+          }
+        ],
+        "coordinates": "https://swissmodel.expasy.org/repository/uniprot/P38398.pdb?range=1646-1859&template=4y2g.1.A&provider=swissmodel",
+        "coverage": 0.11486849168008588,
+        "created_date": "2021-03-01T19:20:11.931000+00:00",
+        "found_by": "BLAST",
+        "from": 1646,
+        "gmqe": 0.0358521045,
+        "identity": 100.0,
+        "in_complex_with": {},
+        "ligand_chains": [
+          {
+            "count": 1,
+            "ligands": [
+              {
+                "description": "BRCA1-A complex subunit Abraxas",
+                "hetid": "TYR"
+              },
+              {
+                "description": "BRCA1-A complex subunit Abraxas",
+                "hetid": "SER"
+              },
+              {
+                "description": "BRCA1-A complex subunit Abraxas",
+                "hetid": "ARG"
+              },
+              {
+                "description": "BRCA1-A complex subunit Abraxas",
+                "hetid": "SEP"
+              },
+              {
+                "description": "BRCA1-A complex subunit Abraxas",
+                "hetid": "PRO"
+              },
+              {
+                "description": "BRCA1-A complex subunit Abraxas",
+                "hetid": "THR"
+              },
+              {
+                "description": "BRCA1-A complex subunit Abraxas",
+                "hetid": "PHE"
+              }
+            ]
+          }
+        ],
+        "md5": "e40f752dedf675e2f7c99142ebb2607a",
+        "method": "HOMOLOGY MODELLING",
+        "oligo-state": "monomer",
+        "provider": "SWISSMODEL",
+        "qmean": {
+          "acc_agreement_norm_score": 0.7056074766,
+          "acc_agreement_z_score": 0.2354104752,
+          "avg_local_score": 0.8084963054000001,
+          "avg_local_score_error": 0.058,
+          "cbeta_norm_score": -0.013103328400000001,
+          "cbeta_z_score": -0.1153274609,
+          "interaction_norm_score": -0.0234203501,
+          "interaction_z_score": -0.25247361620000003,
+          "packing_norm_score": -0.3853936103,
+          "packing_z_score": 0.17640780650000001,
+          "qmean4_norm_score": 0.7468411385,
+          "qmean4_z_score": -0.8407349683,
+          "qmean6_norm_score": 0.7530353207,
+          "qmean6_z_score": -0.6217392547,
+          "ss_agreement_norm_score": 0.628257633,
+          "ss_agreement_z_score": -0.2372012839,
+          "torsion_norm_score": -0.2314317509,
+          "torsion_z_score": -0.8912892824
+        },
+        "similarity": 0.6239871383000001,
+        "template": "4y2g.1.A",
+        "to": 1859
+      },
+      {
+        "chains": [
+          {
+            "id": "A",
+            "segments": [
+              {
+                "smtl": {
+                  "aligned_sequence": "MDLSALRVEEVQNVINAMQKILECPICLELIKEPVSTKCDHIFCKFCMLKLLNQKKGPSQCPLCKNDITKRSLQESTRFSQLVEELLKIICAFQLDTGLEYAN",
+                  "description": "BREAST CANCER TYPE 1 SUSCEPTIBILITY PROTEIN",
+                  "from": 1,
+                  "to": 103
+                },
+                "uniprot": {
+                  "aligned_sequence": "MDLSALRVEEVQNVINAMQKILECPICLELIKEPVSTKCDHIFCKFCMLKLLNQKKGPSQCPLCKNDITKRSLQESTRFSQLVEELLKIICAFQLDTGLEYAN",
+                  "from": 1,
+                  "to": 103
+                }
+              }
+            ]
+          }
+        ],
+        "coordinates": "https://swissmodel.expasy.org/repository/uniprot/P38398.pdb?range=1-103&template=1jm7.1.A&provider=swissmodel",
+        "coverage": 0.05528717122920022,
+        "created_date": "2021-03-01T19:20:11.968000+00:00",
+        "found_by": "HHblits",
+        "from": 1,
+        "gmqe": 0.0137245426,
+        "identity": 100.0,
+        "in_complex_with": {},
+        "ligand_chains": [
+          {
+            "count": 2,
+            "ligands": [
+              {
+                "description": "ZINC ION",
+                "hetid": "ZN"
+              }
+            ]
+          }
+        ],
+        "md5": "e40f752dedf675e2f7c99142ebb2607a",
+        "method": "HOMOLOGY MODELLING",
+        "oligo-state": "monomer",
+        "provider": "SWISSMODEL",
+        "qmean": {
+          "acc_agreement_norm_score": 0.6116504854,
+          "acc_agreement_z_score": -0.3475502358,
+          "avg_local_score": 0.6605325127,
+          "avg_local_score_error": 0.078,
+          "cbeta_norm_score": -0.0115389659,
+          "cbeta_z_score": -0.4864863003,
+          "interaction_norm_score": -0.0135098028,
+          "interaction_z_score": -1.5569406622000002,
+          "packing_norm_score": -0.3702581789,
+          "packing_z_score": 0.0231212407,
+          "qmean4_norm_score": 0.6329247629,
+          "qmean4_z_score": -3.0580587998,
+          "qmean6_norm_score": 0.631288029,
+          "qmean6_z_score": -2.771552534,
+          "ss_agreement_norm_score": 0.5707235179,
+          "ss_agreement_z_score": -0.5680766174,
+          "torsion_norm_score": 0.07806599410000001,
+          "torsion_z_score": -3.0828285869
+        },
+        "similarity": 0.6145451069,
+        "template": "1jm7.1.A",
+        "to": 103
+      }
+    ],
+    "uniprot_entries": [
+      {
+        "ac": "P38398",
+        "id": "BRCA1_HUMAN",
+        "isoid": 1
+      }
+    ]
+  }
+}
