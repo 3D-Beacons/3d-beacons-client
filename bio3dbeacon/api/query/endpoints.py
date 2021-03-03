@@ -1,5 +1,11 @@
 import logging
+import re
 from flask_restx import Namespace, Resource, fields
+
+from bio3dbeacon.database.models import (
+    ModelStructure, ModelStructureSchema,
+    ModelChain, ModelChainSchema,
+    ModelChainSegment, ModelChainSegmentSchema)
 
 LOG = logging.getLogger(__name__)
 
@@ -7,8 +13,10 @@ api = Namespace(
     'uniprot', description='Operations relating to a 3D-Beacon UniProtKB query')
 
 uniprot_entry = api.model('UniprotEntry', {
-    'sequence_length': fields.Integer(required=True, description='Sequence length'),
-    'ac': fields.String(required=False, description='Accession'),
+    'description': fields.String(required=False, description='Information on the UniProt accession'),
+    'uniprot_md5': fields.String(required=False, description='MD5 hash of the UniProt sequence'),
+    'sequence_length': fields.Integer(required=False, description='Sequence length'),
+    'ac': fields.String(required=True, description='Accession'),
     'id': fields.String(required=False, description='Identifier'),
 })
 
@@ -24,11 +32,14 @@ residues_in_chain = api.model('ResiduesInChain', {
 })
 
 segment_template = api.model('SegmentTemplate', {
-    "last_updated": fields.DateTime(),
-    "provider": fields.String(),
-    "experimental_method": fields.String(),
-    "resolution": fields.Float(),
-    "preferred_assembly_id": fields.Integer(),
+    "template_id": fields.String(required=True),
+    "chain_id": fields.String(required=True),
+    "template_sequence_identity": fields.Float(required=True),
+    "last_updated": fields.DateTime(required=True),
+    "provider": fields.String(required=True),
+    "experimental_method": fields.String(required=True),
+    "resolution": fields.Float(required=True),
+    "preferred_assembly_id": fields.String(),
 })
 
 segment_seqres = api.model('SegmentSeqres', {
@@ -53,29 +64,33 @@ model_residue = api.model('ModelResidue', {
 })
 
 chain_segment = api.model('ChainSegment', {
-    "template": fields.Nested(segment_template),
+    "templates": fields.List(fields.Nested(segment_template)),
     "seqres": fields.Nested(segment_seqres),
     "uniprot": fields.Nested(segment_uniprot),
     "residues": fields.List(fields.Nested(model_residue))
 })
 
 chain = api.model('Chain', {
-    "chain_id": fields.String,
+    "chain_id": fields.String(),
     "segments": fields.List(fields.Nested(chain_segment)),
 })
 
 structure = api.model('Structure', {
-    'created': fields.DateTime,
-    'identity': fields.Float,
-    'similarity': fields.Float,
-    'oligo-stage': fields.String,
-    'coverage': fields.Float,
-    'qmean_version': fields.String,
-    'qmean_avg_local_score': fields.Float,
-    'coordinates': fields.String,
-    'pubmed_ids': fields.List(fields.String),
+    'model_identifier': fields.String(),
+    'model_category': fields.String(),
+    'model_url': fields.String(),
+    'provider': fields.String(),
+    'created': fields.DateTime(),
+    'sequence_identity': fields.Float(),
+    'uniprot_start': fields.Integer(),
+    'uniprot_end': fields.Integer(),
+    'coverage': fields.Float(),
+    'resolution': fields.Float(),
+    'qmean_version': fields.String(),
+    'qmean_avg_local_score': fields.Float(),
+    'oligo_state': fields.String(),
+    'preferred_assembly_id': fields.String(),
     'in_complex_with': fields.List(fields.Nested(residues_in_chain)),
-    'bound_ligands': fields.List(fields.Nested(residues_in_chain)),
     'chains': fields.List(fields.Nested(chain)),
 })
 
@@ -84,7 +99,7 @@ uniprot_response_query = api.model('UniprotResponseQuery', {
 })
 
 uniprot_response = api.model('UniprotResponse', {
-    'uniprot_entries': fields.List(fields.Nested(uniprot_entry)),
+    'uniprot_entry': fields.Nested(uniprot_entry),
     'structures': fields.List(fields.Nested(structure)),
 })
 
@@ -94,6 +109,13 @@ uniprot_query = api.model('UniprotQuery', {
     'template': fields.String(required=False),
     'range': fields.String(required=False),
 })
+
+
+def parse_uniprot_acc(query_str):
+    if re.match(r'[^A-Z0-9]', query_str):
+        raise ValueError(
+            f"query '{query_str}' does not look like a UniProt accession")
+    return query_str
 
 
 @api.param('qualifier', 'UniProtKB accession (eg "P00520")', required=True)
@@ -109,7 +131,7 @@ class UniprotQuery(Resource):
 @api.produces('application/json')
 class UniprotJsonQuery(UniprotQuery):
     """
-    Query with UniProtKB accession and return a JSON data structure 
+    Query with UniProtKB accession and return a JSON data structure
     """
 
     @api.doc('Return the results of the query as a data structure in JSON')
@@ -119,11 +141,26 @@ class UniprotJsonQuery(UniprotQuery):
         Returns entries matching Uniprot query
         """
         LOG.info("UniprotJsonQuery.GET: %s", qualifier)
+
+        page_size = 100
+        page_start = 1
+
+        uniprot_acc = parse_uniprot_acc(qualifier)
+
+        query = ModelStructure.query.filter(
+            # ModelStructure.chains.any(ModelChain.query.filter(
+            #     ModelChain.segments.any(
+            #         ModelChainSegment.uniprot_acc == uniprot_acc)
+            # ))
+        )
+
+        structures = query.limit(page_size).offset(page_start)
+
         return {
-            'query': {'qualifier': qualifier},
-            # 'result': 'foo',
-            # 'sequence': 'foo',
-            'md5': 'foo',
+            'uniprot_entry': {
+                'ac': uniprot_acc,
+            },
+            'structures': structures,
         }
 
 
@@ -133,7 +170,7 @@ class UniprotJsonQuery(UniprotQuery):
 @api.produces('chemical/x-pdb')
 class UniprotPdbQuery(UniprotQuery):
     """
-    Query with UniProtKB accession and return a PDB data file 
+    Query with UniProtKB accession and return a PDB data file
     """
 
     @api.doc('Return the results of the query as a PDB file')
@@ -153,7 +190,7 @@ class UniprotPdbQuery(UniprotQuery):
 @api.produces('chemical/x-mmcif')
 class UniprotMmcifQuery(UniprotQuery):
     """
-    Query with UniProtKB accession and return a mmCIF data file 
+    Query with UniProtKB accession and return a mmCIF data file
     """
 
     @api.doc('Return the results of the query as a mmCIF file')
