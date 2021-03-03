@@ -29,14 +29,6 @@ class Config(object):
 
     SQLALCHEMY_ECHO = False
 
-    SQLALCHEMY_DATABASE_URI = None
-
-
-class ProductionConfig(Config):
-    DEBUG = False
-    TESTING = False
-    SQLALCHEMY_ECHO = False
-
     @property
     def SQLALCHEMY_DATABASE_URI(self):
         db_uri = config('DATABASE_URI',
@@ -50,6 +42,12 @@ class ProductionConfig(Config):
         return db_uri
 
 
+class ProductionConfig(Config):
+    DEBUG = False
+    TESTING = False
+    SQLALCHEMY_ECHO = False
+
+
 class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
@@ -59,6 +57,8 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     DEBUG = True
     TESTING = True
+
+    SQLALCHEMY_DATABASE_URI = None
 
 
 def get_current_config():
