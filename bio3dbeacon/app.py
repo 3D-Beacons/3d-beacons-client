@@ -46,6 +46,8 @@ def create_app():
         LOG.debug("Creating app ... Migrate")
         migrate = Migrate(app, DB)
 
+        LOG.debug("Creating app ... done")
+
     from bio3dbeacon.api.restx import api  #  NOQA
     from bio3dbeacon.frontend.frontend import frontend_bp  # NOQA
 
