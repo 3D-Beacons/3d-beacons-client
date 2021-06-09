@@ -113,3 +113,5 @@ luigi.pid
 work_dir/
 .env.prod
 docker-compose.yml
+
+pfam_data/
