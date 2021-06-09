@@ -1,8 +1,8 @@
 # pylint: disable=no-member
 from datetime import datetime
+import uuid
 
 from sqlalchemy.dialects.postgresql import JSON
-
 from ..app import DB as db, MA as ma
 
 # https://realpython.com/flask-connexion-rest-api-part-2/
@@ -11,7 +11,11 @@ from ..app import DB as db, MA as ma
 class ModelStructure(db.Model):
     __tablename__ = 'model_structure'
 
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+
+    uid = db.Column(db.Text(length=36), default=lambda: str(
+        uuid.uuid4()), primary_key=True)
+
     created_at = db.Column(db.DateTime, nullable=False)
     updated_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.utcnow)
@@ -42,7 +46,7 @@ class ModelStructureSchema(ma.SQLAlchemyAutoSchema):
 class ModelChain(db.Model):
     __tablename__ = 'model_chain'
 
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     chain_id = db.Column(db.String, nullable=False)
 
     model_structure_id = db.Column(
@@ -61,23 +65,20 @@ class ModelChainSchema(ma.SQLAlchemyAutoSchema):
 class ModelChainSegment(db.Model):
     __tablename__ = 'model_chain_segment'
 
-    id = db.Column(db.String, primary_key=True)
-    seqres = db.Column(db.String)
+    id = db.Column(db.Integer, primary_key=True)
 
-    # segment_seqres
-    aligned_sequence = db.Column(db.String)
-    description = db.Column(db.String)
-    pos_from = db.Column(db.Integer)
-    pos_to = db.Column(db.Integer)
+    seqres_from = db.Column(db.Integer)
+    seqres_to = db.Column(db.Integer)
+    seqres_aligned_sequence = db.Column(db.String)
 
     # segment_uniprot
     uniprot_acc = db.Column(db.String, nullable=False)
-    uniprot_id = db.Column(db.String, nullable=False)
+    uniprot_id = db.Column(db.String, nullable=True)
     uniprot_length = db.Column(db.Integer, nullable=False)
     uniprot_md5 = db.Column(db.String)
-    aligned_sequence = db.Column(db.String, nullable=False)
-    pos_from = db.Column(db.Integer, nullable=False)
-    pos_to = db.Column(db.Integer, nullable=False)
+    uniprot_aligned_sequence = db.Column(db.String, nullable=False)
+    uniprot_from = db.Column(db.Integer, nullable=False)
+    uniprot_to = db.Column(db.Integer, nullable=False)
 
     model_chain_id = db.Column(db.Integer, db.ForeignKey('model_chain.id'))
 
@@ -94,7 +95,7 @@ class ModelChainSegmentSchema(ma.SQLAlchemyAutoSchema):
 class ModelChainSegmentTemplate(db.Model):
     __tablename__ = 'model_chain_segment_template'
 
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
 
     template_id = db.Column(db.String, nullable=False)
     chain_id = db.Column(db.String, nullable=False)
