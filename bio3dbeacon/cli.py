@@ -21,16 +21,22 @@ It can be used as a handy facility for running the task from a command line.
 import logging
 import os
 import pathlib
+import uuid
 import subprocess
+import tempfile
+import types
 
 # pip
 import click
 import luigi
+import requests
 
 # local
 from bio3dbeacon import __version__
 from bio3dbeacon.app import flask_cli
 from .tasks import ProcessModelPdb, get_uid_from_file
+from .database import get_db
+from .data_loader import swissmodel
 
 app = flask_cli()
 
@@ -167,23 +173,58 @@ def model(_: Info):
 
 
 @model.command('add')
-@click.option('--pdbfile', required=True,
-              help='input model PDB file')
+@click.option('--type', 'loader_classname', type=str, default='swissmodel', required=True,
+              help='type of loader to use')
+@click.option('--jsonfile', required=True,
+              help='input model JSON file')
 @click.option('--workers', default=5,
               help='number of workers')
 @pass_info
-def add(info: Info, pdbfile, workers):
-    """Add a local PDB file"""
+def add(info: Info, loader_classname, jsonfile, workers):
+    """Add local models"""
 
-    pdbfile = pathlib.Path(pdbfile).resolve()
-    click.echo('Working on file: {}'.format(pdbfile))
-    uid = get_uid_from_file(pdbfile)
-    task = ProcessModelPdb(pdb_file=str(pdbfile), uid=uid)
-    try:
-        luigi.build([task], workers=workers)
-    except Exception as err:
-        LOG.error('caught error: %s', err)
-        raise
+    loader_module = __import__(
+        f"bio3dbeacon.data_loader.{loader_classname}", fromlist=[''])
+
+    if not isinstance(loader_module, types.ModuleType):
+        raise ValueError(
+            f"failed to find data_loader module called '{loader_classname}'")
+
+    with app.app_context():
+        db = get_db()
+
+        click.echo(f'Working on JSON file: {jsonfile} ... ')
+        structures = loader_module.create_model_structures(json_file=jsonfile)
+        click.echo(f' ... found {len(structures)} structures')
+
+        for str_count, structure in enumerate(structures, 1):
+            db.session.add(structure)
+
+            click.echo(
+                f'Working on {pathlib.Path(jsonfile).name}, structure {str_count} ... ')
+
+            coordinate_uri = structure.original_path
+            structure.uid = uuid.uuid4()
+
+            click.echo('Downloading coordinates: {}'.format(coordinate_uri))
+
+            r = requests.get(coordinate_uri)
+
+            tmp_pdb_file = tempfile.NamedTemporaryFile('wt', suffix='.pdb')
+            tmp_pdb_file.write(r.text)
+            tmp_pdb_file.flush()
+
+            click.echo('Working on file: {}'.format(tmp_pdb_file.name))
+            task = ProcessModelPdb(pdb_file=str(
+                tmp_pdb_file.name), uid=structure.uid)
+            try:
+                luigi.build([task], workers=workers)
+            except Exception as err:
+                LOG.error('caught error: %s', err)
+                raise
+
+        LOG.info('Committing DB changes')
+        db.session.commit()
 
 
 @cli.command()
