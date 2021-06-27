@@ -113,3 +113,4 @@ luigi.pid
 work_dir/
 .env.prod
 docker-compose.yml
+example_data/
