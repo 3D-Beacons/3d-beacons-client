@@ -1,21 +1,38 @@
 from pathlib import Path
 from prettyconf import config
 
-BEACON_NAME = 'ModelsRUs (London)'
+from prettyconf.loaders import EnvFile
 
-ROOT_DIR = (Path(__file__) / '..' / '..').resolve()
-MOLSTAR_GITHUB_URL = 'https://github.com/molstar/molstar.git'
-QMEAN_SUBMIT_URL = 'https://swissmodel.expasy.org/qmean/submit/'
-CONTACT_EMAIL = 'i.sillitoe@ucl.ac.uk'
-GEMMI_EXE = ROOT_DIR / 'gemmi' / 'gemmi'
-WORK_DIR = ROOT_DIR / 'work_dir'
-MOLSTAR_PREPROCESS_EXE = ROOT_DIR / 'molstar' / \
-    'build' / 'model-server' / 'preprocess.js'
-
+config.loaders = [EnvFile('.env', var_format=str.upper)]
 
 class Config(object):
     DEBUG = False
     TESTING = False
+
+    BEACON_NAME = config('BEACON_NAME', default='ModelsRUs (London)')
+
+    SECRET_KEY = config(
+        'SECRET_KEY', default='fourteen-ants-marching-over-mushrooms')
+
+    QMEAN_DOCKER_IMAGE = config('QMEAN_DOCKER_IMAGE')
+    PATH_TO_LOCAL_UNICLUST = config('PATH_TO_LOCAL_UNICLUST')
+    PATH_TO_LOCAL_QMTL = config('PATH_TO_LOCAL_QMTL')
+
+
+    ROOT_DIR = config('BEACON_ROOT', 
+        default=(Path(__file__) / '..' / '..').resolve())
+    MOLSTAR_GITHUB_URL = config('BEACON_MOLSTAR_GITHUB_URL', 
+        default='https://github.com/molstar/molstar.git')
+    QMEAN_SUBMIT_URL = config('BEACON_QMEAN_SUBMIT_URL', 
+        default='https://swissmodel.expasy.org/qmean/submit/')
+    CONTACT_EMAIL = config('BEACON_CONTACT', 
+        default='i.sillitoe@ucl.ac.uk')
+    GEMMI_EXE = config('BEACON_GEMMI_EXE', 
+        default=ROOT_DIR / 'gemmi' / 'gemmi')
+    WORK_DIR = config('BEACON_WORKDIR', 
+        default=ROOT_DIR / 'work_dir')
+    MOLSTAR_PREPROCESS_EXE = ROOT_DIR / 'molstar' / \
+        'build' / 'model-server' / 'preprocess.js'
 
     RESTX_SWAGGER_UI_DOC_EXPANSION = 'list'
     RESTX_VALIDATE = True
@@ -24,28 +41,16 @@ class Config(object):
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    SECRET_KEY = config(
-        'SECRET_KEY', default='fourteen-ants-marching-over-mushrooms')
-
     SQLALCHEMY_ECHO = False
 
-    @property
-    def SQLALCHEMY_DATABASE_URI(self):
-        db_uri = config('DATABASE_URI',
-                        default='postgres://{}:{}@{}:{}/{}'.format(
-                            config('DATABASE_USER'),
-                            config('DATABASE_PASSWORD'),
-                            config('DATABASE_HOST', default='localhost'),
-                            config('DATABASE_PORT', default='5432'),
-                            config('DATABASE_NAME'),
-                        ))
-        return db_uri
+    SQLALCHEMY_DATABASE_URI = config('SQL_DATABASE_URI', default=None)
 
 
 class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     SQLALCHEMY_ECHO = False
+
 
 
 class DevelopmentConfig(Config):
@@ -62,12 +67,14 @@ class TestingConfig(Config):
 
 
 def get_current_config():
-    app_mode = config('FLASK_ENV', default='Development').upper()
-    if app_mode == 'TESTING':
+    
+    mode = config('FLASK_ENV', default='Development').upper()
+        
+    if mode == 'TESTING':
         return TestingConfig()
-    elif app_mode == 'DEVELOPMENT':
+    elif mode == 'DEVELOPMENT':
         return DevelopmentConfig()
-    elif app_mode == 'PRODUCTION':
+    elif mode == 'PRODUCTION':
         return ProductionConfig()
     else:
-        raise RuntimeError(f'unrecognised FLASK_ENV={app_mode}')
+        raise RuntimeError(f'unrecognised FLASK_ENV={mode}')
