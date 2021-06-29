@@ -19,7 +19,7 @@ import bio3dbeacon
 from bio3dbeacon.app import create_app
 from bio3dbeacon.database import get_db
 from bio3dbeacon.database.models import ModelStructure
-from bio3dbeacon.tasks import IngestModelPdb, get_file_path
+from bio3dbeacon.tasks import IngestModelPdb, ProcessModelPdb, get_file_path
 
 DATA_ROOT = Path(__file__).parent / 'fixtures'
 DATA_ORIGINAL = DATA_ROOT / 'baker_pfam' / 'original'
@@ -73,5 +73,34 @@ def test_ingest_model_pdb(app):
 
 
 
-def test_process_model_pdb(app):
-    pass
+# def test_process_model_pdb(app):
+#     """
+#     Process all steps required to ingest the model PDB
+#     """
+
+#     orig_pdb_file = DATA_ORIGINAL / 'pdb' / 'PF05017.pdb'
+
+#     task = ProcessModelPdb(app=app, pdb_file=str(orig_pdb_file))
+
+#     success = luigi.build([task], workers=3, local_scheduler=True)
+
+#     uid = task.get_uid()
+
+#     expected_file_suffixes = ('.pdb', '.mmcif', '.bcif')
+
+#     for suffix in expected_file_suffixes:
+#         expected_path = get_file_path(basedir=app.config['WORK_DIR'], uid=uid, suffix=suffix)
+#         assert expected_path.exists()
+
+#     with app.app_context():
+#         entry = ModelStructure.query.get(uid)
+#         assert entry
+#         LOG.info("entry: %s", entry)
+#         assert entry.created_at
+#         assert entry.updated_at
+#         assert entry.original_path == str(orig_pdb_file)
+
+#         assert entry.pdb_created_at
+#         assert not entry.mmcif_created_at
+#         assert not entry.qmean_created_at
+#         assert not entry.model_data_created_at
