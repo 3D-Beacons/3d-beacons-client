@@ -3,7 +3,10 @@ from prettyconf import config
 
 from prettyconf.loaders import EnvFile
 
-config.loaders = [EnvFile('.env', var_format=str.upper)]
+config.loaders = [
+    EnvFile('.env.local', var_format=str.upper),
+    EnvFile('.env', var_format=str.upper),
+]
 
 class Config(object):
     DEBUG = False
