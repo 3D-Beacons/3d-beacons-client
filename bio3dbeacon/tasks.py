@@ -57,25 +57,24 @@ class IngestModelPdb(luigi.Task):
 
     def run(self):
 
+        uid = str(self.uid)
+        pdb_path = Path(self.pdb_file).resolve()
+
         with app.app_context():
             entry = ModelStructure.query.get(self.uid)
-            original_path = str(Path(self.pdb_file).resolve())
 
-        dt_now = datetime.utcnow()
-        if not entry:
-            entry = ModelStructure(
-                id=self.uid,
-                created_at=dt_now,
-                updated_at=dt_now,
-                original_path=original_path)
-        else:
-            entry.updated_at = dt_now
-            entry.original_path = original_path
+            dt_now = datetime.utcnow()
+            if not entry:
+                msg = f"failed to find entry with id '{uid}' in database"
+                raise ValueError(msg)
 
-        with app.app_context():
+            entry.update({
+                'updated_at': dt_now,
+                'original_path': str(pdb_path),
+            })
+            shutil.copyfile(pdb_path, self.output().path)
             db = get_db()
             db.session.add(entry)
-            shutil.copyfile(original_path, self.output().path)
             db.session.commit()
 
 
@@ -264,7 +263,7 @@ class ProcessModelPdb(luigi.WrapperTask):
     uid = luigi.Parameter()
 
     def requires(self):
-        uid = self.uid
+        uid = str(self.uid)
         LOG.info("ProcessModelPdb: calculate model quality")
         yield(CalculateModelQuality(pdb_file=self.pdb_file, uid=uid))
         LOG.info("ProcessModelPdb: convert pdb to mmcif")
