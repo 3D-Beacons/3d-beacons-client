@@ -12,8 +12,9 @@ module.
 import bio3dbeacon.cli as cli
 from bio3dbeacon import __version__
 # fmt: on
-from click.testing import CliRunner, Result
+from click.testing import Result
 
+from .conftest import FIXTURE_PATH
 
 # To learn more about testing Click applications, visit the link below.
 # http://click.pocoo.org/5/testing/
@@ -51,3 +52,17 @@ def test_model_displays_expected_message(cli_runner):
     assert 'cli' in result.output.strip(), \
         "'model' messages should contain the CLI name."
     # fmt: on
+
+
+def test_model_add(cli_runner):
+    """
+    Arrange/Act: Run the `model add` subsubcommand
+    Assert: The PDB file is added to the database
+    """
+
+    pdbfile = FIXTURE_PATH / 'baker_pfam' / 'original' / 'pdb' / 'PF05017.pdb'
+
+    result: Result = cli_runner.invoke(
+        cli.cli, ["model", "add", "--pdbfile", str(pdbfile)])
+
+    assert result.exit_code == 0
