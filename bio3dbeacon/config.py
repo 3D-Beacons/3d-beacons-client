@@ -8,6 +8,7 @@ config.loaders = [
     EnvFile('.env', var_format=str.upper),
 ]
 
+
 class Config(object):
     DEBUG = False
     TESTING = False
@@ -17,26 +18,25 @@ class Config(object):
     SECRET_KEY = config(
         'SECRET_KEY', default='fourteen-ants-marching-over-mushrooms')
 
-    QMEAN_DOCKER_IMAGE = config('QMEAN_DOCKER_IMAGE', 
-        default='registry.scicore.unibas.ch/schwede/qmean:4.2.0')
+    QMEAN_DOCKER_IMAGE = config('QMEAN_DOCKER_IMAGE',
+                                default='registry.scicore.unibas.ch/schwede/qmean:4.2.0')
     PATH_TO_LOCAL_UNICLUST = config('PATH_TO_LOCAL_UNICLUST')
     PATH_TO_LOCAL_QMTL = config('PATH_TO_LOCAL_QMTL')
 
-
-    ROOT_DIR = config('BEACON_ROOT', 
-        default=(Path(__file__) / '..' / '..').resolve())
-    MOLSTAR_GITHUB_URL = config('BEACON_MOLSTAR_GITHUB_URL', 
-        default='https://github.com/molstar/molstar.git')
-    QMEAN_SUBMIT_URL = config('BEACON_QMEAN_SUBMIT_URL', 
-        default='https://swissmodel.expasy.org/qmean/submit/')
-    CONTACT_EMAIL = config('BEACON_CONTACT', 
-        default='i.sillitoe@ucl.ac.uk')
-    GEMMI_EXE = config('BEACON_GEMMI_EXE', 
-        default=ROOT_DIR / 'gemmi' / 'gemmi')
-    WORK_DIR = config('BEACON_WORKDIR', 
-        default=ROOT_DIR / 'work_dir')
+    ROOT_DIR = config('BEACON_ROOT',
+                      default=(Path(__file__) / '..' / '..').resolve())
+    MOLSTAR_GITHUB_URL = config('BEACON_MOLSTAR_GITHUB_URL',
+                                default='https://github.com/molstar/molstar.git')
+    QMEAN_SUBMIT_URL = config('BEACON_QMEAN_SUBMIT_URL',
+                              default='https://swissmodel.expasy.org/qmean/submit/')
+    CONTACT_EMAIL = config('BEACON_CONTACT',
+                           default='i.sillitoe@ucl.ac.uk')
+    GEMMI_EXE = config('BEACON_GEMMI_EXE',
+                       default=ROOT_DIR / 'gemmi' / 'gemmi')
+    WORK_DIR = config('BEACON_WORKDIR',
+                      default=ROOT_DIR / 'work_dir')
     MOLSTAR_PREPROCESS_EXE = ROOT_DIR / 'molstar' / \
-        'build' / 'model-server' / 'preprocess.js'
+        'lib' / 'servers' / 'model' / 'preprocess.js'
 
     RESTX_SWAGGER_UI_DOC_EXPANSION = 'list'
     RESTX_VALIDATE = True
@@ -56,7 +56,6 @@ class ProductionConfig(Config):
     SQLALCHEMY_ECHO = False
 
 
-
 class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
@@ -71,12 +70,10 @@ class TestingConfig(Config):
 
 
 def get_current_config():
-    
+
     mode = config('FLASK_ENV', default='Development').upper()
-        
-    if mode == 'TESTING':
-        return TestingConfig()
-    elif mode == 'DEVELOPMENT':
+
+    if mode == 'DEVELOPMENT':
         return DevelopmentConfig()
     elif mode == 'PRODUCTION':
         return ProductionConfig()

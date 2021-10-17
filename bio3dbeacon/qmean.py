@@ -107,8 +107,7 @@ class QmeanRunner:
         }
         LOG.debug("submit.post: %s", kwargs)
         response = requests.post(**kwargs)
-        LOG.debug("submit.response: %s", json.dumps(
-            response.json(), indent=2, sort_keys=True))
+        LOG.debug("submit.response: %s ...", response.text[:50])
         response.raise_for_status()
         return response
 

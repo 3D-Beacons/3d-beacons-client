@@ -1,31 +1,34 @@
-# core
-from bio3dbeacon.config import TestingConfig
 import logging
 import os
-import pytest
 import tempfile
 from pathlib import Path
 
-# pip
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-
 os.environ['FLASK_ENV'] = 'TESTING'
 
-from bio3dbeacon.database import init_db  # NOQA
-from bio3dbeacon.app import create_app  # NOQA
+# pip
+import luigi  # NOQA
+import pytest  # NOQA
+
+# local
+import bio3dbeacon  # NOQA
 
 LOG = logging.getLogger(__name__)
-
-# read in SQL for populating test data
-# with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
-#     _data_sql = f.read().decode("utf8")
 
 FIXTURE_PATH = (Path(__file__).parent / 'fixtures').absolute()
 
 
 @pytest.fixture
-def app_factory():
+def luigi_runner():
+
+    class MyLuigiRunner:
+        def run(self, tasks):
+            return luigi.build(tasks, workers=3, local_scheduler=True)
+
+    return MyLuigiRunner()
+
+
+@pytest.fixture
+def app_factory(monkeypatch):
     """Create and configure a new app instance for each test."""
 
     created_app_envs = []
@@ -41,10 +44,19 @@ def app_factory():
         tmp_work_dir = tempfile.TemporaryDirectory(
             prefix='pytest-bio3dbeacon-')
 
-        config = TestingConfig()
+        config = bio3dbeacon.config.TestingConfig()
         config.WORK_DIR = tmp_work_dir.name
 
-        _app = create_app(config=config)
+        # for the duration of this test, always return this app on 'create_app'
+        original_create_app = bio3dbeacon.app.create_app
+        _app = original_create_app(config=config)
+
+        def mock_create_app(*args, **kwargs):
+            LOG.warning('Using mocked create_app')
+            return _app
+
+        LOG.info("Applying monkeypatch for create_app ...")
+        monkeypatch.setattr(bio3dbeacon.app, 'create_app', mock_create_app)
 
         LOG.debug("APP: db_path = %s", db_path)
 
@@ -53,7 +65,7 @@ def app_factory():
         # create the database and load test data
         with _app.app_context():
             LOG.debug("Initialising test database ... ")
-            init_db()
+            bio3dbeacon.database.init_db()
             # get_db().executescript(_data_sql)
 
         created_app_envs.append({

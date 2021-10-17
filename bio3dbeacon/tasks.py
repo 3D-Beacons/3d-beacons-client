@@ -19,7 +19,6 @@ from luigi.util import requires  # noqa
 
 # local
 import bio3dbeacon
-from .app import create_app
 from .database import get_db
 from .database.models import ModelStructure
 from .qmean import QmeanRunner
@@ -60,7 +59,7 @@ class WithAppMixin:
         if not hasattr(self, '_app'):
             LOG.debug("Creating app for luigi task %s ...",
                       self.__class__.__name__)
-            self._app = create_app()
+            self._app = bio3dbeacon.app.create_app()
         return self._app
 
 
@@ -301,8 +300,9 @@ class ConvertMmcifToBcif(BaseTask):
         mmcif_file = self.input()
         bcif_file = self.output()
         molstar_exe = self.app.config['MOLSTAR_PREPROCESS_EXE']
-        cmd_args = ['node', molstar_exe,
-                    '-i', mmcif_file.path, '-ob', bcif_file.path]
+        cmd_args = ['node', str(molstar_exe),
+                    '-i', str(mmcif_file.path),
+                    '-ob', str(bcif_file.path)]
         try:
             subprocess.run(cmd_args, check=True, encoding='utf-8',
                            stderr=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -333,7 +333,7 @@ class ProcessModelPdb(BaseWrapperTask):
         LOG.info("ProcessModelPdb: convert pdb to mmcif")
         yield(ConvertPdbToMmcif(pdb_file=pdb_file, uid=uid))
         # LOG.info("ProcessModelPdb: add mmcif to molstar")
-        # yield(ConvertMmcifToBcif(self.app, pdb_file=pdb_file, uid=uid))
+        # yield(ConvertMmcifToBcif(pdb_file=pdb_file, uid=uid))
 
     def get_uid(self):
         if not hasattr(self, '_uid'):
