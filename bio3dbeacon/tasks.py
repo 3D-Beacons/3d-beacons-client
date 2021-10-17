@@ -53,12 +53,27 @@ def get_file_path(*, basedir, uid, suffix):
     return Path(basedir) / uid[:2] / str(uid + suffix)
 
 
-class BaseTask(luigi.Task):
+class WithAppMixin:
+
+    @property
+    def app(self):
+        if not hasattr(self, '_app'):
+            LOG.debug("Creating app for luigi task %s ...",
+                      self.__class__.__name__)
+            self._app = create_app()
+        return self._app
+
+
+class BaseTask(WithAppMixin, luigi.Task):
     """
     Base class for all Luigi tasks
     """
 
-    app = luigi.Parameter(default=create_app())
+
+class BaseWrapperTask(WithAppMixin, luigi.WrapperTask):
+    """
+    Base class for all Luigi Wrapper tasks
+    """
 
 
 class IngestModelPdb(BaseTask):
@@ -135,7 +150,7 @@ class CalculateQmean(BaseTask):
 
     """
 
-    run_remotely = luigi.Parameter(default=False)
+    run_remotely = luigi.BoolParameter(default=True)
 
     def output(self):
         pdb_file = self.input()
@@ -176,9 +191,10 @@ class CalculateQmean(BaseTask):
             LOG.info("Writing output JSON score data to: '%s'",
                      qmean_output_file)
 
-            with qmean_output_file.temporary_path() as temp_output_path:
-                json.dump(results, temp_output_path,
-                          indent=2, sort_keys=True)
+            with qmean_output_file.open('w') as fp:
+                json.dump(results, fp, indent=2, sort_keys=True)
+
+            LOG.info("Committing changes")
 
             db.session.commit()
 
@@ -299,7 +315,7 @@ class ConvertMmcifToBcif(BaseTask):
             raise
 
 
-class ProcessModelPdb(luigi.WrapperTask):
+class ProcessModelPdb(BaseWrapperTask):
     """
     Generate all related files for a given model PDB file
 
@@ -307,18 +323,17 @@ class ProcessModelPdb(luigi.WrapperTask):
         pdb_file: input PDB file
     """
 
-    app = luigi.Parameter()
     pdb_file = luigi.Parameter()
 
     def requires(self):
         pdb_file = self.pdb_file
         uid = self.get_uid()
         LOG.info("ProcessModelPdb: calculate qmean (local)")
-        yield(CalculateQmean(app=self.app, pdb_file=pdb_file, uid=uid))
+        yield(CalculateQmean(pdb_file=pdb_file, uid=uid))
         LOG.info("ProcessModelPdb: convert pdb to mmcif")
-        yield(ConvertPdbToMmcif(app=self.app, pdb_file=pdb_file, uid=uid))
+        yield(ConvertPdbToMmcif(pdb_file=pdb_file, uid=uid))
         # LOG.info("ProcessModelPdb: add mmcif to molstar")
-        # yield(ConvertMmcifToBcif(app=self.app, pdb_file=pdb_file, uid=uid))
+        # yield(ConvertMmcifToBcif(self.app, pdb_file=pdb_file, uid=uid))
 
     def get_uid(self):
         if not hasattr(self, '_uid'):
