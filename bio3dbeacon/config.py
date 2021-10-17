@@ -17,7 +17,8 @@ class Config(object):
     SECRET_KEY = config(
         'SECRET_KEY', default='fourteen-ants-marching-over-mushrooms')
 
-    QMEAN_DOCKER_IMAGE = config('QMEAN_DOCKER_IMAGE')
+    QMEAN_DOCKER_IMAGE = config('QMEAN_DOCKER_IMAGE', 
+        default='registry.scicore.unibas.ch/schwede/qmean:4.2.0')
     PATH_TO_LOCAL_UNICLUST = config('PATH_TO_LOCAL_UNICLUST')
     PATH_TO_LOCAL_QMTL = config('PATH_TO_LOCAL_QMTL')
 
