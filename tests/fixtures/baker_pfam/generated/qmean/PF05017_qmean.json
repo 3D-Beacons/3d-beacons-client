@@ -1,0 +1,65 @@
+{
+  "created": "2021-10-18T00:08:08.980",
+  "method": "QMEANDisCo",
+  "models": {
+    "model_001": {
+      "chains": {
+        "A": {
+          "atomseq": "WDGIKDAFKSM",
+          "name": "seq_chain_0",
+          "seqres": "WDGIKDAFKSM"
+        }
+      },
+      "model_pdb": "https://swissmodel.expasy.org/qmean/nybyJr/model_001_processed.pdb",
+      "original_name": "PF05017.pdb",
+      "preprocessing": {
+        "atomsRemoved": 47,
+        "molck_log": "removing atoms with zero occupancy\n --> removed 0 atoms with zero occupancy\nremoving hydrogen atoms\n --> removed 38 hydrogen atoms\nresidue A.TRP1 contains unknown atom A.TRP1.1H --> removed \nresidue A.TRP1 contains unknown atom A.TRP1.2H --> removed \nresidue A.TRP1 contains unknown atom A.TRP1.3H --> removed \nresidue A.ASP2 contains unknown atom A.ASP2.1HB --> removed \nresidue A.ASP2 contains unknown atom A.ASP2.2HB --> removed \nresidue A.GLY3 contains unknown atom A.GLY3.1HA --> removed \nresidue A.GLY3 contains unknown atom A.GLY3.2HA --> removed \nresidue A.ASP6 contains unknown atom A.ASP6.1HB --> removed \nresidue A.ASP6 contains unknown atom A.ASP6.2HB --> removed \n",
+        "residuesRemoved": -11
+      },
+      "scores": {
+        "global_scores": {
+          "acc_agreement_norm_score": 0.7272727273,
+          "acc_agreement_z_score": 0.197842548,
+          "avg_local_score": 0.6358853237000001,
+          "avg_local_score_error": 0.115,
+          "cbeta_norm_score": -0.0318026468,
+          "cbeta_z_score": 0.4921075265,
+          "interaction_norm_score": -0.0093671437,
+          "interaction_z_score": -1.0673745664,
+          "packing_norm_score": 0.1581003917,
+          "packing_z_score": -2.5609366056000002,
+          "qmean4_norm_score": 0.3362597305,
+          "qmean4_z_score": -3.6018890553,
+          "qmean6_norm_score": 0.38257069,
+          "qmean6_z_score": -2.7220524499,
+          "ss_agreement_norm_score": 0.1177660484,
+          "ss_agreement_z_score": -1.0044214508,
+          "torsion_norm_score": 0.7154631825000001,
+          "torsion_z_score": -3.6747473406999998
+        },
+        "local_scores": {
+          "A": [
+            0.1802103816,
+            0.351304634,
+            0.8540674532,
+            0.8533899079,
+            0.8739445282,
+            0.881746957,
+            0.8830072419,
+            0.8039439008,
+            0.8068582362000001,
+            0.17239703580000001,
+            0.33386828360000004
+          ]
+        }
+      }
+    }
+  },
+  "project_name": "Untitled Project",
+  "qmean_version": "4.2.0",
+  "results_page": "https://swissmodel.expasy.org/qmean/nybyJr",
+  "seqres_uploaded": null,
+  "smtl_version": "2021-10-13",
+  "status": "COMPLETED"
+}
