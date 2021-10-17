@@ -9,7 +9,7 @@ Module to test the Luigi tasks
 
 import tempfile
 from pathlib import Path
-import uuid 
+import uuid
 import logging
 
 import luigi
@@ -29,6 +29,7 @@ DATA_EXPECTED = DATA_ROOT / 'baker_pfam' / 'expected'
 
 LOG = logging.getLogger()
 
+
 def test_app(app):
 
     pdb_file = DATA_ORIGINAL / 'pdb' / 'PF05017.pdb'
@@ -36,7 +37,7 @@ def test_app(app):
 
     task = IngestModelPdb(app=app, pdb_file=str(pdb_file), uid=str(uid))
 
-    assert 'pytest-bio3dbeacon-' in task.app.config['WORK_DIR'] 
+    assert 'pytest-bio3dbeacon-' in task.app.config['WORK_DIR']
 
 
 def test_ingest_model_pdb(app):
@@ -52,7 +53,8 @@ def test_ingest_model_pdb(app):
 
     assert success
 
-    expected_pdb_file = get_file_path(basedir=app.config['WORK_DIR'], uid=uid, suffix='.pdb')
+    expected_pdb_file = get_file_path(
+        basedir=app.config['WORK_DIR'], uid=uid, suffix='.pdb')
 
     assert expected_pdb_file.exists()
 
@@ -72,35 +74,37 @@ def test_ingest_model_pdb(app):
         assert not entry.model_data_created_at
 
 
+def test_process_model_pdb(app):
+    """
+    Process all steps required to ingest the model PDB
+    """
 
-# def test_process_model_pdb(app):
-#     """
-#     Process all steps required to ingest the model PDB
-#     """
+    orig_pdb_file = DATA_ORIGINAL / 'pdb' / 'PF05017.pdb'
 
-#     orig_pdb_file = DATA_ORIGINAL / 'pdb' / 'PF05017.pdb'
+    task = ProcessModelPdb(app=app, pdb_file=str(orig_pdb_file))
 
-#     task = ProcessModelPdb(app=app, pdb_file=str(orig_pdb_file))
+    success = luigi.build([task], workers=3, local_scheduler=True)
 
-#     success = luigi.build([task], workers=3, local_scheduler=True)
+    assert success
 
-#     uid = task.get_uid()
+    uid = task.get_uid()
 
-#     expected_file_suffixes = ('.pdb', '.mmcif', '.bcif')
+    expected_file_suffixes = ('.pdb', '.mmcif', '.bcif')
 
-#     for suffix in expected_file_suffixes:
-#         expected_path = get_file_path(basedir=app.config['WORK_DIR'], uid=uid, suffix=suffix)
-#         assert expected_path.exists()
+    for suffix in expected_file_suffixes:
+        expected_path = get_file_path(
+            basedir=app.config['WORK_DIR'], uid=uid, suffix=suffix)
+        assert expected_path.exists()
 
-#     with app.app_context():
-#         entry = ModelStructure.query.get(uid)
-#         assert entry
-#         LOG.info("entry: %s", entry)
-#         assert entry.created_at
-#         assert entry.updated_at
-#         assert entry.original_path == str(orig_pdb_file)
+    with app.app_context():
+        entry = ModelStructure.query.get(uid)
+        assert entry
+        LOG.info("entry: %s", entry)
+        assert entry.created_at
+        assert entry.updated_at
+        assert entry.original_path == str(orig_pdb_file)
 
-#         assert entry.pdb_created_at
-#         assert not entry.mmcif_created_at
-#         assert not entry.qmean_created_at
-#         assert not entry.model_data_created_at
+        assert entry.pdb_created_at
+        assert not entry.mmcif_created_at
+        assert not entry.qmean_created_at
+        assert not entry.model_data_created_at
