@@ -42,11 +42,11 @@ class ModelStructureSchema(ma.SQLAlchemyAutoSchema):
 class ModelChain(db.Model):
     __tablename__ = 'model_chain'
 
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     chain_id = db.Column(db.String, nullable=False)
 
     model_structure_id = db.Column(
-        db.Integer, db.ForeignKey('model_structure.id'))
+        db.String, db.ForeignKey('model_structure.id'))
 
     model_structure = db.relationship(
         "ModelStructure", backref="chains")
@@ -61,7 +61,7 @@ class ModelChainSchema(ma.SQLAlchemyAutoSchema):
 class ModelChainSegment(db.Model):
     __tablename__ = 'model_chain_segment'
 
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     seqres = db.Column(db.String)
 
     # segment_seqres
@@ -94,7 +94,7 @@ class ModelChainSegmentSchema(ma.SQLAlchemyAutoSchema):
 class ModelChainSegmentTemplate(db.Model):
     __tablename__ = 'model_chain_segment_template'
 
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
 
     template_id = db.Column(db.String, nullable=False)
     chain_id = db.Column(db.String, nullable=False)
