@@ -15,14 +15,15 @@ DB = SQLAlchemy()
 MA = Marshmallow()
 
 CONFIG_ATTRIBUTES = (
-    'WORK_DIR', 
-    'QMEAN_SUBMIT_URL', 
-    'QMEAN_DOCKER_IMAGE', 
+    'WORK_DIR',
+    'QMEAN_SUBMIT_URL',
+    'QMEAN_DOCKER_IMAGE',
     'PATH_TO_LOCAL_UNICLUST',
     'PATH_TO_LOCAL_QMTL',
-    'CONTACT_EMAIL', 
-    'GEMMI_EXE', 
+    'CONTACT_EMAIL',
+    'GEMMI_EXE',
     'MOLSTAR_PREPROCESS_EXE')
+
 
 def create_app(config=None):
     """Creates an instance of Flask app"""
@@ -56,13 +57,8 @@ def create_app(config=None):
     from bio3dbeacon.database.models import ma
 
     with app.app_context():
-        LOG.debug("Creating app ... db.init_app()")
         DB.init_app(app)
-
-        LOG.debug("Creating app ... ma.init_app()")
         MA.init_app(app)
-
-        LOG.debug("Creating app ... Migrate")
         migrate = Migrate(app, DB)
 
     from bio3dbeacon.api.restx import api  #  NOQA
