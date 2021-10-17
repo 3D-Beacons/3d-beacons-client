@@ -31,6 +31,7 @@ LOG = logging.getLogger(__name__)
 # to be recalculated (which might be what you want)
 DATA_MODEL_VERSION = '1'
 
+
 def get_uid_from_file(model_file):
     """
     Generates a unique id (MD5) based on the file contents (and `DATA_MODEL_VERSION`)
@@ -70,16 +71,16 @@ class IngestModelPdb(BaseTask):
 
     Output:
         /path/to/model.pdb
-    
+
     """
 
     pdb_file = luigi.Parameter()
     uid = luigi.Parameter()
 
-
     def output(self):
         uid = str(self.uid)
-        outfile = get_file_path(basedir=self.app.config['WORK_DIR'], uid=uid, suffix='.pdb')
+        outfile = get_file_path(
+            basedir=self.app.config['WORK_DIR'], uid=uid, suffix='.pdb')
         target = luigi.LocalTarget(outfile)
         target.makedirs()
         return target
@@ -128,7 +129,7 @@ class CalculateQmean(BaseTask):
 
     Input: 
         model.pdb
-    
+
     Output: 
         model_qmean.json
 
@@ -146,16 +147,18 @@ class CalculateQmean(BaseTask):
 
     def run(self):
 
+        app = self.app
+        uid = str(self.uid)
         pdb_file = Path(self.pdb_file).resolve()
         qmean_output_file = self.output()
 
-        runner = QmeanRunner(app=self.app, pdb_file=pdb_file)
+        runner = QmeanRunner(app=app, pdb_file=pdb_file)
 
         if self.run_remotely:
-            results = runner.run_remote()    
+            results = runner.run_remote()
         else:
-            results = runner.run_local()    
-        
+            results = runner.run_local()
+
         dt_now = datetime.utcnow()
 
         with app.app_context():
@@ -170,10 +173,12 @@ class CalculateQmean(BaseTask):
             entry.qmean_created_at = dt_now
             db.session.add(entry)
 
-            LOG.info("Writing output JSON score data to: '%s'", qmean_json_file)
+            LOG.info("Writing output JSON score data to: '%s'",
+                     qmean_output_file)
 
             with qmean_output_file.temporary_path() as temp_output_path:
-                json.dump(score_data, temp_output_path, indent=2, sort_keys=True)
+                json.dump(results, temp_output_path,
+                          indent=2, sort_keys=True)
 
             db.session.commit()
 
@@ -189,7 +194,7 @@ class ConvertPdbToMmcif(BaseTask):
 
     Input:
         model.pdb
-    
+
     Output:
         model.mmcif
     """
@@ -213,18 +218,17 @@ class ConvertPdbToMmcif(BaseTask):
             self.update_db()
             LOG.info("done")
 
-
     def convert_pdb_to_mmcif(self, pdb_path, mmcif_path):
         """Converts PDB to mmCIF file"""
 
         # gemmi_exe = self.app.config['GEMMI_EXE']
         # cmd_args = ['', 'convert', '--to', 'mmcif', pdb_path, mmcif_path]
-        
+
         cmd_args = ['pdb_tocif', pdb_path]
         try:
             with open(mmcif_path, "wt") as outfile:
                 subprocess.run(cmd_args, check=True, encoding='utf-8',
-                            stderr=subprocess.PIPE, stdout=outfile)
+                               stderr=subprocess.PIPE, stdout=outfile)
         except subprocess.CalledProcessError as err:
             LOG.error("failed to convert pdb to mmcif: %s", err)
             LOG.error("CMD: %s", " ".join(cmd_args))
@@ -264,7 +268,7 @@ class ConvertMmcifToBcif(BaseTask):
 
     Input:
         model.mmcif
-    
+
     Output:
         model.bcif
     """
