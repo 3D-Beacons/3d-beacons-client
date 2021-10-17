@@ -7,7 +7,8 @@ import shutil
 import subprocess
 import tempfile
 
-LOG = logging.getLogger()
+LOG = logging.getLogger(__name__)
+
 
 class QmeanRunner:
 
@@ -25,29 +26,36 @@ class QmeanRunner:
 
         original_dir = os.getcwd()
 
-        qmean_result_contents = None
+        qmean_results = None
         try:
+            args = []
             with tempfile.TemporaryDirectory() as tmpdir:
                 tmpdir_path = Path(tmpdir).resolve()
                 LOG.debug("Moving to tmp directory: %s", tmpdir_path)
-                
+
                 os.chdir(tmpdir_path)
-                LOG.debug("Copying PDB file to local dir: %s -> %s", self.pdb_file, model_pdb_file)
+                LOG.debug("Copying PDB file to local dir: %s -> %s",
+                          self.pdb_file, model_pdb_file)
                 shutil.copyfile(self.pdb_file, model_pdb_file)
                 LOG.debug("Running local QMEAN analysis")
-                args = ['docker', 'run', 
-                    '-v', f'{tmpdir_path}:{tmpdir_path}', 
-                    '-v', f'{uniclust_path}:/uniclust30',
-                    '-v', f'{qmtl_path}:/qmtl',
-                    qmean_docker_image, 
-                    'run_qmean.py', 'model.pdb', 
-                    #'--seqres', 'seqres.fasta',
-                    ]
-                LOG.debug("CMD: `%s`", ' '.join(args))
-                result = subprocess.run(args, capture_output=True, check=True, text=True)
+                args = ['docker', 'run',
+                        '-v', f'{tmpdir_path}:{tmpdir_path}',
+                        '-v', f'{uniclust_path}:/uniclust30',
+                        '-v', f'{qmtl_path}:/qmtl',
+                        qmean_docker_image,
+                        'run_qmean.py', 'model.pdb',
+                        #'--seqres', 'seqres.fasta',
+                        ]
+                LOG.info("CMD: `%s`", ' '.join(args))
+                result = subprocess.run(
+                    args, capture_output=True, check=True, text=True)
                 qmean_content = result.stdout
                 qmean_results = json.loads(qmean_content)
-                LOG.debug("RESULT: %s", result)        
+                LOG.debug("RESULT: %s", result)
+        except Exception as err:  # subprocess.CalledProcessError as err:
+            LOG.error("failed to run QMEAN with cmd `%s`: %s",
+                      ' '.join(args), err)
+            raise
         finally:
             os.chdir(original_dir)
 
