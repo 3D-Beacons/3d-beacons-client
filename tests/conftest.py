@@ -1,8 +1,10 @@
 # core
+from bio3dbeacon.config import TestingConfig
 import logging
 import os
 import pytest
 import tempfile
+from pathlib import Path
 
 # pip
 from flask_migrate import Migrate
@@ -10,7 +12,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 os.environ['FLASK_ENV'] = 'TESTING'
 
-from bio3dbeacon.config import TestingConfig
 from bio3dbeacon.database import init_db  # NOQA
 from bio3dbeacon.app import create_app  # NOQA
 
@@ -19,6 +20,8 @@ LOG = logging.getLogger(__name__)
 # read in SQL for populating test data
 # with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
 #     _data_sql = f.read().decode("utf8")
+
+FIXTURE_PATH = (Path(__file__).parent / 'fixtures').absolute()
 
 
 @pytest.fixture
@@ -35,7 +38,8 @@ def app_factory():
 
         # create the app with common test config
         db_fd, db_path = tempfile.mkstemp()
-        tmp_work_dir = tempfile.TemporaryDirectory(prefix='pytest-bio3dbeacon-')
+        tmp_work_dir = tempfile.TemporaryDirectory(
+            prefix='pytest-bio3dbeacon-')
 
         config = TestingConfig()
         config.WORK_DIR = tmp_work_dir.name
@@ -69,6 +73,7 @@ def app_factory():
         os.close(app_env['db_fd'])
         os.unlink(app_env['db_path'])
         app_env['work_dir'].cleanup()
+
 
 @pytest.fixture
 def app(app_factory):
