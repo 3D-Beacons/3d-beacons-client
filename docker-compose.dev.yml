@@ -14,6 +14,8 @@ services:
 
   luigi:
     image: axiom/docker-luigi:latest-alpine
+    ports: 
+      - "8082:8082"
     networks:
       default:
         aliases:
