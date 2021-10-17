@@ -13,11 +13,7 @@ import uuid
 import logging
 
 import luigi
-import pytest
 
-import bio3dbeacon
-from bio3dbeacon.app import create_app
-from bio3dbeacon.database import get_db
 from bio3dbeacon.database.models import ModelStructure
 from bio3dbeacon.tasks import IngestModelPdb, ProcessModelPdb, get_file_path
 
@@ -27,7 +23,7 @@ DATA_GENERATED = DATA_ROOT / 'baker_pfam' / 'generated'
 DATA_EXPECTED = DATA_ROOT / 'baker_pfam' / 'expected'
 
 
-LOG = logging.getLogger()
+LOG = logging.getLogger(__name__)
 
 
 def test_app(app):
