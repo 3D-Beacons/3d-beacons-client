@@ -1,0 +1,7 @@
+
+# Python related
+venv
+__pycache__
+
+# SOLR data
+solr_data/

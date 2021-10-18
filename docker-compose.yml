@@ -1,0 +1,25 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: bio3dbeacons/api/Dockerfile
+    command: uvicorn bio3dbeacons.api.main:app --host 0.0.0.0
+    ports:
+      - 8080:8000
+    environment:
+      SOLR_COLLECTION_URL: http://solr:8983/solr/model_core
+  solr:
+    image: solr:8
+    ports:
+     - "8983:8983"
+    volumes:
+      - ./solr_data:/var/solr
+      - ./solr_conf:/opt/solr/server/solr/configsets/model_conf
+    command:
+      - solr-precreate
+      - model_core
+      - /opt/solr/server/solr/configsets/model_conf
+volumes:
+  solr_data:
+  solr_conf:

@@ -1,0 +1,21 @@
+# common parameter descriptions
+UNIPROT_AC_DESC = "UniProt accession, e.g. P00520"
+UNIPROT_NAME_DESC = "UniProt identifier, e.g. ABL1_MOUSE"
+UNIPROT_RANGE_DESC = "Specify a UniProt sequence residue range; separated by hyphen(-)."
+UNIPROT_RESIDUE_START_DESC = "UniProt starting residue number"
+UNIPROT_RESIDUE_END_DESC = "UniProt ending residue number"
+UNIPROT_LENGTH_DESC = "Length of the UniProt sequence, e.g. 100"
+UNIPROT_RESIDUE_DESC = "UniProt residue number"
+UNIPROT_START_DESC = """The index of the first residue of the model according to UniProt
+sequence numbering, e.g. 1"""
+UNIPROT_END_DESC = """The index of the last residue of the model according to UniProt
+sequence numbering, e.g. 142"""
+UNIPROT_QUAL_DESC = "UniProtKB accession number (AC) or entry name (ID)"
+UNIPROT_SEQUENCE_DESC = "A sequence of amino acids in UniProt"
+MODEL_ID_DESC = "Identifier of the model, e.g. PDB id"
+MODEL_CAT_DESC = "Category of the model, e.g. EXPERIMENTALLY DETERMINED"
+MODEL_URL_DESC = "URL of the model coordinates"
+MODEL_PROVIDER_DESC = "Name of the model provider, e.g. PDBe"
+MODEL_CREATED_DESC = "Date of release of model generation in the format of YYYY-MM-DD"
+SEQ_IDENTITY_DESC = "Sequence identity of the model to the UniProt sequence, e.g. 90%"
+SEQ_COVERAGE_DESC = "Percentage of the UniProt sequence covered by the model, e.g. 42%"
