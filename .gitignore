@@ -2,6 +2,14 @@
 # Python related
 venv
 __pycache__
+.mypy_cache
+build
+*.egg-info
 
 # SOLR data
-solr_data/
+data
+
+logs
+
+# environment related
+.env
