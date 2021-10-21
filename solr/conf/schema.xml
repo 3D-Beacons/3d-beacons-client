@@ -190,17 +190,18 @@
 
   <field name="entryId" type="string" indexed="true" stored="true" multiValued="false" required="true" />
   <field name="gene" type="string" indexed="true" stored="true" multiValued="false" required="false" default="Unknown" />
-  <field name="sequenceChecksum" type="string" indexed="false" stored="true" multiValued="false" required="true" />
-  <field name="sequenceVersionDate" type="string" indexed="false" stored="true" multiValued="false" required="true" />
+  <field name="sequenceChecksum" type="string" indexed="false" stored="true" multiValued="false" required="false" />
+  <field name="sequenceVersionDate" type="string" indexed="false" stored="true" multiValued="false" required="false" />
   <field name="uniprotAccession" type="string" indexed="true" stored="true" multiValued="false" required="true" />
-  <field name="uniprotId" type="string" indexed="true" stored="true" multiValued="false" required="true" />
-  <field name="uniprotDescription" type="string" indexed="true" stored="true" multiValued="false" required="true" />
-  <field name="taxId" type="pint" indexed="true" stored="true" multiValued="false" required="true" />
-  <field name="organismScientificName" type="string" indexed="true" stored="true" multiValued="false" required="true" />
+  <field name="uniprotId" type="string" indexed="true" stored="true" multiValued="false" required="false" />
+  <field name="uniprotDescription" type="string" indexed="true" stored="true" multiValued="false" required="false" />
+  <field name="taxId" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+  <field name="organismScientificName" type="string" indexed="true" stored="true" multiValued="false" required="false" />
   <field name="uniprotStart" type="pint" indexed="false" stored="true" multiValued="false" required="true" />
   <field name="uniprotEnd" type="pint" indexed="false" stored="true" multiValued="false" required="true" />
-  <field name="uniprotSequence" type="string" indexed="false" stored="true" multiValued="false" required="true" />
-  <field name="modelCreatedDate" type="string" indexed="false" stored="true" multiValued="false" required="true" />
+  <field name="uniprotSequence" type="string" indexed="false" stored="true" multiValued="false" required="false" />
+  <field name="modelCreatedDate" type="string" indexed="false" stored="true" multiValued="false" required="false" />
+  <field name="modelCategory" type="string" indexed="false" stored="true" multiValued="false" required="true" />
 
   <uniqueKey>entryId</uniqueKey>
 

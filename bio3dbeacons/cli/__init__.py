@@ -1,11 +1,21 @@
 import logging
 import os
 
-LOG_LEVEL = os.environ.get("LOG_LEVEL")
+import coloredlogs
 
-logger = logging.getLogger("3dbeacons-client-cli")
+handler = logging.StreamHandler()
+LOG_FORMAT = "{hostname}: {username}: {asctime}: {module}: {levelname}: {message}"
+handler.setFormatter(logging.Formatter(LOG_FORMAT, style="{"))
 
-if LOG_LEVEL:
-    logger.setLevel(LOG_LEVEL)
-else:
+logger = logging.getLogger()
+
+logger.addHandler(handler)
+
+try:
+    log_level = os.getenv("LOG_LEVEL", "INFO")
+    logger.setLevel(log_level)
+    coloredlogs.install(level=log_level, logger=logger)
+except ValueError:
+    logger.error("Invalid log level in env var LOG_LEVEL. Defaulting to INFO")
     logger.setLevel(logging.INFO)
+    coloredlogs.install(level="INFO", logger=logger)

@@ -1,9 +1,8 @@
-import subprocess
-
 import click
 from exitstatus import ExitStatus
 
 from bio3dbeacons.cli.ciftojson import ciftojson
+from bio3dbeacons.cli.pdbtocif import pdbtocif
 
 
 @click.group("CLI", help="CLI application for AlphaFold utilities")  # pragma: no cover
@@ -18,19 +17,29 @@ def main() -> ExitStatus:
 
 @main.command("convert_cif_to_metadata_json")
 @click.option(
-    "-i",
-    "--input_mmcif",
+    "-ic",
+    "--input-mmcif",
     help="Input MMCIF file",
     required=True,
 )
 @click.option(
-    "-o",
-    "--output_json",
-    help="Output JSON",
+    "-im",
+    "--input-metadata-json",
+    help="Input metadata JSON",
     required=True,
 )
-def cif_to_json(input_mmcif: str, output_json: str):
-    ciftojson.run(input_mmcif, output_json)
+@click.option(
+    "-o",
+    "--output-index-json",
+    help="Output SOLR index JSON",
+    required=True,
+)
+def cif_to_json(input_mmcif: str, input_metadata_json: str, output_index_json: str):
+    ciftojson.run(
+        cif_path=input_mmcif,
+        metadata_json_path=input_metadata_json,
+        output_index_json_path=output_index_json,
+    )
 
 
 @main.command("convert_pdb_to_cif")
@@ -47,8 +56,7 @@ def cif_to_json(input_mmcif: str, output_json: str):
     required=True,
 )
 def pdb_to_cif(input_pdb: str, output_cif: str):
-    cmd_args = ["gemmi/gemmi", "convert", "--to", "mmcif", input_pdb, output_cif]
-    subprocess.check_call(cmd_args)
+    pdbtocif.run(pdb_path=input_pdb, output_cif_path=output_cif)
 
 
 if __name__ == "__main__":

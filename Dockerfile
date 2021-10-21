@@ -14,8 +14,10 @@ RUN git clone https://github.com/project-gemmi/gemmi.git && \
         make && \
         cd ..
 
+# Update pip, wheel and setuptools
+RUN pip install --upgrade pip setuptools wheel
+
 COPY . /app
 
 # install CLI dependencies
-RUN pip install --upgrade pip setuptools wheel
 RUN pip install .

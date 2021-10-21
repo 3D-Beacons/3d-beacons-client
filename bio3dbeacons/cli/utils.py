@@ -1,3 +1,4 @@
+import json
 import xml.etree.ElementTree as ET
 from typing import Any, Dict
 
@@ -31,3 +32,7 @@ def get_uniprot_xml(accession: str) -> ET.Element:
         logger.debug(e)
 
     return None
+
+
+def prepare_data_dictionary_from_json(json_file: str):
+    return json.load(open(json_file, "r"))
