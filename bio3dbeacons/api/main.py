@@ -1,13 +1,15 @@
-from typing import Any
+import os
+from typing import Any, Dict, List
 
 from fastapi import FastAPI, HTTPException
 from fastapi.params import Path, Query
 from starlette import status
-from starlette.responses import JSONResponse
+from starlette.responses import HTMLResponse, JSONResponse
 
+from bio3dbeacons.api import models_db
 from bio3dbeacons.api.constants import UNIPROT_QUAL_DESC, UNIPROT_RANGE_DESC
 from bio3dbeacons.api.models.uniprot_model import ResultSummary
-from bio3dbeacons.api.utils import query_solr
+from bio3dbeacons.api.utils import get_model_asset_url
 
 app = FastAPI()
 
@@ -55,37 +57,50 @@ async def get_uniprot_summary_api(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="residue ranges should be numbers",
                 )
+    model_collection = models_db.modelCollection
 
-    response = await query_solr(qualifier)
+    results = model_collection.find(
+        {
+            "$or": [
+                {"uniprotAccession": {"$eq": qualifier}},
+                {"uniprotId": {"$eq": qualifier}},
+            ]
+        }
+    )
 
-    if response["response"]["numFound"] == 0:
+    root_obj = None
+    models = []
+
+    async for row in results:
+        root_obj = {
+            "uniprot_entry": {
+                "ac": row["uniprotAccession"],
+                "id": row["uniprotId"],
+            },
+            "structures": List[Dict],
+        }
+        models.append(
+            {
+                "model_identifier": row["entryId"],
+                "model_category": row["modelCategory"],
+                "model_url": get_model_asset_url(
+                    row["entryId"], os.environ.get("MODEL_FORMAT", "cif")
+                ),
+                "provider": os.environ.get("PROVIDER"),
+                "uniprot_start": row["uniprotStart"],
+                "uniprot_end": row["uniprotEnd"],
+                "model_format": os.environ.get("MODEL_FORMAT", "MMCIF"),
+            }
+        )
+
+    if not models:
         return JSONResponse(content={}, status_code=status.HTTP_404_NOT_FOUND)
 
-    for item in response["response"]["docs"]:
-        out = {
-            **{
-                "uniprot_entry": {
-                    "sequence_length": len(item["uniprotSequence"]),
-                    "ac": item["uniprotAccession"],
-                    "id": item["uniprotId"],
-                },
-                "structures": [
-                    {
-                        "model_identifier": item["entryId"],
-                        "model_category": "DEEP-LEARNING",
-                        "model_url": "URL",
-                        "provider": "AlphaFold DB",
-                        "created": item["modelCreatedDate"],
-                        "sequence_identity": 1,
-                        "coverage": 100,
-                        "uniprot_start": item["uniprotStart"],
-                        "uniprot_end": item["uniprotEnd"],
-                        "model_format": "MMCIF",
-                    }
-                ],
-            }
-        }
+    root_obj["structures"] = models
 
-        return JSONResponse(
-            content=out, headers={"Cache-Control": "public, max-age=2592000"}
-        )
+    return JSONResponse(content=root_obj, status_code=status.HTTP_200_OK)
+
+
+@app.get("/health-check", include_in_schema=False)
+def health_check():
+    return HTMLResponse("success", status_code=status.HTTP_200_OK)

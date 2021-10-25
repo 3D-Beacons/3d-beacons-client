@@ -1,9 +1,15 @@
-from bio3dbeacons.api import SOLR_COLLECTION_URL, SingletonAiohttp
+from bio3dbeacons.api import PROXY_URL
 
 
-async def query_solr(query: str):
+def get_model_asset_url(entry_id: str, model_format: str = "cif") -> str:
+    """Returns model URL for an entry
 
-    # default URL
-    solr_url = f"{SOLR_COLLECTION_URL}/select?q=uniprotAccession:{query}&wt=json"
+    Args:
+        entry_id (str): Unique ID for the model.
+        model_format (str, optional): Model format. Defaults to "cif".
 
-    return await SingletonAiohttp.query_url(solr_url)
+    Returns:
+        [str]: Model URL
+    """
+    model_format = model_format.lower()
+    return f"{PROXY_URL}/{model_format}/{entry_id}.{model_format}"

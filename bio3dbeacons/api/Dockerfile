@@ -15,4 +15,4 @@ COPY bio3dbeacons/api/requirements.txt .
 RUN pip install -r requirements.txt
 
 # copy project
-COPY bio3dbeacons/api bio3dbeacons/api
+COPY bio3dbeacons bio3dbeacons

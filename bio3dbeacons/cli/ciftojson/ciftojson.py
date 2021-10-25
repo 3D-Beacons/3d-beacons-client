@@ -4,6 +4,7 @@ import os
 from concurrent.futures import ProcessPoolExecutor
 from typing import Dict
 
+from fastapi.encoders import jsonable_encoder
 from gemmi import cif
 
 from bio3dbeacons.cli import logger
@@ -18,6 +19,7 @@ from bio3dbeacons.cli.utils import (
 class Cif2Json:
     cif_path: str
     output_index_json_path: str
+    entry: Entry
 
     def __init__(
         self, cif_path: str, metadata_json_path: str, output_index_json_path: str
@@ -99,11 +101,14 @@ class Cif2Json:
             "experimentalMethod"
         ].strip("'")
 
+        # add unique ID
+        self.interim_entry["_id"] = self.interim_entry["entryId"]
+
     def write(self):
         """Writes the data in entry to the output json"""
         try:
             with open(self.output_index_json_path, "w+") as f:
-                json.dump(self.entry.dict(), f)
+                json.dump(self.entry, f)
         except Exception as e:
             logger.error("Error in writing to output JSON file!", e)
             logger.debug(e)
@@ -122,7 +127,7 @@ def process(cif_path: str, metadata_json_path: str, output_index_json_path: str)
     cif2json.read_json()
     cif2json.add_extra_uniprot_info()
     cif2json.transform()
-    cif2json.entry = Entry(**cif2json.interim_entry)
+    cif2json.entry = jsonable_encoder(cif2json.interim_entry)
     cif2json.write()
 
 
@@ -181,5 +186,5 @@ def run(cif_path: str, metadata_json_path: str, output_index_json_path: str):
         cif2json.read_json()
         cif2json.add_extra_uniprot_info()
         cif2json.transform()
-        cif2json.entry = Entry(**cif2json.interim_entry)
+        cif2json.entry = jsonable_encoder(cif2json.interim_entry)
         cif2json.write()
