@@ -4,7 +4,7 @@ from bson import ObjectId
 from pydantic import BaseModel, Field
 
 
-class ModelCategory(Enum):
+class ModelCategory(Enum):  # pragma: no cover
     EXPERIMENTALLY_DETERMINED = "EXPERIMENTALLY DETERMINED"
     TEMPLATE_BASED = "TEMPLATE-BASED"
     AB_INITIO = "AB-INITIO"
@@ -12,7 +12,7 @@ class ModelCategory(Enum):
     DEEP_LEARNING = "DEEP-LEARNING"
 
 
-class PyObjectId(ObjectId):
+class PyObjectId(ObjectId):  # pragma: no cover
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
@@ -28,7 +28,7 @@ class PyObjectId(ObjectId):
         field_schema.update(type="string")
 
 
-class Entry(BaseModel):
+class Entry(BaseModel):  # pragma: no cover
     id: PyObjectId = Field(
         default_factory=PyObjectId, description="Unique ID", alias="_id"
     )

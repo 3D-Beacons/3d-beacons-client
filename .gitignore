@@ -5,11 +5,14 @@ __pycache__
 .mypy_cache
 build
 *.egg-info
+.pytest_cache
+coverage
+report.xml
+.coverage
+.coveragerc
 
-# SOLR data
-data
+gemmi
 
-logs
 
 # environment related
 .env

@@ -6,7 +6,7 @@ from fastapi.params import Path, Query
 from starlette import status
 from starlette.responses import HTMLResponse, JSONResponse
 
-from bio3dbeacons.api import models_db
+from bio3dbeacons.api import SingletonMongoDB
 from bio3dbeacons.api.constants import UNIPROT_QUAL_DESC, UNIPROT_RANGE_DESC
 from bio3dbeacons.api.models.uniprot_model import ResultSummary
 from bio3dbeacons.api.utils import get_model_asset_url
@@ -18,7 +18,7 @@ app = FastAPI()
     "/uniprot/summary/{qualifier}.json",
     status_code=status.HTTP_200_OK,
     summary="Get summary details for a UniProt residue range",
-    description="Get all Alpha Fold models for the UniProt residue range.",
+    description="Get all models for the UniProt residue range.",
     response_model=ResultSummary,
     response_model_exclude_unset=True,
 )
@@ -46,8 +46,8 @@ async def get_uniprot_summary_api(
         if "-" not in res_range:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="range parameter should be residue start and residue "
-                + "end separated by -",
+                detail="range parameter should be residue start and residue"
+                " end separated by -",
             )
         if res_range is not None:
             [residue_start, residue_end] = res_range.split("-")
@@ -57,14 +57,19 @@ async def get_uniprot_summary_api(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="residue ranges should be numbers",
                 )
+
+    models_db = SingletonMongoDB.get_models_db()
     model_collection = models_db.modelCollection
 
     results = model_collection.find(
         {
             "$or": [
-                {"uniprotAccession": {"$eq": qualifier}},
-                {"uniprotId": {"$eq": qualifier}},
-            ]
+                {"mappingAccession": {"$eq": qualifier}},
+                {"mappingId": {"$eq": qualifier}},
+            ],
+            "$and": [
+                {"mappingAccessionType": {"$eq": "uniprot"}},
+            ],
         }
     )
 
@@ -74,8 +79,8 @@ async def get_uniprot_summary_api(
     async for row in results:
         root_obj = {
             "uniprot_entry": {
-                "ac": row["uniprotAccession"],
-                "id": row["uniprotId"],
+                "ac": row["mappingAccession"],
+                "id": row["mappingId"],
             },
             "structures": List[Dict],
         }
@@ -87,8 +92,8 @@ async def get_uniprot_summary_api(
                     row["entryId"], os.environ.get("MODEL_FORMAT", "cif")
                 ),
                 "provider": os.environ.get("PROVIDER"),
-                "uniprot_start": row["uniprotStart"],
-                "uniprot_end": row["uniprotEnd"],
+                "uniprot_start": row["start"],
+                "uniprot_end": row["end"],
                 "model_format": os.environ.get("MODEL_FORMAT", "MMCIF"),
             }
         )

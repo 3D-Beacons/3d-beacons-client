@@ -18,7 +18,7 @@ services:
       - MONGO_USERNAME=$MONGO_USERNAME
       - MONGO_PASSWORD=$MONGO_PASSWORD
       - MONGO_DB_HOST=$MONGO_DB_HOST
-      - PROXY_URL=nginx-proxy:80
+      - PROXY_URL=$PROXY_URL
 
   mongodb:
     image: mongo:latest
@@ -37,6 +37,7 @@ services:
       - 80:80
     volumes:
       - ./bio3dbeacons/nginx/default.conf:/tmp/default.conf
+      - ./data:/var/www/static
     environment:
       - API_SERVER_ADDR=web:8000
     depends_on:

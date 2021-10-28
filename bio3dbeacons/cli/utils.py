@@ -8,7 +8,16 @@ from bio3dbeacons.cli import logger
 from bio3dbeacons.config.config import get_config, get_config_keys
 
 
-def prepare_data_dictionary(cif_block: Any, config_section: str):
+def prepare_data_dictionary(cif_block: Any, config_section: str) -> Dict:
+    """Returns a Python object from a CIF block (read by GEMMI) from a config
+
+    Args:
+        cif_block (Any): CIF bloc for the data
+        config_section (str): Section in conf.ini where the mapping is provided
+
+    Returns:
+        Dict: Python object which maps the configuration from CIF block.
+    """
 
     data_dict: Dict = dict()
 
@@ -20,6 +29,14 @@ def prepare_data_dictionary(cif_block: Any, config_section: str):
 
 
 def get_uniprot_xml(accession: str) -> ET.Element:
+    """Gets UniProt XML
+
+    Args:
+        accession (str): A UniProt accession
+
+    Returns:
+        ET.Element: An XML element
+    """
 
     uniprot_xml_url = get_config("cli", "UNIPROT_XML_URL")
 
@@ -35,4 +52,12 @@ def get_uniprot_xml(accession: str) -> ET.Element:
 
 
 def prepare_data_dictionary_from_json(json_file: str):
+    """Gets a Python object from a JSON file
+
+    Args:
+        json_file (str): Path to the JSON file
+
+    Returns:
+        [Any]: A Python object
+    """
     return json.load(open(json_file, "r"))

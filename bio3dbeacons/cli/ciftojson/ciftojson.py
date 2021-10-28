@@ -5,7 +5,6 @@ from concurrent.futures import ProcessPoolExecutor
 from typing import Dict
 
 from fastapi.encoders import jsonable_encoder
-from gemmi import cif
 
 from bio3dbeacons.cli import logger
 from bio3dbeacons.cli.ciftojson.models import Entry
@@ -14,6 +13,7 @@ from bio3dbeacons.cli.utils import (
     prepare_data_dictionary,
     prepare_data_dictionary_from_json,
 )
+from gemmi import cif
 
 
 class Cif2Json:
@@ -60,9 +60,9 @@ class Cif2Json:
 
         entry = {}
         # parse UniProt xml
-        xml_root = get_uniprot_xml(self.interim_entry["uniprotAccession"])
+        xml_root = get_uniprot_xml(self.interim_entry["mappingAccession"])
 
-        logger.info(f"Parsing XML for {self.interim_entry['uniprotAccession']}")
+        logger.info(f"Parsing XML for {self.interim_entry['mappingAccession']}")
         if xml_root:
             namespace = "{http://uniprot.org/uniprot}"
             # fetch accession related data
@@ -85,11 +85,11 @@ class Cif2Json:
                 f"./{namespace}entry/{namespace}organism/{namespace}dbReference"
             ).attrib.get("id")
 
-            entry["uniprotId"] = ac_id
-            entry["uniprotDescription"] = description
+            entry["mappingId"] = ac_id
+            entry["mappingDescription"] = description
             entry["gene"] = gene
             entry["organismScientificName"] = scientific_name
-            entry["taxId"] = tax_id
+            entry["taxId"] = int(tax_id)
 
         self.interim_entry.update(entry)
 
@@ -112,9 +112,11 @@ class Cif2Json:
         except Exception as e:
             logger.error("Error in writing to output JSON file!", e)
             logger.debug(e)
-            exit(1)
+            return 1
 
         logger.info(f"Data written to {self.output_index_json_path}")
+
+        return 0
 
 
 def process(cif_path: str, metadata_json_path: str, output_index_json_path: str):
@@ -125,7 +127,11 @@ def process(cif_path: str, metadata_json_path: str, output_index_json_path: str)
     )
     cif2json.read_cif()
     cif2json.read_json()
-    cif2json.add_extra_uniprot_info()
+
+    # add extra uniprot info for uniprot accessions
+    if cif2json.interim_entry.get("mappingAccessionType") == "uniprot":
+        cif2json.add_extra_uniprot_info()
+
     cif2json.transform()
     cif2json.entry = jsonable_encoder(cif2json.interim_entry)
     cif2json.write()
@@ -147,10 +153,10 @@ def run(cif_path: str, metadata_json_path: str, output_index_json_path: str):
             logger.error(
                 f"{output_index_json_path} is a file, must provide a directory"
             )
-            exit(1)
+            return 1
         if os.path.isfile(metadata_json_path):
             logger.error(f"{metadata_json_path} is a file, must provide a directory")
-            exit(1)
+            return 1
         # make the output dir
         os.makedirs(output_index_json_path, exist_ok=True)
         logger.info(f"Created directory {output_index_json_path}")
@@ -174,7 +180,7 @@ def run(cif_path: str, metadata_json_path: str, output_index_json_path: str):
     else:
         if not os.path.isfile(cif_path):
             logger.error("CIF file not found!")
-            exit(1)
+            return 1
 
         cif2json = Cif2Json(
             cif_path=cif_path,
@@ -184,7 +190,13 @@ def run(cif_path: str, metadata_json_path: str, output_index_json_path: str):
 
         cif2json.read_cif()
         cif2json.read_json()
-        cif2json.add_extra_uniprot_info()
+
+        # add extra uniprot info for uniprot accessions
+        if cif2json.interim_entry.get("mappingAccessionType") == "uniprot":
+            cif2json.add_extra_uniprot_info()
+
         cif2json.transform()
         cif2json.entry = jsonable_encoder(cif2json.interim_entry)
         cif2json.write()
+
+    return 0

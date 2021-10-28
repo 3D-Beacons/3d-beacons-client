@@ -14,14 +14,14 @@ class MongoLoad:
     data: List[Dict]
     collection: Collection
 
-    def __init__(self, mongo_db_url) -> None:
-        client = pymongo.MongoClient(mongo_db_url)
-        db = client.models
-        self.collection = db.modelCollection
+    def __init__(self) -> None:
         self.data = []
         self.key_fields = list(
             (x, "text") for x in config.get_config("cli", "MONGO_INDEXES").split(",")
         )
+
+    def init_collection(self, mongo_db_url):
+        self.collection = pymongo.MongoClient(mongo_db_url).models.modelCollection
 
     def load(self):
         self.collection.bulk_write(self.data)
@@ -41,7 +41,8 @@ def run(index_path: str, mongo_db_url: str, batch_size: int):
         batch_size (int): Number of documents to batch in a single commit
     """
 
-    lm = MongoLoad(mongo_db_url)
+    lm = MongoLoad()
+    lm.init_collection(mongo_db_url)
 
     # if a directory is provided, convert all .pdb files in it
     if os.path.isdir(index_path):
@@ -69,11 +70,14 @@ def run(index_path: str, mongo_db_url: str, batch_size: int):
     else:
         if not os.path.isfile(index_path):
             logger.error("Index json not found!")
-            exit(1)
+            return 1
 
         logger.info(f"Loading {index_path}")
-        lm.data = [json.load(open(index_path, "r"))]
+        d = json.load(open(index_path, "r"))
+        lm.data.append(UpdateOne({"_id": d.get("_id")}, {"$set": d}, upsert=True))
         lm.load()
         logger.info(f"Loaded {index_path}")
 
     lm.create_index()
+
+    return 0

@@ -14,7 +14,7 @@ class Pdb2Cif:
         self.pdb_path = pdb_path
         self.output_cif_path = output_cif_path
 
-    def convert(self):
+    def convert(self) -> int:
         """Converts PDB to CIF"""
         logger.info(f"Converting {self.pdb_path}")
         try:
@@ -30,16 +30,19 @@ class Pdb2Cif:
             logger.info(f"Converted {self.pdb_path} to {self.output_cif_path}")
 
         except Exception as e:
-            logger.error("Error in converting the PDB file!")
+            logger.error(f"Error in converting the PDB file!: {self.pdb_path}")
             logger.debug(e)
+            return 1
+
+        return 0
 
 
 def process(pdb_path: str, output_cif_path: str):
     pdbtocif = Pdb2Cif(pdb_path=pdb_path, output_cif_path=output_cif_path)
-    pdbtocif.convert()
+    return pdbtocif.convert()
 
 
-def run(pdb_path: str, output_cif_path: str):
+def run(pdb_path: str, output_cif_path: str) -> int:
     """Converts PDB to CIF file
 
     Args:
@@ -53,7 +56,7 @@ def run(pdb_path: str, output_cif_path: str):
     if os.path.isdir(pdb_path):
         if os.path.isfile(output_cif_path):
             logger.error(f"{output_cif_path} is a file, must provide a directory")
-            exit(1)
+            return 1
 
         # make the output dir
         os.makedirs(output_cif_path, exist_ok=True)
@@ -70,7 +73,9 @@ def run(pdb_path: str, output_cif_path: str):
     else:
         if not os.path.isfile(pdb_path):
             logger.error("PDB file not found!")
-            exit(1)
+            return 1
 
         pdbtocif = Pdb2Cif(pdb_path=pdb_path, output_cif_path=output_cif_path)
-        pdbtocif.convert()
+        return pdbtocif.convert()
+
+    return 0

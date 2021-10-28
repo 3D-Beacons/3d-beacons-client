@@ -1,1 +1,2 @@
 include bio3dbeacons/config/conf.ini
+include bio3dbeacons/tests/data
