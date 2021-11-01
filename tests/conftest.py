@@ -1,7 +1,8 @@
+import os
 import sys
 from pathlib import Path
 
-import mongomock
+import pymongo
 import pytest
 
 import gemmi
@@ -10,7 +11,10 @@ sys.path.append(Path(__file__).parent.parent.as_posix())
 
 from bio3dbeacons.cli.mongoload.mongoload import MongoLoad
 
-print(sys.path)
+MONGO_USERNAME = os.environ.get("MONGO_USERNAME")
+MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
+MONGO_DB_HOST = os.environ.get("MONGO_DB_HOST")
+MONGO_DB_URL = f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_DB_HOST}"
 
 
 @pytest.fixture(scope="session")
@@ -41,12 +45,17 @@ def cif_doc(cif_file) -> gemmi.cif.Document:
     return gemmi.cif.read_file(cif_file)
 
 
-@pytest.fixture(scope="function")
-def mongo_collection():
-    return mongomock.MongoClient().models.modelCollection
+@pytest.fixture(scope="session")
+def mongo_db():
+    return pymongo.MongoClient(MONGO_DB_URL).models
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
+def mongo_collection(mongo_db):
+    return mongo_db.modelCollection
+
+
+@pytest.fixture(scope="session")
 def mongo_load(mongo_collection) -> MongoLoad:
     ml = MongoLoad()
     ml.collection = mongo_collection

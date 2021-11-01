@@ -16,3 +16,4 @@ gemmi
 
 # environment related
 .env
+env.sh

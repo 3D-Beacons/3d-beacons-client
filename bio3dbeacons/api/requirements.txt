@@ -3,3 +3,4 @@ uvicorn
 aiohttp
 pymongo
 motor
+python-dotenv
