@@ -23,6 +23,11 @@ def data_dir():
 
 
 @pytest.fixture(scope="session")
+def res_dir():
+    return Path(__file__).parent.parent.parent / "resources"
+
+
+@pytest.fixture(scope="session")
 def cif_file(data_dir) -> str:
     f = data_dir / "cif" / "P38398_1jm7.1.A_1_103.cif"
     return f.as_posix()

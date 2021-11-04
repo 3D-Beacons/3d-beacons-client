@@ -77,7 +77,6 @@ async def get_uniprot_summary_api(
     models = []
 
     async for row in results:
-        print(row, "row->")
         root_obj = {
             "uniprot_entry": {
                 "ac": row["mappingAccession"],

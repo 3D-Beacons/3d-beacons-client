@@ -1,0 +1,7 @@
+click
+exitstatus
+requests
+gemmi
+pydantic
+coloredlogs
+jsonschema

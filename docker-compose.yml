@@ -18,7 +18,7 @@ services:
       - MONGO_USERNAME=$MONGO_USERNAME
       - MONGO_PASSWORD=$MONGO_PASSWORD
       - MONGO_DB_HOST=$MONGO_DB_HOST
-      - PROXY_URL=$PROXY_URL
+      - ASSETS_URL=$ASSETS_URL
 
   mongodb:
     image: mongo:latest

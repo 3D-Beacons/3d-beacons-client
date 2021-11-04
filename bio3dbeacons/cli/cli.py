@@ -4,6 +4,7 @@ from exitstatus import ExitStatus
 from bio3dbeacons.cli.ciftojson import ciftojson
 from bio3dbeacons.cli.mongoload import mongoload
 from bio3dbeacons.cli.pdbtocif import pdbtocif
+from bio3dbeacons.cli.validatejson import validatejson
 
 
 @click.group("CLI", help="CLI application for 3D Beacons utilities")
@@ -86,6 +87,18 @@ def pdb_to_cif(input_pdb: str, output_cif: str):  # pragma: no cover
 )
 def load_mongo(mongo_db_url: str, index_path: str, batch_size: int):  # pragma: no cover
     mongoload.run(index_path, mongo_db_url, batch_size)
+
+
+@main.command("validate_index_json")
+@click.option(
+    "-i",
+    "--index-path",
+    help="Path to index file, can be a directory as well. In case of directory, "
+    "will index all json files in it.",
+    required=True,
+)
+def validate_index_json(index_path):
+    validatejson.run(index_path)
 
 
 if __name__ == "__main__":  # pragma: no cover

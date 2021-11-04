@@ -1,4 +1,4 @@
-from bio3dbeacons.api import PROXY_URL
+from bio3dbeacons.api import ASSETS_URL
 
 
 def get_model_asset_url(entry_id: str, model_format: str = "cif") -> str:
@@ -12,4 +12,4 @@ def get_model_asset_url(entry_id: str, model_format: str = "cif") -> str:
         [str]: Model URL
     """
     model_format = model_format.lower()
-    return f"{PROXY_URL}/{model_format}/{entry_id}.{model_format}"
+    return f"{ASSETS_URL}/{model_format}/{entry_id}.{model_format}"

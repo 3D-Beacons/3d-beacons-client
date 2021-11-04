@@ -1,0 +1,93 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Mongo index JSON schema",
+    "description": "Schema for index JSON documents to load to Mongo DB",
+    "type": "object",
+    "properties": {
+        "entryId": {
+            "description": "Unique ID for the model entry",
+            "type": "string"
+        },
+        "experimentalMethod": {
+            "description": "Experimental method",
+            "type": "string"
+        },
+        "mappingAccession": {
+            "description": "Accession for the mapped protein, domain etc.",
+            "type": "string"
+        },
+        "mappingAccessionType": {
+            "description": "Type of the mapped accession.",
+            "type": "string",
+            "examples": [
+                "uniprot",
+                "pfam"
+            ]
+        },
+        "start": {
+            "description": "Sequence start for the mapped region",
+            "type": "number"
+        },
+        "end": {
+            "description": "Sequence end for the mapped region",
+            "type": "number"
+        },
+        "modelCategory": {
+            "description": "Category of the model",
+            "type": "string",
+            "examples": [
+                "EXPERIMENTALLY DETERMINED",
+                "TEMPLATE-BASED",
+                "AB-INITIO",
+                "CONFORMATIONAL ENSEMBLE",
+                "DEEP-LEARNING"
+            ]
+        },
+        "modelType": {
+            "description": "Type of the model",
+            "type": "string",
+            "examples": [
+                "single",
+                "complex"
+            ]
+        },
+        "mappingId": {
+            "description": "An ID for the mapping. Used as an additional identifier for the accession",
+            "type": "string"
+        },
+        "mappingDescription": {
+            "description": "Description for the mapping accession. Can be used to keep protein description in case of a UniProt accession",
+            "type": "string"
+        },
+        "gene": {
+            "description": "Gene",
+            "type": "string"
+        },
+        "organismScientificName": {
+            "description": "Scientific name for the organism",
+            "type": "string"
+        },
+        "taxId": {
+            "description": "NCBI taxonomy identifier",
+            "type": "number"
+        },
+        "_id": {
+            "description": "Unique identifier for the model, same as entryId",
+            "type": "string"
+        }
+    },
+    "required": [
+        "_id",
+        "entryId",
+        "experimentalMethod",
+        "mappingAccession",
+        "mappingAccessionType",
+        "start",
+        "end",
+        "modelCategory",
+        "mappingId",
+        "modelType",
+        "mappingDescription"
+    ]
+}

@@ -12,7 +12,7 @@ MONGO_USERNAME = os.environ.get("MONGO_USERNAME")
 MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
 MONGO_DB_HOST = os.environ.get("MONGO_DB_HOST")
 MONGO_DB_URL = f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_DB_HOST}"
-PROXY_URL = os.environ.get("PROXY_URL")
+ASSETS_URL = os.environ.get("ASSETS_URL")
 
 logger = logging.getLogger("3dbeacons-client")
 
