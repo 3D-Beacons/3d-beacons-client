@@ -23,23 +23,15 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v2
 
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
       - name: Install Gemmi
         run: |
-          git clone https://github.com/project-gemmi/gemmi.git
-          cd gemmi
-          cmake .
-          make
-          export PATH=$PATH:$PWD/gemmi
-
-      # - name: Start MongoDB
-      #   uses: supercharge/mongodb-github-action@1.6.0
-      #   with:
-      #     mongodb-version: ${{ matrix.mongodb-version }}
-      #     mongodb-replica-set: test-rs
-      #     mongodb-port: 27017
-      #   env:
-      #     MONGO_INITDB_ROOT_USERNAME: test
-      #     MONGO_INITDB_ROOT_PASSWORD: test
+          # $CONDA is an environment variable pointing to the root of the miniconda directory
+          $CONDA/bin/conda install -c conda-forge gemmi
 
       - name: Run tests
         run: make test
