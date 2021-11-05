@@ -19,7 +19,6 @@ from luigi.util import requires  # noqa
 
 # local
 import bio3dbeacon
-from .app import create_app
 from .database import get_db
 from .database.models import ModelStructure
 from .qmean import QmeanRunner
@@ -53,12 +52,27 @@ def get_file_path(*, basedir, uid, suffix):
     return Path(basedir) / uid[:2] / str(uid + suffix)
 
 
-class BaseTask(luigi.Task):
+class WithAppMixin:
+
+    @property
+    def app(self):
+        if not hasattr(self, '_app'):
+            LOG.debug("Creating app for luigi task %s ...",
+                      self.__class__.__name__)
+            self._app = bio3dbeacon.app.create_app()
+        return self._app
+
+
+class BaseTask(WithAppMixin, luigi.Task):
     """
     Base class for all Luigi tasks
     """
 
-    app = luigi.Parameter(default=create_app())
+
+class BaseWrapperTask(WithAppMixin, luigi.WrapperTask):
+    """
+    Base class for all Luigi Wrapper tasks
+    """
 
 
 class IngestModelPdb(BaseTask):
@@ -128,7 +142,7 @@ class CalculateQmean(BaseTask):
 
     """
 
-    run_remotely = luigi.Parameter(default=False)
+    run_remotely = luigi.BoolParameter(default=True)
 
     def output(self):
         pdb_file = self.input()
@@ -140,20 +154,17 @@ class CalculateQmean(BaseTask):
 
     def run(self):
 
-        uid = self.uid
         app = self.app
-
+        uid = str(self.uid)
         pdb_file = Path(self.pdb_file).resolve()
         qmean_output_file = self.output()
 
-        runner = QmeanRunner(app=self.app, pdb_file=pdb_file)
+        runner = QmeanRunner(app=app, pdb_file=pdb_file)
 
         if self.run_remotely:
             results = runner.run_remote()
         else:
             results = runner.run_local()
-
-        score_data = results.
 
         dt_now = datetime.utcnow()
 
@@ -172,9 +183,10 @@ class CalculateQmean(BaseTask):
             LOG.info("Writing output JSON score data to: '%s'",
                      qmean_output_file)
 
-            with qmean_output_file.temporary_path() as temp_output_path:
-                json.dump(score_data, temp_output_path,
-                          indent=2, sort_keys=True)
+            with qmean_output_file.open('w') as fp:
+                json.dump(results, fp, indent=2, sort_keys=True)
+
+            LOG.info("Committing changes")
 
             db.session.commit()
 
@@ -281,8 +293,9 @@ class ConvertMmcifToBcif(BaseTask):
         mmcif_file = self.input()
         bcif_file = self.output()
         molstar_exe = self.app.config['MOLSTAR_PREPROCESS_EXE']
-        cmd_args = ['node', molstar_exe,
-                    '-i', mmcif_file.path, '-ob', bcif_file.path]
+        cmd_args = ['node', str(molstar_exe),
+                    '-i', str(mmcif_file.path),
+                    '-ob', str(bcif_file.path)]
         try:
             subprocess.run(cmd_args, check=True, encoding='utf-8',
                            stderr=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -295,7 +308,7 @@ class ConvertMmcifToBcif(BaseTask):
             raise
 
 
-class ProcessModelPdb(luigi.WrapperTask):
+class ProcessModelPdb(BaseWrapperTask):
     """
     Generate all related files for a given model PDB file
 
@@ -303,19 +316,18 @@ class ProcessModelPdb(luigi.WrapperTask):
         pdb_file: input PDB file
     """
 
-    app = luigi.Parameter()
     pdb_file = luigi.Parameter()
 
     def requires(self):
         uid = str(self.uid)
         pdb_file = self.pdb_file
-
-        LOG.info("ProcessModelPdb: calculate model quality")
-        yield(CalculateQmean(pdb_file=self.pdb_file, uid=uid))
+        uid = self.get_uid()
+        LOG.info("ProcessModelPdb: calculate qmean (local)")
+        yield(CalculateQmean(pdb_file=pdb_file, uid=uid))
         LOG.info("ProcessModelPdb: convert pdb to mmcif")
-        yield(ConvertPdbToMmcif(app=self.app, pdb_file=pdb_file, uid=uid))
+        yield(ConvertPdbToMmcif(pdb_file=pdb_file, uid=uid))
         # LOG.info("ProcessModelPdb: add mmcif to molstar")
-        # yield(ConvertMmcifToBcif(app=self.app, pdb_file=pdb_file, uid=uid))
+        # yield(ConvertMmcifToBcif(pdb_file=pdb_file, uid=uid))
 
     def get_uid(self):
         if not hasattr(self, '_uid'):

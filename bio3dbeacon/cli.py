@@ -38,7 +38,7 @@ from .tasks import ProcessModelPdb, get_uid_from_file
 from .database import get_db
 from .data_loader import swissmodel
 
-app = flask_cli()
+from .tasks import ProcessModelPdb
 
 LOGGING_LEVELS = {
     0: logging.NOTSET,
@@ -48,7 +48,6 @@ LOGGING_LEVELS = {
     4: logging.DEBUG,
 }  #: a mapping of `verbose` option counts to logging levels
 
-logging.basicConfig(level='INFO', format='%(message)s')
 LOG = logging.getLogger(__name__)
 
 
@@ -58,9 +57,10 @@ class Info(object):
     def __init__(self):  # Note: This object must have an empty constructor.
         """Create a new instance."""
         self.verbose: int = 0
-        self.root_dir: str = pathlib.Path(__file__).parent.parent.resolve()
+        self.root_dir: str = Path(__file__).parent.parent.resolve()
         self.molstar_github_url = 'https://github.com/molstar/molstar.git'
         self.molstar_dir = self.root_dir / 'molstar'
+        self.app = create_app()
 
 
 # pass_info is a decorator for functions that pass 'Info' objects.
@@ -68,8 +68,6 @@ class Info(object):
 pass_info = click.make_pass_decorator(Info, ensure=True)
 
 
-# Change the options to below to suit the actual options for your task (or
-# tasks).
 @click.group()
 @click.option("--verbose", "-v", count=True, help="Enable verbose output.")
 @pass_info
@@ -95,75 +93,51 @@ def cli(info: Info, verbose: int):
 
 @cli.group()
 @pass_info
-def molstar(_: Info):
-    """Functions relating to the MolStar (Coordinate Server)."""
+def db(_: Info):
+    """Functions relating to the local database"""
 
 
-def _run(cmd_args, stderr=None, stdout=None, check=True, work_dir=None):
+@db.command()
+@click.option('--commit', 'commit_flag', is_flag=True, default=False,
+              help="Confirm that you want to make changes")
+@pass_info
+def init(info: Info, commit_flag):
+    """Initialise the local database"""
 
-    cwd = os.getcwd()
+    app = info.app
+    with app.app_context():
+        db = get_db()
 
-    if not stderr:
-        stderr = subprocess.PIPE
-    if not stdout:
-        stdout = subprocess.PIPE
-    if not work_dir:
-        work_dir = cwd
+        click.echo(f"Database: {db}")
+        if commit_flag:
+            click.echo(f"Initialising database ... ")
+            init_db()
+            click.echo("  ... done")
+        else:
+            click.echo("THIS COMMAND WILL DELETE ALL DATA IN YOUR DATABASE")
+            click.echo(
+                f"Run this command again with the '--commit' flag to go ahead and initialise this database")
+
+
+@db.command()
+@pass_info
+def info(info: Info):
+    """Provide information about the local database"""
+
+    app = info.app
+    db_uri = app.config['SQLALCHEMY_DATABASE_URI']
 
     try:
-        os.chdir(work_dir)
-        click.echo(f"CMD: `{' '.join(cmd_args)}`")
-        result = subprocess.run(cmd_args, stderr=stderr,
-                                stdout=stdout, check=check, encoding='utf-8')
-    except subprocess.CalledProcessError as err:
-        msg = f"ERROR: failed to run `{' '.join(cmd_args)}`: {err}"
-        click.echo(click.style(msg, fg='red'))
-        raise
-    finally:
-        os.chdir(cwd)
+        with app.app_context():
+            db = get_db()
+            click.echo(f"Database: {db}")
+            model_count = ModelStructure.query.count()
+            click.echo(f"MODELS: {model_count}")
 
-    return result
-
-
-@molstar.command()
-@pass_info
-def init(info: Info):
-    """Initialise the coordinate server."""
-
-    git_repo = info.molstar_github_url
-
-    if os.path.isdir(info.molstar_dir):
+    except Exception as err:
         click.echo(
-            f"submodule 'molstar' already exists (updating)")
-        _run(['git', 'submodule', 'update'])
-    else:
-        click.echo(
-            f"submodule 'molstar' does not exist (adding)")
-        _run(['git', 'submodule', 'add', git_repo])
-
-    _run(['NODE_ENV=production', 'npm', 'run', 'build'],
-         work_dir=info.molstar_dir)
-
-    _run(['npm', 'install', '-g', 'forever', 'http-server'],
-         work_dir=info.molstar_dir)
-
-
-@molstar.command()
-@pass_info
-def run(info: Info):
-    """Start the molstar coordinate server."""
-    click.echo('Starting the molstar server ...')
-    _run(['forever', 'start', 'build/server'],
-         work_dir=info.molstar_dir)
-
-
-@molstar.command()
-@pass_info
-def stop(info: Info):
-    """Stop the molstar coordinate server."""
-    click.echo('Stopping the coordinate server ...')
-    _run(['forever', 'stop', 'build/server'],
-         work_dir=info.molstar_dir)
+            f"Failed to connect to database '{db_uri}': {err}")
+        exit(1)
 
 
 @cli.group()

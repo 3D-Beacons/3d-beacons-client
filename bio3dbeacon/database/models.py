@@ -50,7 +50,7 @@ class ModelChain(db.Model):
     chain_id = db.Column(db.String, nullable=False)
 
     model_structure_id = db.Column(
-        db.Integer, db.ForeignKey('model_structure.id'))
+        db.String, db.ForeignKey('model_structure.id'))
 
     model_structure = db.relationship(
         "ModelStructure", backref="chains")
@@ -66,6 +66,7 @@ class ModelChainSegment(db.Model):
     __tablename__ = 'model_chain_segment'
 
     id = db.Column(db.Integer, primary_key=True)
+    seqres = db.Column(db.String)
 
     seqres_from = db.Column(db.Integer)
     seqres_to = db.Column(db.Integer)

@@ -11,7 +11,7 @@ import subprocess
 import tempfile
 import time
 
-LOG = logging.getLogger()
+LOG = logging.getLogger(__name__)
 
 
 @dataclass
@@ -63,11 +63,13 @@ class QmeanRunner:
         qmean_docker_image = self.app.config['QMEAN_DOCKER_IMAGE']
 
         model_pdb_file = 'model.pdb'
+        model_seqres_file = 'model.fasta'
 
         original_dir = os.getcwd()
 
-        qmean_result_contents = None
+        qmean_results = None
         try:
+            args = []
             with tempfile.TemporaryDirectory() as tmpdir:
                 tmpdir_path = Path(tmpdir).resolve()
                 LOG.debug("Moving to tmp directory: %s", tmpdir_path)
@@ -76,21 +78,32 @@ class QmeanRunner:
                 LOG.debug("Copying PDB file to local dir: %s -> %s",
                           self.pdb_file, model_pdb_file)
                 shutil.copyfile(self.pdb_file, model_pdb_file)
+
+                LOG.debug("Creating FASTA file from PDB: %s -> %s",
+                          self.pdb_file, model_seqres_file)
+
+                with open(model_seqres_file, 'wt') as fasta_fp:
+                    subprocess.run(['pdb_tofasta', self.pdb_file],
+                                   stdout=fasta_fp, check=True, text=True)
+
                 LOG.debug("Running local QMEAN analysis")
                 args = ['docker', 'run',
                         '-v', f'{tmpdir_path}:{tmpdir_path}',
                         '-v', f'{uniclust_path}:/uniclust30',
                         '-v', f'{qmtl_path}:/qmtl',
                         qmean_docker_image,
-                        'run_qmean.py', 'model.pdb',
-                        #'--seqres', 'seqres.fasta',
+                        'run_qmean.py', model_pdb_file,
+                        '--seqres', model_seqres_file,
                         ]
-                LOG.debug("CMD: `%s`", ' '.join(args))
+                LOG.info("CMD: `%s`", ' '.join(args))
                 result = subprocess.run(
                     args, capture_output=True, check=True, text=True)
                 qmean_content = result.stdout
                 qmean_results = json.loads(qmean_content)
                 LOG.debug("RESULT: %s", result)
+        except Exception as err:  # subprocess.CalledProcessError as err:
+            msg = f"failed to run QMEAN with cmd `{args}`: {err}"
+            raise err(msg)
         finally:
             os.chdir(original_dir)
 
@@ -104,7 +117,7 @@ class QmeanRunner:
         app = self.app
         pdb_file = self.pdb_file
 
-        submit_response = self._submit(app=app, pdb_file=pdb_file)
+        submit_response = self._submit(pdb_file)
         check_uri = submit_response.json()["results_json"]
 
         qmean_results = None
@@ -123,9 +136,9 @@ class QmeanRunner:
 
         return qmean_results
 
-    def _submit(self):
+    def _submit(self, pdb_file):
         config = self.app.config
-        pdb_file = Path(self.pdb_file).resolve()
+        pdb_file = Path(str(pdb_file)).resolve()
         kwargs = {
             'url': config['QMEAN_SUBMIT_URL'],
             'data': {"email": config['CONTACT_EMAIL']},
@@ -133,8 +146,7 @@ class QmeanRunner:
         }
         LOG.debug("submit.post: %s", kwargs)
         response = requests.post(**kwargs)
-        LOG.debug("submit.response: %s", json.dumps(
-            response.json(), indent=2, sort_keys=True))
+        LOG.debug("submit.response: %s ...", response.text[:50])
         response.raise_for_status()
         return response
 
