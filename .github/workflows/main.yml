@@ -43,4 +43,4 @@ jobs:
           MODEL_FORMAT: MMCIF
           ASSETS_URL: localhost/static
           LOG_LEVEL: DEBUG
-          GEMMI_BIN: $CONDA/bin/gemmi
+          GEMMI_BIN: /usr/share/miniconda/bin/gemmi
