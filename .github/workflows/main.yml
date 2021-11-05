@@ -23,6 +23,14 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v2
 
+      - name: Install Gemmi
+        run: |
+          git clone https://github.com/project-gemmi/gemmi.git
+          cd gemmi
+          cmake .
+          make
+          export PATH=$PATH:$PWD/gemmi
+
       # - name: Start MongoDB
       #   uses: supercharge/mongodb-github-action@1.6.0
       #   with:
