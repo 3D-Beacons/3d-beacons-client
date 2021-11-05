@@ -147,7 +147,7 @@ $ git clone https://github.com/project-gemmi/gemmi.git
 $ cd gemmi
 $ cmake .
 $ make
-$ export PATH=$PATH:$PWD/gemmi
+$ export GEMMI_BIN=$PWD/gemmi/gemmi
 ```
 
 

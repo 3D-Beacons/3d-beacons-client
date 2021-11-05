@@ -5,6 +5,8 @@ from concurrent.futures import ProcessPoolExecutor
 
 from bio3dbeacons.cli import logger
 
+GEMMI_BIN = os.environ.get("GEMMI_BIN", "gemmi")
+
 
 class Pdb2Cif:
     pdb_path: str
@@ -19,7 +21,7 @@ class Pdb2Cif:
         logger.info(f"Converting {self.pdb_path}")
         try:
             cmd_args = [
-                "gemmi",
+                GEMMI_BIN,
                 "convert",
                 "--to",
                 "mmcif",
