@@ -42,3 +42,4 @@ jobs:
           MONGO_DB_HOST: localhost:27017
           MODEL_FORMAT: MMCIF
           ASSETS_URL: localhost/static
+          LOG_LEVEL: DEBUG
