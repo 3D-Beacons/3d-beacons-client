@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import List
+import datetime
 import logging
 import json
 import os
@@ -6,8 +9,46 @@ import requests
 import shutil
 import subprocess
 import tempfile
+import time
 
 LOG = logging.getLogger()
+
+
+@dataclass
+class QmeanResponseResultQuery:
+    ac: str
+    template: str
+
+
+@dataclass
+class QmeanResponseStructure:
+    pass
+
+
+@dataclass
+class QmeanResponseResult:
+    crc64: str
+    md5: str
+    sequence: str
+    sequence_length: int
+    structures: QmeanResponseStructure
+
+
+@dataclass
+class QmeanResponseUniprotEntry:
+    ac: str
+    id: str
+    isoid: bool
+
+
+@dataclass
+class QmeanResponse:
+    api_version: float
+    query: QmeanResponseResultQuery
+    query_date: datetime.datetime
+    result: List[QmeanResponseResult]
+    uniprot_entries: List[QmeanResponseUniprotEntry]
+
 
 class QmeanRunner:
 
@@ -30,24 +71,26 @@ class QmeanRunner:
             with tempfile.TemporaryDirectory() as tmpdir:
                 tmpdir_path = Path(tmpdir).resolve()
                 LOG.debug("Moving to tmp directory: %s", tmpdir_path)
-                
+
                 os.chdir(tmpdir_path)
-                LOG.debug("Copying PDB file to local dir: %s -> %s", self.pdb_file, model_pdb_file)
+                LOG.debug("Copying PDB file to local dir: %s -> %s",
+                          self.pdb_file, model_pdb_file)
                 shutil.copyfile(self.pdb_file, model_pdb_file)
                 LOG.debug("Running local QMEAN analysis")
-                args = ['docker', 'run', 
-                    '-v', f'{tmpdir_path}:{tmpdir_path}', 
-                    '-v', f'{uniclust_path}:/uniclust30',
-                    '-v', f'{qmtl_path}:/qmtl',
-                    qmean_docker_image, 
-                    'run_qmean.py', 'model.pdb', 
-                    #'--seqres', 'seqres.fasta',
-                    ]
+                args = ['docker', 'run',
+                        '-v', f'{tmpdir_path}:{tmpdir_path}',
+                        '-v', f'{uniclust_path}:/uniclust30',
+                        '-v', f'{qmtl_path}:/qmtl',
+                        qmean_docker_image,
+                        'run_qmean.py', 'model.pdb',
+                        #'--seqres', 'seqres.fasta',
+                        ]
                 LOG.debug("CMD: `%s`", ' '.join(args))
-                result = subprocess.run(args, capture_output=True, check=True, text=True)
+                result = subprocess.run(
+                    args, capture_output=True, check=True, text=True)
                 qmean_content = result.stdout
                 qmean_results = json.loads(qmean_content)
-                LOG.debug("RESULT: %s", result)        
+                LOG.debug("RESULT: %s", result)
         finally:
             os.chdir(original_dir)
 
