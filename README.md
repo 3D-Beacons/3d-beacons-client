@@ -251,7 +251,5 @@ $ make test
 Code formatting and PEP8 compliance are automated using [pre-commit](https://pre-commit.com/) hooks. This is configured in `.pre-commit-config.yaml` which will run these hooks before `commit` ting anything to the repository. Run below command to run all the pre-commit hooks.
 
 ```
-$ pre-commit run --all
+$ make pre-commit
 ```
-
-Please note that this is already installed via requirements.dev.txt. The `make test` command will be running pre-commit hooks along with unit tests.

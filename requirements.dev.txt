@@ -1,4 +1,3 @@
-pre-commit
 pytest-asyncio
 coverage[toml]
 mongomock
