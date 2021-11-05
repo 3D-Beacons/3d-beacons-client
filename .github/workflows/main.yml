@@ -3,32 +3,42 @@ name: Run tests
 on: [push]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        mongodb-version: ['5.0']
-
+    services:
+      mongo:
+        image: mongo
+        env:
+          MONGO_INITDB_ROOT_USERNAME: test
+          MONGO_INITDB_ROOT_PASSWORD: test
+          MONGO_INITDB_DATABASE: models
+        options: >-
+          --health-cmd mongo
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 27017:27017
     steps:
-    - name: Git checkout
-      uses: actions/checkout@v2
+      - name: Git checkout
+        uses: actions/checkout@v2
 
-    - name: Start MongoDB
-      uses: supercharge/mongodb-github-action@1.6.0
-      with:
-        mongodb-version: ${{ matrix.mongodb-version }}
-        mongodb-replica-set: test-rs
-        mongodb-port: 27017
-      env:
-        MONGO_INITDB_ROOT_USERNAME: test
-        MONGO_INITDB_ROOT_PASSWORD: test
+      # - name: Start MongoDB
+      #   uses: supercharge/mongodb-github-action@1.6.0
+      #   with:
+      #     mongodb-version: ${{ matrix.mongodb-version }}
+      #     mongodb-replica-set: test-rs
+      #     mongodb-port: 27017
+      #   env:
+      #     MONGO_INITDB_ROOT_USERNAME: test
+      #     MONGO_INITDB_ROOT_PASSWORD: test
 
-    - name: Run tests
-      run: make test
-      env:
-        MONGO_USERNAME: test
-        MONGO_PASSWORD: test
-        PROVIDER: test
-        MONGO_DB_HOST: localhost:27017
-        MODEL_FORMAT: MMCIF
-        ASSETS_URL: localhost/static
+      - name: Run tests
+        run: make test
+        env:
+          MONGO_USERNAME: test
+          MONGO_PASSWORD: test
+          PROVIDER: test
+          MONGO_DB_HOST: localhost:27017
+          MODEL_FORMAT: MMCIF
+          ASSETS_URL: localhost/static
