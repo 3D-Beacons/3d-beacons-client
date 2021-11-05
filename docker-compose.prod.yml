@@ -51,16 +51,12 @@ services:
       - FLASK_ENV=production
       - FLASK_APP=bio3dbeacon.app:create_app()
       - ALLOWED_HOSTS=$ALLOWED_HOSTS
-      - DATABASE_TYPE=postgres
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      - DATABASE_NAME=$DATABASE_NAME
-      - DATABASE_USER=$DATABASE_WRITER_USER
-      - DATABASE_PASSWORD=$DATABASE_WRITER_PASSWORD
+      - DATABASE_URI=postgres://$DATABASE_WRITER_USER:$DATABASE_WRITER_PASSWORD@db:5432/$DATABASE_NAME
     ports:
       - "5010"
     volumes:
       - bio3dbeacons-www-static:/static
+      - /var/run/docker.sock:/var/run/docker.sock
 
   nginx:
     restart: always

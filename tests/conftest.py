@@ -10,6 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 os.environ['FLASK_ENV'] = 'TESTING'
 
+from bio3dbeacon.config import TestingConfig
 from bio3dbeacon.database import init_db  # NOQA
 from bio3dbeacon.app import create_app  # NOQA
 
@@ -21,32 +22,57 @@ LOG = logging.getLogger(__name__)
 
 
 @pytest.fixture
-def app():
+def app_factory():
     """Create and configure a new app instance for each test."""
-    # create a temporary file to isolate the database for each test
 
-    LOG.info("Creating test app ... ")
+    created_app_envs = []
 
-    # create the app with common test config
-    db_fd, db_path = tempfile.mkstemp()
+    def _app_factory():
 
-    _app = create_app()
+        # create a temporary file to isolate the database for each test
 
-    LOG.debug("APP: db_path = %s", db_path)
+        LOG.info("Creating test app ... ")
 
-    _app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+        # create the app with common test config
+        db_fd, db_path = tempfile.mkstemp()
+        tmp_work_dir = tempfile.TemporaryDirectory(prefix='pytest-bio3dbeacon-')
 
-    # create the database and load test data
-    with _app.app_context():
-        LOG.debug("Initialising test database ... ")
-        init_db()
-        # get_db().executescript(_data_sql)
+        config = TestingConfig()
+        config.WORK_DIR = tmp_work_dir.name
 
-    yield _app
+        _app = create_app(config=config)
 
-    # close and remove the temporary database
-    os.close(db_fd)
-    os.unlink(db_path)
+        LOG.debug("APP: db_path = %s", db_path)
+
+        _app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+
+        # create the database and load test data
+        with _app.app_context():
+            LOG.debug("Initialising test database ... ")
+            init_db()
+            # get_db().executescript(_data_sql)
+
+        created_app_envs.append({
+            'app': _app,
+            'db_fd': db_fd,
+            'db_path': db_path,
+            'work_dir': tmp_work_dir,
+        })
+
+        return _app
+
+    yield _app_factory
+
+    for app_env in created_app_envs:
+        LOG.info("Cleaning up test app ...")
+        # close and remove the temporary database
+        os.close(app_env['db_fd'])
+        os.unlink(app_env['db_path'])
+        app_env['work_dir'].cleanup()
+
+@pytest.fixture
+def app(app_factory):
+    return app_factory()
 
 
 @pytest.fixture
