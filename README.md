@@ -107,7 +107,18 @@ $ pip install -r bio3dbeacons/api/requirements.txt
 </code>
 </pre>
 
-The above commands will create a new Python virtual environment and install the dependencies required to run the API. To use environment variables, API is using a python package `python-dotenv` which is a convenient way of keeping the variables in a `.env` file in the project directory.
+The above commands will create a new Python virtual environment and install the dependencies required to run the API.
+
+Alternatively, environment can be managed very easily using [Anaconda](https://docs.anaconda.com/) as well. Use below commands to manage via conda.
+
+```
+$ conda create -n beacons_env -c conda-forge python=3.7 gemmi
+$ conda activate beacons_env
+```
+
+The above commands will create a new conda environment `beacons_env` with Python version 3.7 along with the Gemmi program which is later used by CLI.
+
+To use environment variables, API is using a python package `python-dotenv` which is a convenient way of keeping the variables in a `.env` file in the project directory.
 So, create a file named `.env` in project root directory and set below environment variables.
 
 <pre>
