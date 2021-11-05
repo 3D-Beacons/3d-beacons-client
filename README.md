@@ -131,22 +131,127 @@ Now access the local API docs using [http://localhost:8000/docs](http://localhos
 
 
 ##### Develop CLI locally
+CLI is conveniently packed using Python [click](https://palletsprojects.com/p/click/) package which is an easy way of creating command line interfaces with less code. `<PROJECT_ROOT>/bio3dbeacons/cli/.py` is the entry point for the CLI application.
 
+Follow below steps to start using the CLI,
 
-### Testing
+CLI has an external dependency on [Gemmi program](https://gemmi.readthedocs.io/en/latest/install.html#gemmi-program) for converting PDB files to CIF. It is available as part of [conda-forge packages](https://anaconda.org/conda-forge/gemmi/files) or can be build from source by following below steps
 
-pip install .
+<pre>
+Make sure you have git, cmake, C++ compiler installed
+For eg. on Ubuntu, <b>sudo apt install git cmake make g++</b>
+</pre>
 
-
-Install Gemmi
 ```
-Install git cmake make g++
-
-git clone https://github.com/project-gemmi/gemmi.git && \
-        cd gemmi && \
-        cmake . && \
-        make && \
-        cd ..
+$ git clone https://github.com/project-gemmi/gemmi.git
+$ cd gemmi
+$ cmake .
+$ make
+$ export PATH=$PATH:$PWD/gemmi
 ```
 
-make test
+
+<pre>
+<code>
+# Create a new Python (3.6+) virtual environment
+$ python3 -m venv venv
+</code>
+</pre>
+
+If the environment is already created as part of API development, skip the previous step.
+
+<pre>
+<code>
+
+# activate the environment
+$ source venv/bin/activate
+
+# Install the dependencies
+$ pip install -r bio3dbeacons/cli/requirements.txt
+
+# Get the help menu of the CLI
+$ python3 -m bio3dbeacons.cli --help
+</code>
+</pre>
+
+Use the help menu of various commands to see their usage.
+
+For eg:
+```
+(venv) $ python3 -m bio3dbeacons.cli convert_pdb_to_cif --help
+Usage: python -m bio3dbeacons.cli convert_pdb_to_cif [OPTIONS]
+
+Options:
+  -i, --input-pdb TEXT   Input PDB to convert, can be a directory in which
+                         case all .pdb files will be converted  [required]
+  -o, --output-cif TEXT  Output CIF file, a directory in case a directory is
+                         passed for --input-pdb  [required]
+  --help                 Show this message and exit.
+
+```
+
+The CLI can also be distributed as a Python pip package, install and use it using below commands.
+
+<pre>
+<code>
+
+# activate the environment
+$ source venv/bin/activate
+
+# Update pip, wheel and setuptools
+$ pip install --upgrade pip setuptools wheel
+
+# Install the dependencies
+$ pip install .
+
+# Get the help menu of the CLI
+$ bio3dbeacons_cli --help
+</code>
+</pre>
+
+To further make it more convenient for development and distribution, there is a docker image provided as well. Use below steps to build and run the CLI application.
+
+<pre>
+<code>
+
+# build the docker image and tag it
+$ docker build -t bio3dbeacons .
+
+# Get the help menu of the CLI
+$ docker run -t bio3dbeacons bio3dbeacons_cli --help
+
+# Run PDB to CIF conversion using the docker image
+$ docker run -v $PWD/data:/data -t bio3dbeacons bio3dbeacons_cli convert_pdb_to_cif -i /data/pdb -o /data/cif
+</code>
+</pre>
+
+The above docker run command for PDB to CIF conversion assumes you have a `data/pdb` directory in current working directory with one or more PDB files. The command will convert the PDB files in `data/pdb` to `data/cif` directory.
+
+### Unit Testing
+
+Unit testing is performed with [pytest](https://pytest.org/).
+
+pytest will automatically discover and run tests by recursively searching for folders and `.py` files prefixed with `test` for any functions prefixed by `test`.
+
+
+Code coverage is provided by the [pytest-cov](https://pytest-cov.readthedocs.io/en/latest/) plugin.
+
+Use the make command below to run the unit tests.
+
+Please make sure to keep the docker compose services up as the tests will be running against Mongo DB docker instance since there are compatibility issues of using [mongomock](https://github.com/mongomock/mongomock) with [motor](https://motor.readthedocs.io/en/stable/tutorial-asyncio.html) asyncio framework.
+
+```
+# set the env variables from 'Develop API locally' section
+
+$ make test
+```
+
+### Workflow automation using pre-commit hooks ###
+
+Code formatting and PEP8 compliance are automated using [pre-commit](https://pre-commit.com/) hooks. This is configured in `.pre-commit-config.yaml` which will run these hooks before `commit` ting anything to the repository. Run below command to run all the pre-commit hooks.
+
+```
+$ pre-commit run --all
+```
+
+Please note that this is already installed via requirements.dev.txt. The `make test` command will be running pre-commit hooks along with unit tests.

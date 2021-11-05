@@ -19,7 +19,7 @@ class Pdb2Cif:
         logger.info(f"Converting {self.pdb_path}")
         try:
             cmd_args = [
-                "gemmi/gemmi",
+                "gemmi",
                 "convert",
                 "--to",
                 "mmcif",

@@ -5,3 +5,5 @@ gemmi
 pydantic
 coloredlogs
 jsonschema
+pymongo
+fastapi

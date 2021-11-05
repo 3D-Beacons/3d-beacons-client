@@ -21,19 +21,22 @@ def main() -> ExitStatus:  # pragma: no cover
 @click.option(
     "-ic",
     "--input-mmcif",
-    help="Input MMCIF file",
+    help="Input MMCIF file, a directory in which case all .cif files inside it will be "
+    "converted.",
     required=True,
 )
 @click.option(
     "-im",
     "--input-metadata-json",
-    help="Input metadata JSON",
+    help="Input metadata JSON, a directory if --input-mmcif is passed as a directory. "
+    "Also make sure files are of same name except the extension.",
     required=True,
 )
 @click.option(
     "-o",
     "--output-index-json",
-    help="Output SOLR index JSON",
+    help="Output SOLR index JSON, a directory if --input-mmcif is passed as a "
+    "directory.",
     required=True,
 )
 def cif_to_json(
@@ -50,13 +53,14 @@ def cif_to_json(
 @click.option(
     "-i",
     "--input-pdb",
-    help="Input PDB to convert",
+    help="Input PDB to convert, can be a directory in which case all .pdb files will "
+    "be converted",
     required=True,
 )
 @click.option(
     "-o",
     "--output-cif",
-    help="Output CIF",
+    help="Output CIF file, a directory in case a directory is passed for --input-pdb",
     required=True,
 )
 def pdb_to_cif(input_pdb: str, output_cif: str):  # pragma: no cover
