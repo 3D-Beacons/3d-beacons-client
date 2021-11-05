@@ -146,7 +146,9 @@ CLI is conveniently packed using Python [click](https://palletsprojects.com/p/cl
 
 Follow below steps to start using the CLI,
 
-CLI has an external dependency on [Gemmi program](https://gemmi.readthedocs.io/en/latest/install.html#gemmi-program) for converting PDB files to CIF. It is available as part of [conda-forge packages](https://anaconda.org/conda-forge/gemmi/files) or can be build from source by following below steps
+CLI has an external dependency on [Gemmi program](https://gemmi.readthedocs.io/en/latest/install.html#gemmi-program) for converting PDB files to CIF. It is available as part of [conda-forge packages](https://anaconda.org/conda-forge/gemmi/files) or can be build from source by following below steps.
+
+**NOTE**: Skip these steps if using conda to manage the environment as described in earlier section.
 
 <pre>
 Make sure you have git, cmake, C++ compiler installed
