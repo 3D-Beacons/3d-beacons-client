@@ -17,7 +17,7 @@ def main() -> ExitStatus:  # pragma: no cover
     return 0
 
 
-@main.command("convert-cif2json")
+@main.command("convert-cif2index")
 @click.option(
     "-ic",
     "--input-mmcif",
@@ -67,7 +67,7 @@ def pdb_to_cif(input_pdb: str, output_cif: str):  # pragma: no cover
     pdbtocif.run(pdb_path=input_pdb, output_cif_path=output_cif)
 
 
-@main.command("load-json")
+@main.command("load-index")
 @click.option(
     "-h",
     "--mongo-db-url",
@@ -93,7 +93,7 @@ def load_mongo(mongo_db_url: str, index_path: str, batch_size: int):  # pragma: 
     mongoload.run(index_path, mongo_db_url, batch_size)
 
 
-@main.command("validate-index-json")
+@main.command("validate-index")
 @click.option(
     "-i",
     "--index-path",
