@@ -17,3 +17,6 @@ data
 # environment related
 .env
 env.sh
+
+# snakemake
+.snakemake/
