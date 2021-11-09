@@ -28,6 +28,9 @@ services:
     build:
       context: .
       dockerfile: docker/cli/Dockerfile
+    volumes:
+      - ./data:/app/data
+    entrypoint: "tail -F anything"
 
   mongodb:
     image: mongo:latest
@@ -37,7 +40,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - mongodb_data_container:/data/db
+      - mongodb-data:/data/db
 
   nginx-proxy:
     build: docker/nginx
@@ -45,7 +48,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./bio3dbeacons/nginx/default.conf:/tmp/default.conf
+      - ./docker/nginx/default.conf:/tmp/default.conf
       - ./data:/var/www/static
     environment:
       - API_SERVER_ADDR=web:8000
@@ -63,4 +66,4 @@ services:
     command: /app/start.sh
 
 volumes:
-  mongodb_data_container:
+  mongodb-data:
