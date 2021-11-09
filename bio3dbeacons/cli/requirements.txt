@@ -7,3 +7,4 @@ coloredlogs
 jsonschema
 pymongo
 fastapi
+snakemake
