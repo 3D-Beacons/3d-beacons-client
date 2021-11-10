@@ -50,3 +50,11 @@ rule cif2index:
         f"{INDEX_DIR}/{{model}}.json"
     shell:
         f"{CLI} convert-cif2index -ic {{input[0]}} -im {{input[1]}} -o {{output}}"
+
+rule loadindex:
+    input:
+        f"{INDEX_DIR}/{{model}}.json"
+    output:
+        f"{INDEX_DIR}/{{model}}.json.loaded"
+    shell:
+        f"{CLI} load-index -i {{input}} && touch {{output}}"
