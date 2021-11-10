@@ -12,7 +12,7 @@ report.xml
 .coveragerc
 
 gemmi
-data
+/data
 
 # environment related
 .env
