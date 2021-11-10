@@ -9,3 +9,4 @@ pymongo
 fastapi
 snakemake
 prettyconf
+sparqlwrapper
