@@ -8,7 +8,6 @@ More about 3D-Beacons can be found in the [WikiPages](https://github.com/3D-Beac
 
 The 3D-Beacons Client has been made available as a series of docker containers, so the following software must be available:
 
-- docker
 - [docker-compose](https://docs.docker.com/compose/install/)
 - [python3](https://www.python.org/downloads/)
 
@@ -49,6 +48,13 @@ data
 │   └── P38398_1jm7.1.A_1_103.json
 └── pdb
     └── P38398_1jm7.1.A_1_103.pdb
+```
+
+Now we need to setup the local environment - copy over the example and update `MONGO_PASSWORD` and `PROVIDER`.
+
+```
+cp .env.example .env
+vim .env
 ```
 
 We can now start up the docker containers.
@@ -167,8 +173,6 @@ Commands:
   convert-pdb2cif
   load-json
   validate-index
-```
-
 ```
 
 ---
@@ -460,6 +464,8 @@ Code formatting and PEP8 compliance are automated using [pre-commit](https://pre
 ```
 
 $ make pre-commit
+
+```
 
 ```
 
