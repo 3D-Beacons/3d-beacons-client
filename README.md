@@ -99,10 +99,6 @@ $ curl -X 'GET' \
 {"uniprot_entry":{"ac":"P38398","id":"BRCA1_HUMAN"},"structures":[{"model_identifier":"P38398_1jm7.1.A_1_103","model_category":"TEMPLATE-BASED","model_url":"localhost/static/cif/P38398_1jm7.1.A_1_103.cif","provider":"GENOME3D","uniprot_start":1,"uniprot_end":103,"model_format":"MMCIF"}]}
 ```
 
-TODO:
-
-- write files as the current (non-root) user
-
 ## Running CLI commands manually
 
 The Snakemake workflow has been included for convenience, but it is possible
@@ -256,7 +252,7 @@ The client also provides a RESTful API to expose the model metadata to users as 
 
 The RESTful API service is backed by an [NGINX](https://www.nginx.com/) proxy which also acts as a static file server to serve the model files like CIF and PDB.
 
-## Getting started
+## Developing
 
 ### Local development
 
@@ -264,15 +260,22 @@ For local development, please follow the below instructions.
 
 ##### Set the environment variables
 
-<pre>
-<b>MONGO_USERNAME</b>: username for Mongo DB
-<b>MONGO_PASSWORD</b>: password for Mongo DB
-<b>PROVIDER</b>: Provider name. For eg: PDBE
-<b>MONGO_DB_HOST</b>: Mongo DB host. Used by API, set it to <b>mongodb:27017</b> if using the docker compose service.
-<b>MODEL_FORMAT</b>: Format of the model. For eg: MMCIF
-<b>ASSETS_URL</b>: Static assets URL, location where the hosted model files can be accessed.
-Set to <b>localhost/static</b> if using docker compose service. This is used by API to return <i>modelUrl</i> where the model file can be accessed.
-</pre>
+Make sure the environment has been set up correctly (`.env`)
+
+```
+MONGO_USERNAME=<username> # username for MongoDB
+MONGO_PASSWORD=<password> # password for MongoDB
+PROVIDER=<provider> # Same as set in earlier section
+MONGO_DB_HOST=localhost:27017 # Mongo DB docker compose service
+MODEL_FORMAT=<format> # Same as set in earlier section
+ASSETS_URL=localhost/static # NGINX docker compose service
+```
+
+Note: if you make any changes to this file _after_ the docker containers have been built, then you will need to rebuild the `cli` containers in order to be able to see those changes within `docker-compose`:
+
+```
+docker-compose up --detach --build cli
+```
 
 ##### Start the necessary services
 
@@ -329,18 +332,6 @@ $ conda activate beacons_env
 The above commands will create a new conda environment `beacons_env` with Python version 3.7 along with the Gemmi program which is later used by CLI.
 
 To use environment variables, API is using a python package `python-dotenv` which is a convenient way of keeping the variables in a `.env` file in the project directory.
-So, create a file named `.env` in project root directory and set below environment variables.
-
-```
-
-MONGO_USERNAME=<username> # Same as set in earlier section
-MONGO_PASSWORD=<password> # Same as set in earlier section
-PROVIDER=<provider> # Same as set in earlier section
-MONGO_DB_HOST=localhost:27017 # Mongo DB docker compose service
-MODEL_FORMAT=<format> # Same as set in earlier section
-ASSETS_URL=localhost/static # NGINX docker compose service
-
-```
 
 Now that dependencies and environment variables are available, run the API locally using [uvicorn](https://www.uvicorn.org/) which is a lightning fast ASGI server implementation. This is already installed using the `pip` command executed before.
 
@@ -484,6 +475,10 @@ Code formatting and PEP8 compliance are automated using [pre-commit](https://pre
 ```
 
 $ make pre-commit
+
+```
+
+```
 
 ```
 
