@@ -1,6 +1,8 @@
+# type: ignore
+
 from pathlib import Path
 
-DATA_ROOT = "./data"
+DATA_ROOT = "data"
 PDB_DIR = f"{DATA_ROOT}/pdb"
 CIF_DIR = f"{DATA_ROOT}/cif"
 METADATA_DIR = f"{DATA_ROOT}/metadata"
@@ -10,10 +12,9 @@ CLI = "3dbeacons-cli"
 
 
 def init():
-    Path(PDB_DIR).mkdir(parents=True, exist_ok=True)
-    Path(CIF_DIR).mkdir(parents=True, exist_ok=True)
-    Path(METADATA_DIR).mkdir(parents=True, exist_ok=True)
-    Path(INDEX_DIR).mkdir(parents=True, exist_ok=True)
+    dirs = [PDB_DIR, CIF_DIR, METADATA_DIR, INDEX_DIR]
+    for dir in dirs:
+        Path(dir).mkdir(parents=True, exist_ok=True)
 
 
 def gather_model_ids():
