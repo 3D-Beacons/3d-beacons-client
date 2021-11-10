@@ -13,14 +13,16 @@ The 3D-Beacons Client has been made available as a series of docker containers, 
 
 ## Quick Start
 
-Download the code
+#### Download the code
 
 ```
 $ git clone git@github.com:3D-Beacons/3d-beacons-client.git
 $ cd 3d-beacons-client
 ```
 
-Prepare the model data directories and files - every model needs a PDB/CIF file and a JSON file
+#### Prepare the model data
+
+Every model needs a PDB/CIF file and a JSON file
 (containing metadata about how this model maps to a UniProt entry).
 
 ```
@@ -50,14 +52,16 @@ data
     └── P38398_1jm7.1.A_1_103.pdb
 ```
 
-Now we need to setup the local environment - copy over the example and update `MONGO_PASSWORD` and `PROVIDER`.
+#### Setup local environment 
+
+Copy over the example file and update the values for `MONGO_PASSWORD` and `PROVIDER`.
 
 ```
 cp .env.example .env
 vim .env
 ```
 
-We can now start up the docker containers.
+#### Start up docker containers.
 
 Note: the following may take a few minutes the first time it is run
 (the resulting images are cached by default, so they should only need to be built once).
@@ -68,7 +72,13 @@ docker-compose up -d
 
 You should now be able to access the API documentation by directing a web browser at http://localhost:8000/docs
 
-Process the model PDB files:
+#### Process the model PDB files
+
+The following command will:
+
+* convert PDB files to CIF files
+* convert CIF and METADATA files to JSON index files
+* load JSON index files into the database (MongoDB)
 
 ```
 $ docker-compose exec cli snakemake --cores=2
@@ -89,6 +99,8 @@ data
     └── P38398_1jm7.1.A_1_103.pdb
 ```
 
+#### Find the model via API
+
 We can now search for this model via the API:
 
 ```
@@ -98,6 +110,10 @@ $ curl -X 'GET' \
 
 {"uniprot_entry":{"ac":"P38398","id":"BRCA1_HUMAN"},"structures":[{"model_identifier":"P38398_1jm7.1.A_1_103","model_category":"TEMPLATE-BASED","model_url":"localhost/static/cif/P38398_1jm7.1.A_1_103.cif","provider":"GENOME3D","uniprot_start":1,"uniprot_end":103,"model_format":"MMCIF"}]}
 ```
+
+Congratulations. You are now ready to connect your API to the 3D Beacons Hub!
+
+---
 
 ## Running CLI commands manually
 
