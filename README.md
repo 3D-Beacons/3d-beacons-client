@@ -50,7 +50,7 @@ data
     └── P38398_1jm7.1.A_1_103.pdb
 ```
 
-Now we need to setup the local environment - copy over the example and update `MONGO_PASSWORD` and `PROVIDER`.
+Now we need to setup the local environment (copy over the example file and update the values for `MONGO_PASSWORD` and `PROVIDER`).
 
 ```
 cp .env.example .env
