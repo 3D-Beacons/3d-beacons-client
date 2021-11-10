@@ -99,6 +99,10 @@ $ curl -X 'GET' \
 {"uniprot_entry":{"ac":"P38398","id":"BRCA1_HUMAN"},"structures":[{"model_identifier":"P38398_1jm7.1.A_1_103","model_category":"TEMPLATE-BASED","model_url":"localhost/static/cif/P38398_1jm7.1.A_1_103.cif","provider":"GENOME3D","uniprot_start":1,"uniprot_end":103,"model_format":"MMCIF"}]}
 ```
 
+Congratulations. You are now ready to connect your API to the 3D Beacons Hub!
+
+---
+
 ## Running CLI commands manually
 
 The Snakemake workflow has been included for convenience, but it is possible
