@@ -81,14 +81,15 @@ data
 ├── cif
 │   └── P38398_1jm7.1.A_1_103.cif
 ├── index
-│   └── P38398_1jm7.1.A_1_103.json
+│   ├── P38398_1jm7.1.A_1_103.json
+│   └── P38398_1jm7.1.A_1_103.json.loaded
 ├── metadata
 │   └── P38398_1jm7.1.A_1_103.json
 └── pdb
     └── P38398_1jm7.1.A_1_103.pdb
 ```
 
-We can now search for this model just querying the API with
+We can now search for this model via the API:
 
 ```
 $ curl -X 'GET' \
@@ -100,22 +101,18 @@ $ curl -X 'GET' \
 
 TODO:
 
-- add `load-index` step to Snakefile
 - write files as the current (non-root) user
-- make sure links to static files work
 
----
+## Running CLI commands manually
 
-### Running CLI commands manually
+The Snakemake workflow has been included for convenience, but it is possible
+to run the individual steps outside of Snakemake, and outside of the docker
+container entirely if desired.
 
-The Snakemake pipeline has been included for convenience, but it is possible
-to run the individual steps of the work flow outside of Snakemake, and outside
-of the docker container entirely if desired.
+Running steps inside docker (recommended)
 
-Running workflow steps inside docker
-
-- Pros: less to install
-- Cons: can add complexity mapping data directories
+- Pros: nothing to install
+- Cons: docker adds a layer of complexity (eg different hosts and data directories)
 
 ```
 # create a shortcut to run the CLI tool inside docker container
