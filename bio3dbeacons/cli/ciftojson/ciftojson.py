@@ -7,7 +7,7 @@ from typing import Dict
 
 from fastapi.encoders import jsonable_encoder
 
-from bio3dbeacons.cli.ciftojson.models import Entry
+from bio3dbeacons.cli.models import ModelEntry
 from bio3dbeacons.cli.utils import (
     get_uniprot_xml,
     prepare_data_dictionary,
@@ -21,7 +21,7 @@ LOG = logging.getLogger(__name__)
 class Cif2Json:
     cif_path: str
     output_index_json_path: str
-    entry: Entry
+    entry: ModelEntry
 
     def __init__(
         self, cif_path: str, metadata_json_path: str, output_index_json_path: str
@@ -29,7 +29,7 @@ class Cif2Json:
         self.cif_path = cif_path
         self.metadata_json_path = metadata_json_path
         self.output_index_json_path = output_index_json_path
-        self.entry: Entry
+        self.entry: ModelEntry
         self.interim_entry: Dict = {}
 
     def read_cif(self):
