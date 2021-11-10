@@ -216,7 +216,6 @@ The field mappings in CIF file to index JSON is configured via `cif_json_mapping
 Below is an example metadata JSON with all mandatory fields. Description for each of these fields are available in `resources/schema.json`
 
 ```
-
 {
 "mappingAccession": "P38398",
 "mappingAccessionType": "uniprot",
@@ -225,7 +224,6 @@ Below is an example metadata JSON with all mandatory fields. Description for eac
 "modelCategory": "TEMPLATE-BASED",
 "modelType": "single"
 }
-
 ```
 
 The tool can accept a single CIF and metadata JSON or directories containing the files and will generate the index JSONs accordingly.
@@ -280,9 +278,7 @@ docker-compose up --detach --build cli
 ##### Start the necessary services
 
 ```
-
 $ docker compose up --build
-
 ```
 
 The above docker compose command will start API, Mongo DB and NGINX services defined in `docker-compose.yml` file. Each of these services uses environment variables provided in `docker-compose.yml` for its configuration.
@@ -291,9 +287,7 @@ Once the docker compose command is executed and services started, API docs can b
 Also Mongo DB can be accessed using [Mongo Shell](https://docs.mongodb.com/mongodb-shell/#mongodb-binary-bin.mongosh) using the below command,
 
 ```
-
 $ mongosh mongodb://<MONGO_USERNAME>:<MONGO_PASSWORD>@localhost:27017
-
 ```
 
 **NOTE**: If you check the NGINX service in `docker-compose.yml`, `/var/www/static` directory in NGINX is mounted with `data` directory in the project root. This is where the model files need to be kept for serving via file server. API is configured to expect CIF files to be kept in `data/cif` and PDB files to be in `data/pdb` directories. If another directory is used (which obvioulsly in most cases), replace `./data` in `docker-compose.yml` with the proper path where your model files are present. But make sure you still keep them in `cif` and `pdb` subdirectories accordingly.
@@ -303,19 +297,14 @@ $ mongosh mongodb://<MONGO_USERNAME>:<MONGO_PASSWORD>@localhost:27017
 The docker compose command will start an API service inside the docker container. This may not be a good option to continously test and develop your services. To develop the API locally, use the below commands.
 
 ```
-
 # Create a new Python (3.6+) virtual environment
-
 $ python3 -m venv venv
 
 # activate the environment
-
 $ source venv/bin/activate
 
 # Install the dependencies
-
 $ pip install -r bio3dbeacons/api/requirements.txt
-
 ```
 
 The above commands will create a new Python virtual environment and install the dependencies required to run the API.
@@ -323,10 +312,8 @@ The above commands will create a new Python virtual environment and install the 
 Alternatively, environment can be managed very easily using [Anaconda](https://docs.anaconda.com/) as well. Use below commands to manage via conda.
 
 ```
-
 $ conda create -n beacons_env -c conda-forge python=3.7 gemmi
 $ conda activate beacons_env
-
 ```
 
 The above commands will create a new conda environment `beacons_env` with Python version 3.7 along with the Gemmi program which is later used by CLI.
@@ -336,9 +323,7 @@ To use environment variables, API is using a python package `python-dotenv` whic
 Now that dependencies and environment variables are available, run the API locally using [uvicorn](https://www.uvicorn.org/) which is a lightning fast ASGI server implementation. This is already installed using the `pip` command executed before.
 
 ```
-
 uvicorn bio3dbeacons.api.main:app --reload
-
 ```
 
 Now access the local API docs using [http://localhost:8000/docs](http://localhost:8000/docs). The server will keep monitoring the files and reloads the instance without the need for restarting the server after making any code changes.
@@ -355,33 +340,25 @@ CLI has an external dependency on [Gemmi program](https://gemmi.readthedocs.io/e
 
 **NOTE**: Skip these steps if using conda to manage the environment as described in earlier section.
 
-<pre>
 Make sure you have git, cmake, C++ compiler installed
-For eg. on Ubuntu, <b>sudo apt install git cmake make g++</b>
-</pre>
+For eg. on Ubuntu, `sudo apt install git cmake make g++`
 
 ```
-
 $ git clone https://github.com/project-gemmi/gemmi.git
 $ cd gemmi
 $ cmake .
 $ make
 $ export GEMMI_BIN=$PWD/gemmi/gemmi
-
 ```
 
-<pre>
-<code>
+```
 # Create a new Python (3.6+) virtual environment
 $ python3 -m venv venv
-</code>
-</pre>
+```
 
 If the environment is already created as part of API development, skip the previous step.
 
-<pre>
-<code>
-
+```
 # activate the environment
 $ source venv/bin/activate
 
@@ -390,15 +367,13 @@ $ pip install -r bio3dbeacons/cli/requirements.txt
 
 # Get the help menu of the CLI
 $ python3 -m bio3dbeacons.cli --help
-</code>
-</pre>
+```
 
 Use the help menu of various commands to see their usage.
 
 For eg:
 
 ```
-
 (venv) $ python3 -m bio3dbeacons.cli convert_pdb_to_cif --help
 Usage: python -m bio3dbeacons.cli convert_pdb_to_cif [OPTIONS]
 
@@ -408,14 +383,11 @@ case all .pdb files will be converted [required]
 -o, --output-cif TEXT Output CIF file, a directory in case a directory is
 passed for --input-pdb [required]
 --help Show this message and exit.
-
 ```
 
 The CLI can also be distributed as a Python pip package, install and use it using below commands.
 
-<pre>
-<code>
-
+```
 # activate the environment
 $ source venv/bin/activate
 
@@ -427,14 +399,11 @@ $ pip install .
 
 # Get the help menu of the CLI
 $ bio3dbeacons_cli --help
-</code>
-</pre>
+```
 
 To further make it more convenient for development and distribution, there is a docker image provided as well. Use below steps to build and run the CLI application.
 
-<pre>
-<code>
-
+```
 # build the docker image and tag it
 $ docker build -t bio3dbeacons .
 
@@ -443,8 +412,7 @@ $ docker run -t bio3dbeacons bio3dbeacons_cli --help
 
 # Run PDB to CIF conversion using the docker image
 $ docker run -v $PWD/data:/data -t bio3dbeacons bio3dbeacons_cli convert_pdb_to_cif -i /data/pdb -o /data/cif
-</code>
-</pre>
+```
 
 The above docker run command for PDB to CIF conversion assumes you have a `data/pdb` directory in current working directory with one or more PDB files. The command will convert the PDB files in `data/pdb` to `data/cif` directory.
 
@@ -461,11 +429,8 @@ Use the make command below to run the unit tests.
 Please make sure to keep the docker compose services up as the tests will be running against Mongo DB docker instance since there are compatibility issues of using [mongomock](https://github.com/mongomock/mongomock) with [motor](https://motor.readthedocs.io/en/stable/tutorial-asyncio.html) asyncio framework.
 
 ```
-
 # set the env variables from 'Develop API locally' section
-
 $ make test
-
 ```
 
 ### Workflow automation using pre-commit hooks
@@ -473,19 +438,5 @@ $ make test
 Code formatting and PEP8 compliance are automated using [pre-commit](https://pre-commit.com/) hooks. This is configured in `.pre-commit-config.yaml` which will run these hooks before `commit` ting anything to the repository. Run below command to run all the pre-commit hooks.
 
 ```
-
 $ make pre-commit
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```
-
 ```
