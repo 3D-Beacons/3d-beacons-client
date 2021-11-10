@@ -5,9 +5,7 @@ from bio3dbeacons.cli.ciftojson import ciftojson
 from exitstatus import ExitStatus
 import click
 
-from pathlib import Path
 from prettyconf import config
-from prettyconf import Configuration
 from prettyconf.loaders import Environment, EnvFile
 
 config.loaders = [
