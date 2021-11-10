@@ -33,7 +33,7 @@ model_ids = gather_model_ids()
 
 rule all:
     input:
-        expand(f"{INDEX_DIR}/{{model}}.json", model=model_ids)
+        expand(f"{INDEX_DIR}/{{model}}.json.loaded", model=model_ids)
 
 rule pdb2cif:
     input:
