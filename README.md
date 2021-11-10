@@ -109,8 +109,13 @@ TODO:
 ### Running commands outside of Snakemake / Docker
 
 The Snakemake pipeline has been included for convenience, but it is possible
-to run the individual steps outside of Snakemake, and outside of docker
-containers entirely if desired.
+to run the individual steps of the work flow outside of Snakemake, and outside
+of docker containers entirely if desired.
+
+Running workflow steps inside docker
+
+- Pros: less to install
+- Cons: can add complexity mapping data directories
 
 ```
 # create a shortcut to run the CLI tool inside docker container
@@ -141,7 +146,10 @@ $ 3dbeacons-cli load-json -i /data/index/
 $ 3dbeacons-cli validate-json -i /data/index/
 ```
 
-Run CLI commands outside of docker
+Running CLI commands outside of docker
+
+- Pros: one fewer layers to consider
+- Cons: requires more manual installation
 
 ```
 # create a virtual environment
@@ -173,6 +181,15 @@ Commands:
   convert-pdb2cif
   load-json
   validate-index
+```
+
+You will also need to install [GEMMI software](https://gemmi.readthedocs.io/en/latest/install.html).
+The instuctions will vary depending on your operating system, but it will look something like:
+
+```
+apt-get update && apt-get install -y git cmake make g++
+git clone https://github.com/project-gemmi/gemmi.git && cd gemmi && cmake . && make
+export GEMMI_BIN=$PWD/gemmi
 ```
 
 ---
