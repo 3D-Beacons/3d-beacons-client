@@ -21,7 +21,7 @@ $ cd 3d-beacons-client
 ```
 
 Prepare the model data directories and files - every model needs a PDB/CIF file and a JSON file
-containing metadata about how this model maps to a UniProt entry.
+(containing metadata about how this model maps to a UniProt entry).
 
 ```
 $ mkdir -p ./data/{pdb,cif,metadata,index}
@@ -106,11 +106,11 @@ TODO:
 
 ---
 
-### Running commands outside of Snakemake / Docker
+### Running CLI commands manually
 
 The Snakemake pipeline has been included for convenience, but it is possible
 to run the individual steps of the work flow outside of Snakemake, and outside
-of docker containers entirely if desired.
+of the docker container entirely if desired.
 
 Running workflow steps inside docker
 
@@ -119,10 +119,10 @@ Running workflow steps inside docker
 
 ```
 # create a shortcut to run the CLI tool inside docker container
-$ alias 3dbeacons-cli="docker-compose exec cli 3dbeacons-cli"
+$ alias 3dbeacons-cli-docker="docker-compose exec cli 3dbeacons-cli"
 
 # convert all PDB files to CIF files
-$ 3dbeacons-cli convert-pdb2cif -i /data/pdb/ -o /data/cif/
+$ 3dbeacons-cli-docker convert-pdb2cif -i ./data/pdb/ -o ./data/cif/
 
 # prepare metadata for every CIF file
 $ ls ./data/cif/model001.cif          # this file was generated in the step above
@@ -137,13 +137,19 @@ $ cat ./data/metadata/model001.json   # you need to generate this file yourself
 }
 
 # create index JSON from CIF
-$ 3dbeacons-cli convert-cif2index -ic ./data/cif/ -im ./data/metadata/ -o ./data/index/
+$ 3dbeacons-cli-docker convert-cif2index \
+  -ic ./data/cif/ -im ./data/metadata/ \
+  -o ./data/index/
 
 # load JSON to local database
-$ 3dbeacons-cli load-json -i /data/index/
+# IMPORTANT: notice that the host from inside docker is 'mongodb'
+$ 3dbeacons-cli-docker load-index \
+  -i ./data/index/ \
+  -h mongodb://MONGO_USER:MONGO_PASSWORD@mongodb:27017
 
 # validate JSON
-$ 3dbeacons-cli validate-json -i /data/index/
+$ 3dbeacons-cli-docker validate-index \
+  -i ./data/index/
 ```
 
 Running CLI commands outside of docker
