@@ -27,8 +27,8 @@ Every model needs a PDB/CIF file and a JSON file
 
 ```
 $ mkdir -p ./data/{pdb,cif,metadata,index}
-$ cp model001.pdb ./data/pdb/
-$ cat model001.json
+$ cp P38398_1jm7.1.A_1_103.pdb ./data/pdb/
+$ cat P38398_1jm7.1.A_1_103.json
 {
   "mappingAccession": "P38398",
   "mappingAccessionType": "uniprot",
@@ -37,7 +37,7 @@ $ cat model001.json
   "modelCategory": "TEMPLATE-BASED",
   "modelType": "single"
 }
-$ cp model001.json ./data/metadata/
+$ cp P38398_1jm7.1.A_1_103.json ./data/metadata/
 ```
 
 The `./data` directory should now look something like this (the model file has been given a more realistic name):
@@ -134,8 +134,8 @@ $ alias 3dbeacons-cli-docker="docker-compose exec cli 3dbeacons-cli"
 $ 3dbeacons-cli-docker convert-pdb2cif -i ./data/pdb/ -o ./data/cif/
 
 # prepare metadata for every CIF file
-$ ls ./data/cif/model001.cif          # this file was generated in the step above
-$ cat ./data/metadata/model001.json   # you need to generate this file yourself
+$ ls ./data/cif/P38398_1jm7.1.A_1_103.cif          # this file was generated in the step above
+$ cat ./data/metadata/P38398_1jm7.1.A_1_103.json   # you need to generate this file yourself
 {
     "mappingAccession": "P38398",
     "mappingAccessionType": "uniprot",
@@ -194,7 +194,7 @@ Options:
 Commands:
   convert-cif2json
   convert-pdb2cif
-  load-json
+  load-index
   validate-index
 ```
 
