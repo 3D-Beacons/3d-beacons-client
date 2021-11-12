@@ -1,11 +1,13 @@
 import json
+import logging
 import xml.etree.ElementTree as ET
 from typing import Any, Dict
 
 import requests
 
-from bio3dbeacons.cli import logger
 from bio3dbeacons.config.config import get_config, get_config_keys
+
+LOG = logging.getLogger(__name__)
 
 
 def prepare_data_dictionary(cif_block: Any, config_section: str) -> Dict:
@@ -42,11 +44,11 @@ def get_uniprot_xml(accession: str) -> ET.Element:
 
     try:
         response = requests.get(f"{uniprot_xml_url}/{accession}.xml")
-        logger.info(f"Received {uniprot_xml_url}/{accession}.xml")
+        LOG.info(f"Received {uniprot_xml_url}/{accession}.xml")
         return ET.fromstring(response.content)
     except Exception as e:
-        logger.error(f"Error in parsing UniProt XML for {accession}!")
-        logger.debug(e)
+        LOG.error(f"Error in parsing UniProt XML for {accession}!")
+        LOG.debug(e)
 
     return None
 

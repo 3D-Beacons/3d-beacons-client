@@ -1,15 +1,19 @@
-version: '3'
+version: "3"
 services:
   web:
     build:
       context: .
-      dockerfile: bio3dbeacons/api/Dockerfile
+      dockerfile: docker/web/Dockerfile
     command: uvicorn bio3dbeacons.api.main:app --host 0.0.0.0
     ports:
       - 8000:8000
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:8000/health-check || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl --silent --fail localhost:8000/health-check || exit 1",
+        ]
       interval: 10s
       timeout: 10s
       retries: 3
@@ -20,6 +24,14 @@ services:
       - MONGO_DB_HOST=$MONGO_DB_HOST
       - ASSETS_URL=$ASSETS_URL
 
+  cli:
+    build:
+      context: .
+      dockerfile: docker/cli/Dockerfile
+    volumes:
+      - ./data:/app/data
+    entrypoint: "tail -F anything"
+
   mongodb:
     image: mongo:latest
     environment:
@@ -28,26 +40,30 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - mongodb_data_container:/data/db
+      - mongodb-data:/data/db
 
   nginx-proxy:
-    build: bio3dbeacons/nginx
+    build: docker/nginx
     restart: always
     ports:
       - 80:80
     volumes:
-      - ./bio3dbeacons/nginx/default.conf:/tmp/default.conf
+      - ./docker/nginx/default.conf:/tmp/default.conf
       - ./data:/var/www/static
     environment:
       - API_SERVER_ADDR=web:8000
     depends_on:
       - web
     healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:80/health-check || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl --silent --fail localhost:80/health-check || exit 1",
+        ]
       interval: 10s
       timeout: 10s
       retries: 3
     command: /app/start.sh
 
 volumes:
-  mongodb_data_container:
+  mongodb-data:

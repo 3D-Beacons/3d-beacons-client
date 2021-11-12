@@ -1,9 +1,10 @@
+import logging
 import multiprocessing
 import os
 import subprocess
 from concurrent.futures import ProcessPoolExecutor
 
-from bio3dbeacons.cli import logger
+LOG = logging.getLogger(__name__)
 
 GEMMI_BIN = os.environ.get("GEMMI_BIN", "gemmi")
 
@@ -18,7 +19,8 @@ class Pdb2Cif:
 
     def convert(self) -> int:
         """Converts PDB to CIF"""
-        logger.info(f"Converting {self.pdb_path}")
+        LOG.info(
+            f"Converting PDB:{self.pdb_path} to CIF:{self.output_cif_path}")
         try:
             cmd_args = [
                 GEMMI_BIN,
@@ -29,11 +31,12 @@ class Pdb2Cif:
                 self.output_cif_path,
             ]
             subprocess.check_call(cmd_args)
-            logger.info(f"Converted {self.pdb_path} to {self.output_cif_path}")
+            LOG.info(f"Converted {self.pdb_path} to {self.output_cif_path}")
 
         except Exception as e:
-            logger.error(f"Error in converting the PDB file!: {self.pdb_path}")
-            logger.debug(e)
+            LOG.error(
+                f"Error converting the PDB file: {self.pdb_path} (err:{e})")
+            LOG.debug(e)
             return 1
 
         return 0
@@ -57,12 +60,13 @@ def run(pdb_path: str, output_cif_path: str) -> int:
     # if a directory is provided, convert all .pdb files in it
     if os.path.isdir(pdb_path):
         if os.path.isfile(output_cif_path):
-            logger.error(f"{output_cif_path} is a file, must provide a directory")
+            LOG.error(
+                f"{output_cif_path} is a file, must provide a directory")
             return 1
 
         # make the output dir
         os.makedirs(output_cif_path, exist_ok=True)
-        logger.info(f"Created directory {output_cif_path}")
+        LOG.info(f"Created directory {output_cif_path}")
 
         with ProcessPoolExecutor(max_workers=multiprocessing.cpu_count() + 1) as p:
             for _, _, filenames in os.walk(pdb_path):
@@ -74,7 +78,7 @@ def run(pdb_path: str, output_cif_path: str) -> int:
 
     else:
         if not os.path.isfile(pdb_path):
-            logger.error("PDB file not found!")
+            LOG.error("PDB file '%s' not found!", pdb_path)
             return 1
 
         pdbtocif = Pdb2Cif(pdb_path=pdb_path, output_cif_path=output_cif_path)

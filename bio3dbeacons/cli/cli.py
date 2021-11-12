@@ -1,10 +1,31 @@
-import click
-from exitstatus import ExitStatus
-
-from bio3dbeacons.cli.ciftojson import ciftojson
-from bio3dbeacons.cli.mongoload import mongoload
-from bio3dbeacons.cli.pdbtocif import pdbtocif
 from bio3dbeacons.cli.validatejson import validatejson
+from bio3dbeacons.cli.pdbtocif import pdbtocif
+from bio3dbeacons.cli.mongoload import mongoload
+from bio3dbeacons.cli.ciftojson import ciftojson
+from exitstatus import ExitStatus
+import click
+
+from prettyconf import config
+from prettyconf.loaders import Environment, EnvFile
+
+config.loaders = [
+    Environment(var_format=str.upper),
+    EnvFile(filename='.env', var_format=str.upper),
+]
+
+
+class Config():
+
+    LOG_LEVEL = config("LOG_LEVEL", default="INFO")
+    MONGO_USERNAME = config("MONGO_USERNAME")
+    MONGO_PASSWORD = config("MONGO_PASSWORD")
+    MONGO_DB_HOST = config("MONGO_DB_HOST", default="mongodb")
+    ASSETS_URL = config("ASSETS_URL")
+
+    @property
+    def MONGO_DB_URL(self):
+        return (f"mongodb://{self.MONGO_USERNAME}:{self.MONGO_PASSWORD}"
+                f"@{self.MONGO_DB_HOST}")
 
 
 @click.group("CLI", help="CLI application for 3D Beacons utilities")
@@ -17,7 +38,7 @@ def main() -> ExitStatus:  # pragma: no cover
     return 0
 
 
-@main.command("convert_cif_to_metadata_json")
+@main.command("convert-cif2index")
 @click.option(
     "-ic",
     "--input-mmcif",
@@ -49,7 +70,7 @@ def cif_to_json(
     )
 
 
-@main.command("convert_pdb_to_cif")
+@main.command("convert-pdb2cif")
 @click.option(
     "-i",
     "--input-pdb",
@@ -67,19 +88,19 @@ def pdb_to_cif(input_pdb: str, output_cif: str):  # pragma: no cover
     pdbtocif.run(pdb_path=input_pdb, output_cif_path=output_cif)
 
 
-@main.command("mongo_load")
-@click.option(
-    "-h",
-    "--mongo-db-url",
-    help="Mongo DB URL",
-    required=True,
-)
+@main.command("load-index")
 @click.option(
     "-i",
     "--index-path",
     help="Path to index file, can be a directory as well. In case of directory, "
     "will index all json files in it.",
     required=True,
+)
+@click.option(
+    "-h",
+    "--mongo-db-url",
+    help="Mongo DB URL",
+    required=False,
 )
 @click.option(
     "-b",
@@ -90,10 +111,14 @@ def pdb_to_cif(input_pdb: str, output_cif: str):  # pragma: no cover
     type=int,
 )
 def load_mongo(mongo_db_url: str, index_path: str, batch_size: int):  # pragma: no cover
+
+    if not mongo_db_url:
+        mongo_db_url = Config().MONGO_DB_URL
+
     mongoload.run(index_path, mongo_db_url, batch_size)
 
 
-@main.command("validate_index_json")
+@main.command("validate-index")
 @click.option(
     "-i",
     "--index-path",

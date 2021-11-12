@@ -12,6 +12,11 @@ class ModelCategory(Enum):  # pragma: no cover
     DEEP_LEARNING = "DEEP-LEARNING"
 
 
+class ModelType(Enum):
+    SINGLE = "single"
+    COMPLEX = "complex"
+
+
 class PyObjectId(ObjectId):  # pragma: no cover
     @classmethod
     def __get_validators__(cls):
@@ -28,7 +33,33 @@ class PyObjectId(ObjectId):  # pragma: no cover
         field_schema.update(type="string")
 
 
-class Entry(BaseModel):  # pragma: no cover
+class ModelMetadata(BaseModel):  # pragma: no cover
+    mappingAccession: str = Field(..., description="Protein accession to which this "
+                                  "model has been mapped, e.g. P38398")
+    mappingAccessionType: str = Field(...,
+                                      description="Type of accession code, e.g. uniprot")
+    start: int = Field(
+        ...,
+        description="The index of the first residue of the model according to UniProt"
+        " sequence numbering, e.g. 1",
+    )
+    end: int = Field(
+        ...,
+        description="The index of the last residue of the model according to UniProt "
+        "sequence numbering, e.g. 142",
+    )
+    modelCategory: ModelCategory = Field(
+        ..., description="Category of the model, e.g. EXPERIMENTALLY DETERMINED"
+    )
+    modelType: ModelType = Field(
+        ..., description="Category of the model type, e.g. single"
+    )
+
+    class Config:
+        use_enum_values = True
+
+
+class ModelEntry(BaseModel):  # pragma: no cover
     id: PyObjectId = Field(
         default_factory=PyObjectId, description="Unique ID", alias="_id"
     )

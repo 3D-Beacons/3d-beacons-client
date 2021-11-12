@@ -12,8 +12,11 @@ report.xml
 .coveragerc
 
 gemmi
-data
+/data
 
 # environment related
 .env
 env.sh
+
+# snakemake
+.snakemake/

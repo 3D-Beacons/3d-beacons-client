@@ -1,4 +1,5 @@
 import json
+import logging
 import multiprocessing
 import os
 from concurrent.futures import ProcessPoolExecutor
@@ -6,8 +7,7 @@ from typing import Dict
 
 from fastapi.encoders import jsonable_encoder
 
-from bio3dbeacons.cli import logger
-from bio3dbeacons.cli.ciftojson.models import Entry
+from bio3dbeacons.cli.models import ModelEntry
 from bio3dbeacons.cli.utils import (
     get_uniprot_xml,
     prepare_data_dictionary,
@@ -15,11 +15,13 @@ from bio3dbeacons.cli.utils import (
 )
 from gemmi import cif
 
+LOG = logging.getLogger(__name__)
+
 
 class Cif2Json:
     cif_path: str
     output_index_json_path: str
-    entry: Entry
+    entry: ModelEntry
 
     def __init__(
         self, cif_path: str, metadata_json_path: str, output_index_json_path: str
@@ -27,14 +29,15 @@ class Cif2Json:
         self.cif_path = cif_path
         self.metadata_json_path = metadata_json_path
         self.output_index_json_path = output_index_json_path
-        self.entry: Entry
+        self.entry: ModelEntry
         self.interim_entry: Dict = {}
 
     def read_cif(self):
         """Reads the mmcif file and populates them in entry"""
-        logger.info(f"Reading {self.cif_path}")
+        LOG.info(f"Reading {self.cif_path}")
         try:
-            doc = cif.read_file(self.cif_path)  # copy all the data from mmCIF file
+            # copy all the data from mmCIF file
+            doc = cif.read_file(self.cif_path)
             block = doc.sole_block()  # mmCIF has exactly one block
 
             # run the mapping from CIF
@@ -43,12 +46,12 @@ class Cif2Json:
             self.interim_entry.update(entry)
 
         except Exception as e:
-            logger.error("Error in parsing the cif file!", e)
-            logger.debug(e)
+            LOG.error("Error in parsing the cif file!", e)
+            LOG.debug(e)
 
     def read_json(self):
         """Reads the json file and populates them in entry"""
-        logger.info(f"Reading {self.metadata_json_path}")
+        LOG.info(f"Reading {self.metadata_json_path}")
 
         # run the mapping from JSON, this will override any data in CIF
         entry = prepare_data_dictionary_from_json(self.metadata_json_path)
@@ -62,7 +65,8 @@ class Cif2Json:
         # parse UniProt xml
         xml_root = get_uniprot_xml(self.interim_entry["mappingAccession"])
 
-        logger.info(f"Parsing XML for {self.interim_entry['mappingAccession']}")
+        LOG.info(
+            f"Parsing XML for {self.interim_entry['mappingAccession']}")
         if xml_root:
             namespace = "{http://uniprot.org/uniprot}"
             # fetch accession related data
@@ -96,7 +100,8 @@ class Cif2Json:
     def transform(self):
         """Performs transformation on the fields"""
 
-        self.interim_entry["entryId"] = self.interim_entry["entryId"].strip("'")
+        self.interim_entry["entryId"] = self.interim_entry["entryId"].strip(
+            "'")
         self.interim_entry["experimentalMethod"] = self.interim_entry[
             "experimentalMethod"
         ].strip("'")
@@ -110,11 +115,11 @@ class Cif2Json:
             with open(self.output_index_json_path, "w+") as f:
                 json.dump(self.entry, f)
         except Exception as e:
-            logger.error("Error in writing to output JSON file!", e)
-            logger.debug(e)
+            LOG.error("Error in writing to output JSON file! (err:%s)", e)
+            LOG.debug(e)
             return 1
 
-        logger.info(f"Data written to {self.output_index_json_path}")
+        LOG.info(f"Data written to {self.output_index_json_path}")
 
         return 0
 
@@ -150,16 +155,17 @@ def run(cif_path: str, metadata_json_path: str, output_index_json_path: str):
     # if a directory is provided, convert all .cif files in it
     if os.path.isdir(cif_path):
         if os.path.isfile(output_index_json_path):
-            logger.error(
+            LOG.error(
                 f"{output_index_json_path} is a file, must provide a directory"
             )
             return 1
         if os.path.isfile(metadata_json_path):
-            logger.error(f"{metadata_json_path} is a file, must provide a directory")
+            LOG.error(
+                f"{metadata_json_path} is a file, must provide a directory")
             return 1
         # make the output dir
         os.makedirs(output_index_json_path, exist_ok=True)
-        logger.info(f"Created directory {output_index_json_path}")
+        LOG.info(f"Created directory {output_index_json_path}")
 
         with ProcessPoolExecutor(max_workers=multiprocessing.cpu_count() + 1) as p:
             for _, _, filenames in os.walk(cif_path):
@@ -179,7 +185,7 @@ def run(cif_path: str, metadata_json_path: str, output_index_json_path: str):
 
     else:
         if not os.path.isfile(cif_path):
-            logger.error("CIF file not found!")
+            LOG.error("CIF file not found!")
             return 1
 
         cif2json = Cif2Json(
