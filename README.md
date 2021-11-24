@@ -23,64 +23,11 @@ cd 3d-beacons-client
 #### Prepare the model data
 
 Every model needs a PDB/CIF file and a JSON file
-(containing metadata about how this model maps to a UniProt entry). 
+(containing metadata about how this model maps to a UniProt entry).
 Note that the related files must have the same name, e.g. `foo1.pdb` and `foo1.json`.
 
-The schema of the metadata JSON file is available on SwaggerHub: https://app.swaggerhub.com/apis/3dbeacons/3D-Beacons/1.2.0#/metadata
-```
-metadata:
-      type: object
-      properties:
-        mappingAccession:
-          type: string
-          description: 'Accession/identifier of the entity the model is mapped to'
-          example: 'P38398'
-        mappingAccessionType:
-         type: string
-         description: 'The name of the data provider the model is mapped to'
-         enum: [
-           'uniprot',
-           'pfam'
-           ]
-         example: 'uniprot'
-        start:
-          type: number
-          format: integer
-          description: 'The index of the first residue of the model according to the mapping'
-          example: 1
-        end:
-          type: number
-          format: integer
-          description: 'The index of the last residue of the model according to the mapping'
-          example: 103
-        modelCategory:
-          type: string
-          description: 'Category of the model'
-          enum: [
-                  'EXPERIMENTALLY DETERMINED',
-                  'TEMPLATE-BASED',
-                  'AB-INITIO',
-                  'CONFORMATIONAL ENSEMBLE',
-                  'DEEP-LEARNING'
-                ]
-          example: 'TEMPLATE-BASED'
-        modelType:
-          type: string
-          description: 'Monomeric or complex strutures'
-          enum: [
-            'single',
-            'complex'
-            ]
-          example: 'single'
-      required: [
-        mappingAccession,
-        mappingAccessionType,
-        start,
-        end,
-        modelCategory,
-        modelType
-        ]
-```
+The full schema for this JSON metadata is [available on SwaggerHub](https://app.swaggerhub.com/apis/3dbeacons/3D-Beacons/1.2.0#/metadata),
+but a typical use case is highlighted below.
 
 ```
 mkdir -p ./data/{pdb,cif,metadata,index}
@@ -109,7 +56,7 @@ data
     └── P38398_1jm7.1.A_1_103.pdb
 ```
 
-#### Setup local environment 
+#### Setup local environment
 
 Copy over the example file and update the values for `MONGO_PASSWORD` and `PROVIDER`. The `MONGO_PASSWORD` will be the password used for connecting to the MongoDB instance, which is included in the docker container (i.e. no need to install MongoDB separately). The `PROVIDER` is the name that will group all the models together, e.g. AlphaFold models have "AFDB" as provider, while SWISS-MODEL models have "SWISS-MODEL" as provider. This name will be used by the 3D-Beacons front-end, and any other data services using the 3D-Beacons Network to label your models.
 
@@ -133,9 +80,9 @@ You should now be able to access the API documentation by directing a web browse
 
 The following command will:
 
-* convert PDB files to CIF files
-* convert CIF and METADATA files to JSON index files
-* load JSON index files into the database (MongoDB)
+- convert PDB files to CIF files
+- convert CIF and METADATA files to JSON index files
+- load JSON index files into the database (MongoDB)
 
 ```
 docker-compose exec cli snakemake --cores=2
