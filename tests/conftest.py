@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+from typing import List
 
 import pymongo
 import pytest
@@ -9,7 +10,8 @@ import gemmi
 
 sys.path.append(Path(__file__).parent.parent.as_posix())
 
-from bio3dbeacons.cli.mongoload.mongoload import MongoLoad
+from bio3dbeacons.cli.mongoload.mongoload import MongoLoad  # NOQA
+from .testutils import TestExample  # NOQA
 
 MONGO_USERNAME = os.environ.get("MONGO_USERNAME")
 MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
@@ -66,3 +68,19 @@ def mongo_load(mongo_collection) -> MongoLoad:
     ml.collection = mongo_collection
 
     return ml
+
+
+@pytest.fixture(scope="function")
+def make_example():
+
+    examples = []
+
+    def _make_example(src_root: str, stems: List[str], copy_files: bool = True):
+        eg = TestExample(src_root=src_root, stems=stems, copy_files=copy_files)
+        examples.append(eg)
+        return eg
+
+    yield _make_example
+
+    for eg in examples:
+        eg.cleanup()

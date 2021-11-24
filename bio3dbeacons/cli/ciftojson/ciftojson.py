@@ -100,11 +100,11 @@ class Cif2Json:
     def transform(self):
         """Performs transformation on the fields"""
 
-        self.interim_entry["entryId"] = self.interim_entry["entryId"].strip(
-            "'")
-        self.interim_entry["experimentalMethod"] = self.interim_entry[
-            "experimentalMethod"
-        ].strip("'")
+        for field in ["entryId", "experimentalMethod"]:
+            if field not in self.interim_entry:
+                continue
+            if self.interim_entry[field] is not None:
+                self.interim_entry[field] = self.interim_entry[field].strip("'")
 
         # add unique ID
         self.interim_entry["_id"] = self.interim_entry["entryId"]
