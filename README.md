@@ -16,19 +16,76 @@ The 3D-Beacons Client has been made available as a series of docker containers, 
 #### Download the code
 
 ```
-$ git clone git@github.com:3D-Beacons/3d-beacons-client.git
-$ cd 3d-beacons-client
+git clone https://github.com/3D-Beacons/3d-beacons-client.git
+cd 3d-beacons-client
 ```
 
 #### Prepare the model data
 
 Every model needs a PDB/CIF file and a JSON file
-(containing metadata about how this model maps to a UniProt entry).
+(containing metadata about how this model maps to a UniProt entry). 
+Note that the related files must have the same name, e.g. `foo1.pdb` and `foo1.json`.
+
+The schema of the metadata JSON file is available on SwaggerHub: https://app.swaggerhub.com/apis/3dbeacons/3D-Beacons/1.2.0#/metadata
+```
+metadata:
+      type: object
+      properties:
+        mappingAccession:
+          type: string
+          description: 'Accession/identifier of the entity the model is mapped to'
+          example: 'P38398'
+        mappingAccessionType:
+         type: string
+         description: 'The name of the data provider the model is mapped to'
+         enum: [
+           'uniprot',
+           'pfam'
+           ]
+         example: 'uniprot'
+        start:
+          type: number
+          format: integer
+          description: 'The index of the first residue of the model according to the mapping'
+          example: 1
+        end:
+          type: number
+          format: integer
+          description: 'The index of the last residue of the model according to the mapping'
+          example: 103
+        modelCategory:
+          type: string
+          description: 'Category of the model'
+          enum: [
+                  'EXPERIMENTALLY DETERMINED',
+                  'TEMPLATE-BASED',
+                  'AB-INITIO',
+                  'CONFORMATIONAL ENSEMBLE',
+                  'DEEP-LEARNING'
+                ]
+          example: 'TEMPLATE-BASED'
+        modelType:
+          type: string
+          description: 'Monomeric or complex strutures'
+          enum: [
+            'single',
+            'complex'
+            ]
+          example: 'single'
+      required: [
+        mappingAccession,
+        mappingAccessionType,
+        start,
+        end,
+        modelCategory,
+        modelType
+        ]
+```
 
 ```
-$ mkdir -p ./data/{pdb,cif,metadata,index}
-$ cp P38398_1jm7.1.A_1_103.pdb ./data/pdb/
-$ cat P38398_1jm7.1.A_1_103.json
+mkdir -p ./data/{pdb,cif,metadata,index}
+cp P38398_1jm7.1.A_1_103.pdb ./data/pdb/
+cat P38398_1jm7.1.A_1_103.json
 {
   "mappingAccession": "P38398",
   "mappingAccessionType": "uniprot",
@@ -37,7 +94,7 @@ $ cat P38398_1jm7.1.A_1_103.json
   "modelCategory": "TEMPLATE-BASED",
   "modelType": "single"
 }
-$ cp P38398_1jm7.1.A_1_103.json ./data/metadata/
+cp P38398_1jm7.1.A_1_103.json ./data/metadata/
 ```
 
 The `./data` directory should now look something like this (the model file has been given a more realistic name):
@@ -54,7 +111,7 @@ data
 
 #### Setup local environment 
 
-Copy over the example file and update the values for `MONGO_PASSWORD` and `PROVIDER`.
+Copy over the example file and update the values for `MONGO_PASSWORD` and `PROVIDER`. The `MONGO_PASSWORD` will be the password used for connecting to the MongoDB instance, which is included in the docker container (i.e. no need to install MongoDB separately). The `PROVIDER` is the name that will group all the models together, e.g. AlphaFold models have "AFDB" as provider, while SWISS-MODEL models have "SWISS-MODEL" as provider. This name will be used by the 3D-Beacons front-end, and any other data services using the 3D-Beacons Network to label your models.
 
 ```
 cp .env.example .env
@@ -81,7 +138,7 @@ The following command will:
 * load JSON index files into the database (MongoDB)
 
 ```
-$ docker-compose exec cli snakemake --cores=2
+docker-compose exec cli snakemake --cores=2
 ```
 
 The `./data` directory should now look like:
@@ -104,7 +161,7 @@ data
 We can now search for this model via the API:
 
 ```
-$ curl -X 'GET' \
+curl -X 'GET' \
   'http://localhost:8000/uniprot/summary/P38398.json' \
   -H 'accept: application/json'
 
@@ -128,14 +185,14 @@ Running steps inside docker (recommended)
 
 ```
 # create a shortcut to run the CLI tool inside docker container
-$ alias 3dbeacons-cli-docker="docker-compose exec cli 3dbeacons-cli"
+alias 3dbeacons-cli-docker="docker-compose exec cli 3dbeacons-cli"
 
 # convert all PDB files to CIF files
-$ 3dbeacons-cli-docker convert-pdb2cif -i ./data/pdb/ -o ./data/cif/
+3dbeacons-cli-docker convert-pdb2cif -i ./data/pdb/ -o ./data/cif/
 
 # prepare metadata for every CIF file
-$ ls ./data/cif/P38398_1jm7.1.A_1_103.cif          # this file was generated in the step above
-$ cat ./data/metadata/P38398_1jm7.1.A_1_103.json   # you need to generate this file yourself
+ls ./data/cif/P38398_1jm7.1.A_1_103.cif          # this file was generated in the step above
+cat ./data/metadata/P38398_1jm7.1.A_1_103.json   # you need to generate this file yourself
 {
     "mappingAccession": "P38398",
     "mappingAccessionType": "uniprot",
@@ -146,18 +203,18 @@ $ cat ./data/metadata/P38398_1jm7.1.A_1_103.json   # you need to generate this f
 }
 
 # create index JSON from CIF
-$ 3dbeacons-cli-docker convert-cif2index \
+3dbeacons-cli-docker convert-cif2index \
   -ic ./data/cif/ -im ./data/metadata/ \
   -o ./data/index/
 
 # load JSON to local database
 # IMPORTANT: notice that the host from inside docker is 'mongodb'
-$ 3dbeacons-cli-docker load-index \
+3dbeacons-cli-docker load-index \
   -i ./data/index/ \
   -h mongodb://MONGO_USER:MONGO_PASSWORD@mongodb:27017
 
 # validate JSON
-$ 3dbeacons-cli-docker validate-index \
+3dbeacons-cli-docker validate-index \
   -i ./data/index/
 ```
 
@@ -168,22 +225,22 @@ Running CLI commands outside of docker
 
 ```
 # create a virtual environment
-$ python3 -m venv venv
+python3 -m venv venv
 
 # use the virtual environment
-$ . venv/bin/activate
+. venv/bin/activate
 
 # make the all the installation libraries are up to date
-$ pip install --upgrade pip setuptools wheel
+pip install --upgrade pip setuptools wheel
 
 # install the dependencies for this project
-$ pip install -r bio3dbeacons/cli/requirements.txt
+pip install -r bio3dbeacons/cli/requirements.txt
 
 # install the CLI script
-$ pip install -e .
+pip install -e .
 
 # run the CLI tool
-$ 3dbeacons-cli
+3dbeacons-cli
 Usage: 3dbeacons-cli [OPTIONS] COMMAND [ARGS]...
 
   CLI application for 3D Beacons utilities
@@ -294,7 +351,7 @@ docker-compose up --detach --build cli
 ##### Start the necessary services
 
 ```
-$ docker compose up --build
+docker compose up --build
 ```
 
 The above docker compose command will start API, Mongo DB and NGINX services defined in `docker-compose.yml` file. Each of these services uses environment variables provided in `docker-compose.yml` for its configuration.
@@ -303,7 +360,7 @@ Once the docker compose command is executed and services started, API docs can b
 Also Mongo DB can be accessed using [Mongo Shell](https://docs.mongodb.com/mongodb-shell/#mongodb-binary-bin.mongosh) using the below command,
 
 ```
-$ mongosh mongodb://<MONGO_USERNAME>:<MONGO_PASSWORD>@localhost:27017
+mongosh mongodb://<MONGO_USERNAME>:<MONGO_PASSWORD>@localhost:27017
 ```
 
 **NOTE**: If you check the NGINX service in `docker-compose.yml`, `/var/www/static` directory in NGINX is mounted with `data` directory in the project root. This is where the model files need to be kept for serving via file server. API is configured to expect CIF files to be kept in `data/cif` and PDB files to be in `data/pdb` directories. If another directory is used (which obvioulsly in most cases), replace `./data` in `docker-compose.yml` with the proper path where your model files are present. But make sure you still keep them in `cif` and `pdb` subdirectories accordingly.
@@ -314,13 +371,13 @@ The docker compose command will start an API service inside the docker container
 
 ```
 # Create a new Python (3.6+) virtual environment
-$ python3 -m venv venv
+python3 -m venv venv
 
 # activate the environment
-$ source venv/bin/activate
+source venv/bin/activate
 
 # Install the dependencies
-$ pip install -r bio3dbeacons/api/requirements.txt
+pip install -r bio3dbeacons/api/requirements.txt
 ```
 
 The above commands will create a new Python virtual environment and install the dependencies required to run the API.
@@ -328,8 +385,8 @@ The above commands will create a new Python virtual environment and install the 
 Alternatively, environment can be managed very easily using [Anaconda](https://docs.anaconda.com/) as well. Use below commands to manage via conda.
 
 ```
-$ conda create -n beacons_env -c conda-forge python=3.7 gemmi
-$ conda activate beacons_env
+conda create -n beacons_env -c conda-forge python=3.7 gemmi
+conda activate beacons_env
 ```
 
 The above commands will create a new conda environment `beacons_env` with Python version 3.7 along with the Gemmi program which is later used by CLI.
@@ -360,29 +417,29 @@ Make sure you have git, cmake, C++ compiler installed
 For eg. on Ubuntu, `sudo apt install git cmake make g++`
 
 ```
-$ git clone https://github.com/project-gemmi/gemmi.git
-$ cd gemmi
-$ cmake .
-$ make
-$ export GEMMI_BIN=$PWD/gemmi/gemmi
+git clone https://github.com/project-gemmi/gemmi.git
+cd gemmi
+cmake .
+make
+export GEMMI_BIN=$PWD/gemmi/gemmi
 ```
 
 ```
 # Create a new Python (3.6+) virtual environment
-$ python3 -m venv venv
+python3 -m venv venv
 ```
 
 If the environment is already created as part of API development, skip the previous step.
 
 ```
 # activate the environment
-$ source venv/bin/activate
+source venv/bin/activate
 
 # Install the dependencies
-$ pip install -r bio3dbeacons/cli/requirements.txt
+pip install -r bio3dbeacons/cli/requirements.txt
 
 # Get the help menu of the CLI
-$ python3 -m bio3dbeacons.cli --help
+python3 -m bio3dbeacons.cli --help
 ```
 
 Use the help menu of various commands to see their usage.
@@ -405,29 +462,29 @@ The CLI can also be distributed as a Python pip package, install and use it usin
 
 ```
 # activate the environment
-$ source venv/bin/activate
+source venv/bin/activate
 
 # Update pip, wheel and setuptools
-$ pip install --upgrade pip setuptools wheel
+pip install --upgrade pip setuptools wheel
 
 # Install the dependencies
-$ pip install .
+pip install .
 
 # Get the help menu of the CLI
-$ bio3dbeacons_cli --help
+bio3dbeacons_cli --help
 ```
 
 To further make it more convenient for development and distribution, there is a docker image provided as well. Use below steps to build and run the CLI application.
 
 ```
 # build the docker image and tag it
-$ docker build -t bio3dbeacons .
+docker build -t bio3dbeacons .
 
 # Get the help menu of the CLI
-$ docker run -t bio3dbeacons bio3dbeacons_cli --help
+docker run -t bio3dbeacons bio3dbeacons_cli --help
 
 # Run PDB to CIF conversion using the docker image
-$ docker run -v $PWD/data:/data -t bio3dbeacons bio3dbeacons_cli convert_pdb_to_cif -i /data/pdb -o /data/cif
+docker run -v $PWD/data:/data -t bio3dbeacons bio3dbeacons_cli convert_pdb_to_cif -i /data/pdb -o /data/cif
 ```
 
 The above docker run command for PDB to CIF conversion assumes you have a `data/pdb` directory in current working directory with one or more PDB files. The command will convert the PDB files in `data/pdb` to `data/cif` directory.
@@ -446,7 +503,7 @@ Please make sure to keep the docker compose services up as the tests will be run
 
 ```
 # set the env variables from 'Develop API locally' section
-$ make test
+make test
 ```
 
 ### Workflow automation using pre-commit hooks
@@ -454,5 +511,5 @@ $ make test
 Code formatting and PEP8 compliance are automated using [pre-commit](https://pre-commit.com/) hooks. This is configured in `.pre-commit-config.yaml` which will run these hooks before `commit` ting anything to the repository. Run below command to run all the pre-commit hooks.
 
 ```
-$ make pre-commit
+make pre-commit
 ```
