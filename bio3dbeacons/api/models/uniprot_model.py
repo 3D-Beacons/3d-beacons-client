@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from typing import List, Optional
+from datetime import date
 
 from pydantic import BaseModel, Field
 
@@ -37,11 +38,7 @@ class ResultStructuresSummary(BaseModel):
     model_category: str = Field(..., description=MODEL_CAT_DESC)
     model_url: str = Field(..., description=MODEL_URL_DESC)
     provider: str = Field(..., description=MODEL_PROVIDER_DESC)
-    created: str = Field(
-        ...,
-        description=MODEL_CREATED_DESC,
-        regex="^[1-2][9|0][0-9]{2}-[0-1][0-9]-[0-3][0-9]$",
-    )
+    created: date = Field(..., description=MODEL_CREATED_DESC)
     sequence_identity: float = Field(
         ...,
         description=SEQ_IDENTITY_DESC,
