@@ -1,5 +1,6 @@
 import logging
 import os
+from urllib.parse import quote
 
 import motor.motor_asyncio
 from dotenv import load_dotenv
@@ -11,7 +12,7 @@ LOG_LEVEL = os.environ.get("LOG_LEVEL")
 MONGO_USERNAME = os.environ.get("MONGO_USERNAME")
 MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
 MONGO_DB_HOST = os.environ.get("MONGO_DB_HOST")
-MONGO_DB_URL = f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_DB_HOST}"
+MONGO_DB_URL = f"mongodb://{quote(MONGO_USERNAME, safe='')}:{quote(MONGO_PASSWORD, safe='')}@{MONGO_DB_HOST}"
 ASSETS_URL = os.environ.get("ASSETS_URL")
 
 logger = logging.getLogger("3dbeacons-client")
