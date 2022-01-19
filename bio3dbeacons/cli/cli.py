@@ -1,20 +1,22 @@
-from bio3dbeacons.cli.validatejson import validatejson
-from bio3dbeacons.cli.pdbtocif import pdbtocif
-from bio3dbeacons.cli.mongoload import mongoload
-from bio3dbeacons.cli.ciftojson import ciftojson
-from exitstatus import ExitStatus
-import click
+from urllib.parse import quote
 
+import click
+from exitstatus import ExitStatus
 from prettyconf import config
-from prettyconf.loaders import Environment, EnvFile
+from prettyconf.loaders import EnvFile, Environment
+
+from bio3dbeacons.cli.ciftojson import ciftojson
+from bio3dbeacons.cli.mongoload import mongoload
+from bio3dbeacons.cli.pdbtocif import pdbtocif
+from bio3dbeacons.cli.validatejson import validatejson
 
 config.loaders = [
     Environment(var_format=str.upper),
-    EnvFile(filename='.env', var_format=str.upper),
+    EnvFile(filename=".env", var_format=str.upper),
 ]
 
 
-class Config():
+class Config:
 
     LOG_LEVEL = config("LOG_LEVEL", default="INFO")
     MONGO_USERNAME = config("MONGO_USERNAME")
@@ -24,8 +26,11 @@ class Config():
 
     @property
     def MONGO_DB_URL(self):
-        return (f"mongodb://{self.MONGO_USERNAME}:{self.MONGO_PASSWORD}"
-                f"@{self.MONGO_DB_HOST}")
+        return (
+            f"mongodb://{quote(self.MONGO_USERNAME, safe='')}:"
+            f"{quote(self.MONGO_PASSWORD, safe='')}"
+            f"@{self.MONGO_DB_HOST}"
+        )
 
 
 @click.group("CLI", help="CLI application for 3D Beacons utilities")
