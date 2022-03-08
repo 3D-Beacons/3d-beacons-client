@@ -1,7 +1,10 @@
 # Dockerfile
 
 # pull the official docker image
-FROM python:3.7-slim
+FROM python:3.8-slim
+
+# install curl (for healthcheck)
+RUN apt-get update && apt-get -y install curl
 
 # set work directory
 WORKDIR /app
