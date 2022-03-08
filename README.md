@@ -84,8 +84,8 @@ metadata:
 
 ```
 mkdir -p ./data/{pdb,cif,metadata,index}
-cp P38398_1jm7.1.A_1_103.pdb ./data/pdb/
-cat P38398_1jm7.1.A_1_103.json
+cp tests/data/pdb/P38398_1jm7.1.A_1_103.pdb ./data/pdb/
+cat tests/data/metadata/P38398_1jm7.1.A_1_103.json
 {
   "mappingAccession": "P38398",
   "mappingAccessionType": "uniprot",
@@ -94,7 +94,7 @@ cat P38398_1jm7.1.A_1_103.json
   "modelCategory": "TEMPLATE-BASED",
   "modelType": "single"
 }
-cp P38398_1jm7.1.A_1_103.json ./data/metadata/
+cp tests/data/metadata/P38398_1jm7.1.A_1_103.json ./data/metadata/
 ```
 
 The `./data` directory should now look something like this (the model file has been given a more realistic name):
