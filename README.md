@@ -127,7 +127,9 @@ Note: the following may take a few minutes the first time it is run
 docker-compose up -d
 ```
 
-You should now be able to access the API documentation by directing a web browser at http://localhost:8000/docs
+You should now be able to access the API documentation by directing a web browser at port 80 on your local machine:
+
+http://localhost/docs
 
 #### Process the model PDB files
 
@@ -162,10 +164,28 @@ We can now search for this model via the API:
 
 ```
 curl -X 'GET' \
-  'http://localhost:8000/uniprot/summary/P38398.json' \
+  'http://localhost/uniprot/summary/P38398.json' \
   -H 'accept: application/json'
 
-{"uniprot_entry":{"ac":"P38398","id":"BRCA1_HUMAN"},"structures":[{"model_identifier":"P38398_1jm7.1.A_1_103","model_category":"TEMPLATE-BASED","model_url":"localhost/static/cif/P38398_1jm7.1.A_1_103.cif","provider":"GENOME3D","uniprot_start":1,"uniprot_end":103,"model_format":"MMCIF"}]}
+{
+  "uniprot_entry": {"ac":"P38398","id":"BRCA1_HUMAN"},
+  "structures":[{
+    "model_identifier":"P38398_1jm7.1.A_1_103",
+    "model_category":"TEMPLATE-BASED",
+    "model_url":"/static/cif/P38398_1jm7.1.A_1_103.cif",
+    "provider":"GENOME3D",
+    "uniprot_start":1,
+    "uniprot_end":103,
+    "model_format":"MMCIF"
+  }]
+}
+```
+
+And retrieve the mmCIF file via the `model_url` in that response:
+
+```
+curl -X 'GET' \
+  'http://localhost/static/cif/P38398_1jm7.1.A_1_103.cif'
 ```
 
 Congratulations. You are now ready to connect your API to the 3D Beacons Hub!
@@ -334,15 +354,17 @@ For local development, please follow the below instructions.
 Make sure the environment has been set up correctly (`.env`)
 
 ```
-MONGO_USERNAME=<username> # username for MongoDB
-MONGO_PASSWORD=<password> # password for MongoDB
-PROVIDER=<provider> # Same as set in earlier section
-MONGO_DB_HOST=localhost:27017 # Mongo DB docker compose service
-MODEL_FORMAT=<format> # Same as set in earlier section
-ASSETS_URL=localhost/static # NGINX docker compose service
+MONGO_USERNAME=<username>     # username for MongoDB
+MONGO_PASSWORD=<password>     # password for MongoDB
+PROVIDER=<provider>           # Same as set in earlier section
+MONGO_DB_HOST=mongodb:27017   # Mongo DB docker compose service
+MODEL_FORMAT=<format>         # Same as set in earlier section
+ASSETS_URL=localhost/static   # NGINX docker compose service
 ```
 
-Note: if you make any changes to this file _after_ the docker containers have been built, then you will need to rebuild the `cli` containers in order to be able to see those changes within `docker-compose`:
+Notes:
+
+- if you make any changes to this file _after_ the docker containers have been built, then you will need to rebuild the `cli` containers in order to be able to see those changes within `docker-compose`:
 
 ```
 docker-compose up --detach --build cli
@@ -512,4 +534,47 @@ Code formatting and PEP8 compliance are automated using [pre-commit](https://pre
 
 ```
 make pre-commit
+```
+
+## Troubleshooting
+
+Check the original error message to try and find where the actual error originated.
+
+#### Trouble connecting to mongo?
+
+Make sure `docker-compose` is running and you can connect to the mongo database on the command line
+
+```
+mongo -u <mongouser> -p <mongopasswd> localhost:27017
+```
+
+If you cannot connect at all, then double-check that docker-compose is running and look at mongo logs:
+
+```
+docker-compose logs mongodb
+```
+
+If you connect to mongo, but get thrown out due to permission issues then there may have been an issue when setting the original username / password. If you do not already have important data in the mongo database, then one way round this is to remove the shared volume being used for the mongo database and rebuild.
+
+```
+docker-compose down
+docker volume ls | grep mongo
+docker volume rm 3d-beacons-client_mongodb-data
+docker-compose up -d --build
+```
+
+#### Trouble with 'gemmi'
+
+If you see the following error message:
+
+```
+No such file or directory: 'gemmi'
+```
+
+...then you need to install `gemmi` and make sure it is available on your current `PATH`:
+
+```
+PATH=$PATH:./gemmi/
+which gemmi
+./gemmi/gemmi
 ```
