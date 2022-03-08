@@ -58,9 +58,7 @@ def cif_doc(cif_file) -> gemmi.cif.Document:
 
 @pytest.fixture(scope="session")
 def mongo_db():
-    test_db_name = f"test-{random.randint(0, 10000):06}"
-    LOG.info(f"Creating test mongo db: {test_db_name}")
-    yield pymongo.MongoClient(MONGO_DB_URL)[test_db_name]
+    yield pymongo.MongoClient(MONGO_DB_URL).models
 
 
 @pytest.fixture(scope="session")
