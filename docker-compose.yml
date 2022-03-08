@@ -19,9 +19,9 @@ services:
       retries: 3
     environment:
       - PROVIDER=$PROVIDER
-      - MONGO_USERNAME=$MONGO_USERNAME
-      - MONGO_PASSWORD=$MONGO_PASSWORD
-      - MONGO_DB_HOST=$MONGO_DB_HOST
+      - MONGO_USERNAME=${MONGO_USERNAME:?}
+      - MONGO_PASSWORD=${MONGO_PASSWORD:?}
+      - MONGO_DB_HOST=mongodb:27017
       - ASSETS_URL=$ASSETS_URL
 
   cli:
@@ -35,12 +35,13 @@ services:
   mongodb:
     image: mongo:latest
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
-      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:?}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:?}
     ports:
       - 27017:27017
     volumes:
       - mongodb-data:/data/db
+      - mongodb-config:/data/configdb
 
   nginx-proxy:
     build: docker/nginx
@@ -67,3 +68,4 @@ services:
 
 volumes:
   mongodb-data:
+  mongodb-config:

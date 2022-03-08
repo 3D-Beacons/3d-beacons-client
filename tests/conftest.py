@@ -1,6 +1,9 @@
-import os
+import logging
+import random
 import sys
 from pathlib import Path
+
+from prettyconf import config
 
 import pymongo
 import pytest
@@ -11,10 +14,13 @@ sys.path.append(Path(__file__).parent.parent.as_posix())
 
 from bio3dbeacons.cli.mongoload.mongoload import MongoLoad
 
-MONGO_USERNAME = os.environ.get("MONGO_USERNAME")
-MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
-MONGO_DB_HOST = os.environ.get("MONGO_DB_HOST")
+MONGO_USERNAME = config("MONGO_USERNAME")
+MONGO_PASSWORD = config("MONGO_PASSWORD")
+MONGO_DB_HOST = config("MONGO_DB_HOST")
 MONGO_DB_URL = f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_DB_HOST}"
+
+
+LOG = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session")
@@ -52,7 +58,7 @@ def cif_doc(cif_file) -> gemmi.cif.Document:
 
 @pytest.fixture(scope="session")
 def mongo_db():
-    return pymongo.MongoClient(MONGO_DB_URL).models
+    yield pymongo.MongoClient(MONGO_DB_URL).models
 
 
 @pytest.fixture(scope="session")
