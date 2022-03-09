@@ -8,7 +8,7 @@ from starlette.responses import HTMLResponse, JSONResponse
 
 from bio3dbeacons.api import SingletonMongoDB
 from bio3dbeacons.api.constants import UNIPROT_QUAL_DESC, UNIPROT_RANGE_DESC
-from bio3dbeacons.api.models.uniprot_model import ResultSummary
+from bio3dbeacons.api.models.uniprot_model import UniprotKeyed
 from bio3dbeacons.api.utils import get_model_asset_url
 
 app = FastAPI()
@@ -19,7 +19,7 @@ app = FastAPI()
     status_code=status.HTTP_200_OK,
     summary="Get summary details for a UniProt residue range",
     description="Get all models for the UniProt residue range.",
-    response_model=ResultSummary,
+    response_model=UniprotKeyed,
     response_model_exclude_unset=True,
 )
 async def get_uniprot_summary_api(
