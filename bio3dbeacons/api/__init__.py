@@ -15,7 +15,7 @@ MONGO_DB_HOST = os.environ.get("MONGO_DB_HOST")
 MONGO_DB_URL = f"mongodb://{quote(MONGO_USERNAME, safe='')}:{quote(MONGO_PASSWORD, safe='')}@{MONGO_DB_HOST}"
 ASSETS_URL = os.environ.get("ASSETS_URL")
 
-logger = logging.getLogger("3dbeacons-client")
+logger = logging.getLogger()
 
 if LOG_LEVEL:
     logger.setLevel(LOG_LEVEL)
