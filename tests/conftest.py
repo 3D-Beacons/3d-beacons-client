@@ -1,5 +1,4 @@
 import logging
-import random
 import sys
 from pathlib import Path
 
@@ -12,7 +11,7 @@ import gemmi
 
 sys.path.append(Path(__file__).parent.parent.as_posix())
 
-from bio3dbeacons.cli.mongoload.mongoload import MongoLoad
+from bio3dbeacons.cli.mongoload.mongoload import MongoLoad  # noqa
 
 MONGO_USERNAME = config("MONGO_USERNAME")
 MONGO_PASSWORD = config("MONGO_PASSWORD")
