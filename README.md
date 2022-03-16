@@ -285,7 +285,7 @@ All the index JSON documents must be compliant with the schema provided in `reso
 
 ### RESTful API
 
-The client also provides a RESTful API to expose the model metadata to users as per the OpenAPI 3 specifications hosted in [SwaggerHub](https://app.swaggerhub.com/apis/3dbeacons/3D-Beacons/1.0.0). This is built on [FastAPI](https://fastapi.tiangolo.com/) web framework based on Python 3.6+ standards.
+The client also provides a RESTful API to expose the model metadata to users as per the OpenAPI 3 specifications hosted in [Apary](https://3dbeacons.docs.apiary.io/#). This is built on [FastAPI](https://fastapi.tiangolo.com/) web framework based on Python 3.6+ standards.
 
 ### File server
 
