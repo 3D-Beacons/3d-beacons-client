@@ -28,7 +28,7 @@ Note that the related files must have the same name, e.g. `foo1.pdb` and `foo1.j
 
 The schema of the metadata JSON file is available on Apiary:
 
-[https://3dbeacons.docs.apiary.io/#](https://3dbeacons.docs.apiary.io/#)
+[https://3dbeacons.docs.apiary.io/#reference/0/metadataqualifierjson/get](https://3dbeacons.docs.apiary.io/#reference/0/metadataqualifierjson/get)
 
 ```
 mkdir -p ./data/{pdb,cif,metadata,index}
