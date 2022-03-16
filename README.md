@@ -26,9 +26,9 @@ Every model needs a PDB/CIF file and a JSON file
 (containing metadata about how this model maps to a UniProt entry).
 Note that the related files must have the same name, e.g. `foo1.pdb` and `foo1.json`.
 
-The schema of the metadata JSON file is available on SwaggerHub:
+The schema of the metadata JSON file is available on Apiary:
 
-https://app.swaggerhub.com/apis/3dbeacons/3D-Beacons/1.3.0#/metadata
+[https://3dbeacons.docs.apiary.io/#](https://3dbeacons.docs.apiary.io/#)
 
 ```
 mkdir -p ./data/{pdb,cif,metadata,index}
