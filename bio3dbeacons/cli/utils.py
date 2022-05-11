@@ -10,6 +10,39 @@ from bio3dbeacons.config.config import get_config, get_config_keys
 LOG = logging.getLogger(__name__)
 
 
+def get_avg_plddt_from_pdb(pdb_path) -> float:
+    """Returns the average pLDDT score from PDB file (from temp factor)
+
+    Args:
+        pdb_path: Path to PDB file
+
+    """
+
+    # ATOM      1  N   GLU A   1       0.599  -0.769  -0.906  1.00  6.85           N
+
+    plddt_total = 0
+    residue_count = 0
+    current_res_seq_num = None
+    with open(f"{pdb_path}", "r") as fh:
+        for line in fh:
+            if not line.startswith("ATOM"):
+                continue
+            res_seq_num = int(line[22:26].strip())
+            temperature_factor = float(line[60:66].strip())
+
+            if current_res_seq_num != res_seq_num:
+                current_res_seq_num = res_seq_num
+                plddt_total += temperature_factor
+                residue_count += 1
+
+    avg_plddt = "{:.2f}".format(plddt_total / residue_count)
+
+    LOG.info(f"residues: {residue_count}")
+    LOG.info(f"avg_plddt: {avg_plddt}")
+
+    return avg_plddt
+
+
 def prepare_data_dictionary(cif_block: Any, config_section: str) -> Dict:
     """Returns a Python object from a CIF block (read by GEMMI) from a config
 
