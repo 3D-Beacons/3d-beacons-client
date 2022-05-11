@@ -1,8 +1,8 @@
-import filecmp
 import os
 import tempfile
 
 from bio3dbeacons.cli.pdbtocif import pdbtocif
+from .utils import compare_files
 
 
 class TestPDBToCif:
@@ -11,7 +11,7 @@ class TestPDBToCif:
             s = pdbtocif.run(pdb_file, temp_cif.name)
 
             # test if generated file is same as the sample file
-            assert filecmp.cmp(temp_cif.name, cif_file)
+            assert compare_files(got=temp_cif.name, expected=cif_file)
 
         # test if successful
         assert s == 0
