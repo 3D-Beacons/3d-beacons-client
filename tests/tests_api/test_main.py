@@ -18,10 +18,10 @@ def test_health_check_api():
 
 
 @pytest.mark.asyncio
-async def test_uniprot_summary_api(mongo_collection, metatdata_file):
+async def test_uniprot_summary_api(mongo_collection, metadata_file):
 
     # add some sample entries
-    data = json.load(open(metatdata_file))
+    data = json.load(open(metadata_file))
     data["mappingId"] = "someId"
     data["entryId"] = "someEntryId"
     mongo_collection.bulk_write(

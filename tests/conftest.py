@@ -45,7 +45,7 @@ def pdb_file(data_dir) -> str:
 
 
 @pytest.fixture(scope="session")
-def metatdata_file(data_dir) -> str:
+def metadata_file(data_dir) -> str:
     f = data_dir / "metadata" / "P38398_1jm7.1.A_1_103.json"
     return f.as_posix()
 
