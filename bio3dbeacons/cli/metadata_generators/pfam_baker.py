@@ -5,10 +5,11 @@ from typing import Tuple
 from pathlib import Path
 import re
 
-from prettyconf import config
+# from prettyconf import config
 
 from bio3dbeacons.cli.models import ModelMetadata
 from bio3dbeacons.cli.sparql import UniprotSparql
+from bio3dbeacons.cli.utils import get_avg_plddt_from_pdb
 
 LOG = logging.getLogger(__name__)
 
@@ -34,17 +35,20 @@ def run(pdb_path: str, a3m_path: str, metadata_path: str, model_category: str):
 
     def process_pdb_file(pdb_file, rel_path):
         stem = pdb_file.stem
-        a3m_file = a3m_path / rel_path / (stem + '.a3m')
-        metadata_file = metadata_path / rel_path / (stem + '.json')
+        full_pdb_file = pdb_path / rel_path / pdb_file
+        a3m_file = a3m_path / rel_path / (stem + ".a3m")
+        metadata_file = metadata_path / rel_path / (stem + ".json")
         seq_header = get_first_seqhdr_from_a3m(a3m_file)
         uniprot_acc, start, end = seq_header.get_uniprot_start_end()
         md = ModelMetadata(
             mappingAccession=uniprot_acc,
-            mappingAccessionType='uniprot',
+            mappingAccessionType="uniprot",
             start=start,
             end=end,
             modelCategory=model_category,
-            modelType='single',
+            modelType="single",
+            confidenceType="pLDDT",
+            confidenceAvgLocalScore=get_avg_plddt_from_pdb(full_pdb_file),
         )
         write_metadata_to_file(metadata_file, md)
 
@@ -58,10 +62,12 @@ def run(pdb_path: str, a3m_path: str, metadata_path: str, model_category: str):
                 process_pdb_file(Path(pdb_file), rel_path)
 
     elif pdb_path.is_file() and a3m_path.is_file() and metadata_path.is_file():
-        process_pdb_file(pdb_path, '.')
+        process_pdb_file(pdb_path, ".")
     else:
-        msg = (f"expected either all dirs or all files (not a mixture): "
-               f"{pdb_path}, {a3m_path}, {metadata_path}")
+        msg = (
+            f"expected either all dirs or all files (not a mixture): "
+            f"{pdb_path}, {a3m_path}, {metadata_path}"
+        )
         raise Exception(msg)
 
     return 0
@@ -69,10 +75,11 @@ def run(pdb_path: str, a3m_path: str, metadata_path: str, model_category: str):
 
 class SeqHeader:
 
-    WITH_SEGDATA = re.compile(r'^(?P<seq_id>.*)/(?P<start>[0-9]+)-(?P<end>[0-9]+)$')
-    WITH_VERSION = re.compile(r'^(?P<seq_id>.*)\.(?P<version>[0-9]+)$')
+    WITH_SEGDATA = re.compile(r"^(?P<seq_id>.*)/(?P<start>[0-9]+)-(?P<end>[0-9]+)$")
+    WITH_VERSION = re.compile(r"^(?P<seq_id>.*)\.(?P<version>[0-9]+)$")
     UNIPROT_ACC = re.compile(
-        r'^[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}$')
+        r"^[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}$"
+    )
 
     def __init__(self, hdr: str):
         self.hdr = hdr
@@ -85,14 +92,14 @@ class SeqHeader:
 
         seg_match = self.WITH_SEGDATA.match(hdr)
         if seg_match:
-            seq_id = seg_match.group('seq_id')
-            start = seg_match.group('start')
-            end = seg_match.group('end')
+            seq_id = seg_match.group("seq_id")
+            start = seg_match.group("start")
+            end = seg_match.group("end")
 
         ver_match = self.WITH_VERSION.match(seq_id)
         if ver_match:
-            seq_id = ver_match.group('seq_id')
-            version = ver_match.group('version')
+            seq_id = ver_match.group("seq_id")
+            version = ver_match.group("version")
 
         if self.UNIPROT_ACC.match(seq_id):
             uniprot_acc = seq_id
@@ -114,14 +121,14 @@ class SeqHeader:
 
 
 def get_first_seqhdr_from_a3m(a3m_path: Path) -> SeqHeader:
-    with a3m_path.open('rt') as fp:
+    with a3m_path.open("rt") as fp:
         for line in fp:
-            if line.startswith('>'):
+            if line.startswith(">"):
                 return SeqHeader(line[1:].strip())
 
 
 def write_metadata_to_file(metadata_path: Path, md: ModelMetadata) -> None:
-    with metadata_path.open('wt') as fp:
+    with metadata_path.open("wt") as fp:
         data = md.dict()
         LOG.info("data: %s", data)
         json.dump(data, fp)

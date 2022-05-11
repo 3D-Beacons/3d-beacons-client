@@ -4,5 +4,7 @@
     "start": 1,
     "end": 103,
     "modelCategory": "TEMPLATE-BASED",
-    "modelType": "single"
+    "modelType": "single",
+    "confidenceType": "pLDDT",
+    "confidenceAvgLocalScore": 98.76
 }

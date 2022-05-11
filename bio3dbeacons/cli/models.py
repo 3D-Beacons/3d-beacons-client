@@ -1,5 +1,6 @@
 from enum import Enum
 
+from typing import Optional
 from bson import ObjectId
 from pydantic import BaseModel, Field
 
@@ -34,10 +35,14 @@ class PyObjectId(ObjectId):  # pragma: no cover
 
 
 class ModelMetadata(BaseModel):  # pragma: no cover
-    mappingAccession: str = Field(..., description="Protein accession to which this "
-                                  "model has been mapped, e.g. P38398")
-    mappingAccessionType: str = Field(...,
-                                      description="Type of accession code, e.g. uniprot")
+    mappingAccession: str = Field(
+        ...,
+        description="Protein accession to which this "
+        "model has been mapped, e.g. P38398",
+    )
+    mappingAccessionType: str = Field(
+        ..., description="Type of accession code, e.g. uniprot"
+    )
     start: int = Field(
         ...,
         description="The index of the first residue of the model according to UniProt"
@@ -53,6 +58,28 @@ class ModelMetadata(BaseModel):  # pragma: no cover
     )
     modelType: ModelType = Field(
         ..., description="Category of the model type, e.g. single"
+    )
+
+    confidenceType: str = Field(
+        ...,
+        description="Type of the confidence measure. This is required for theoretical models.",
+    )
+
+    confidenceVersion: Optional[str] = Field(
+        None,
+        description=(
+            "Version of confidence measure software used to calculate quality. This is "
+            "required for theoretical models."
+        ),
+    )
+
+    confidenceAvgLocalScore: str = Field(
+        ...,
+        description=(
+            "Average of the confidence measures in the range of [0,1] for QMEANDisCo "
+            "and [0,100] for pLDDT. Please contact 3D-Beacons developers if other estimates "
+            "are to be added. This is required for theoretical models."
+        ),
     )
 
     class Config:

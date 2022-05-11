@@ -40,7 +40,9 @@ cat tests/data/metadata/P38398_1jm7.1.A_1_103.json
   "start": 1,
   "end": 103,
   "modelCategory": "TEMPLATE-BASED",
-  "modelType": "single"
+  "modelType": "single",
+  "confidenceType": "pLDDT",
+  "confidenceAvgLocalScore": 98.76
 }
 cp tests/data/metadata/P38398_1jm7.1.A_1_103.json ./data/metadata/
 ```
@@ -164,6 +166,8 @@ cat ./data/metadata/P38398_1jm7.1.A_1_103.json   # you need to generate this fil
 {
     "mappingAccession": "P38398",
     "mappingAccessionType": "uniprot",
+    "confidenceType": "pLDDT",
+    "confidenceAvgLocalScore": 98.76
     "start": 1,
     "end": 103,
     "modelCategory": "TEMPLATE-BASED",
@@ -258,12 +262,14 @@ Below is an example metadata JSON with all mandatory fields. Description for eac
 
 ```
 {
-"mappingAccession": "P38398",
-"mappingAccessionType": "uniprot",
-"start": 1,
-"end": 103,
-"modelCategory": "TEMPLATE-BASED",
-"modelType": "single"
+  "mappingAccession": "P38398",
+  "mappingAccessionType": "uniprot",
+  "confidenceType": "pLDDT",
+  "confidenceAvgLocalScore": 98.76
+  "start": 1,
+  "end": 103,
+  "modelCategory": "TEMPLATE-BASED",
+  "modelType": "single"
 }
 ```
 
