@@ -2,13 +2,11 @@ import tempfile
 import pytest
 import shutil
 import logging
-import filecmp
-import difflib
 from pathlib import Path
-import os
-from bio3dbeacons.cli.metadata_generators import pfam_baker
 
-BOOTSTRAP_TESTS = os.environ.get("BOOTSTRAP_TESTS", False)
+from bio3dbeacons.cli.metadata_generators import pfam_baker
+from .utils import compare_files
+
 LOG = logging.getLogger(__name__)
 DATA_ROOT = Path(__file__).parent.parent / "data" / "pfam_baker"
 
@@ -40,28 +38,6 @@ def example():
     yield eg
 
     tmpdir.cleanup()
-
-
-def compare_files(*, got, expected):
-    if BOOTSTRAP_TESTS:
-        LOG.warning("BOOTSTRAP_TESTS: copying '%s' to '%s'", got, expected)
-        shutil.copy(got, expected)
-
-    got = f"{got}"
-    expected = f"{expected}"
-
-    are_files_identical = filecmp.cmp(got, expected)
-
-    if not are_files_identical:
-        d = difflib.Differ()
-        diff_result = list(
-            d.compare(open(got, "r").readlines(), open(expected, "r").readlines())
-        )
-        LOG.warning(f"Difference between got ({got}) and expected ({expected}) ...")
-        for diff_line in diff_result:
-            LOG.warning(diff_line)
-
-    return are_files_identical
 
 
 def test_generate_pfam_baker_metadata(example):
