@@ -19,6 +19,8 @@ class TestValidateJson:
             "modelType": "single",
             "mappingId": "someMappingId",
             "mappingDescription": "someDescription",
+            "confidenceType": "pLDDT",
+            "confidenceAvgLocalScore": 98.76,
             "_id": "someId",
         }
         json.dump(valid_dict, open(temp_index_json, "w+"))
