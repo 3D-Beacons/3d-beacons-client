@@ -31,9 +31,10 @@ def compare_files(*, got, expected):
     are_files_identical = filecmp.cmp(got, expected)
 
     if not are_files_identical:
-        d = difflib.Differ()
         diff_result = list(
-            d.unified_diff(open(got, "r").readlines(), open(expected, "r").readlines())
+            difflib.unified_diff(
+                open(got, "r").readlines(), open(expected, "r").readlines()
+            )
         )
         LOG.warning(f"Difference between got ({got}) and expected ({expected}) ...")
         for diff_line in diff_result:
