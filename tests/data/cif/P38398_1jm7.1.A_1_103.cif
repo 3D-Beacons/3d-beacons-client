@@ -1,6 +1,8 @@
 data_P38398_1jm7.1.A_1_103
 _entry.id 'P38398_1jm7.1.A_1_103'
 
+_audit_author.pdbx_ordinal 1
+_audit_author.name 'SWISS-MODEL SERVER (SEE REFERENCE IN JRNL Records)'
 _cell.entry_id 'P38398_1jm7.1.A_1_103'
 _cell.length_a 1
 _cell.length_b 1
