@@ -18,14 +18,16 @@ EXPECTED_OBJ = {
     "gene": "BRCA1",
     "organismScientificName": "Homo sapiens",
     "taxId": 9606,
+    "confidenceType": "pLDDT",
+    "confidenceAvgLocalScore": 98.76,
     "_id": "P38398_1jm7.1.A_1_103",
 }
 
 
 class TestCifToJson:
-    def test_process_single_cif(self, cif_file, metatdata_file):
+    def test_process_single_cif(self, cif_file, metadata_file):
         _, temp_index_json = tempfile.mkstemp()
-        s = ciftojson.run(cif_file, metatdata_file, temp_index_json)
+        s = ciftojson.run(cif_file, metadata_file, temp_index_json)
 
         # test if operation is successful
         assert s == 0

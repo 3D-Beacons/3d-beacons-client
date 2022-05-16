@@ -60,6 +60,23 @@
             "description": "Description for the mapping accession. Can be used to keep protein description in case of a UniProt accession",
             "type": "string"
         },
+        "confidenceType": {
+            "description": "Type of the confidence measure. This is required for theoretical models",
+            "type": "string",
+            "example": "QMEANDisCo",
+            "enum": [
+                "pLDDT",
+                "QMEANDisCo"
+            ]
+        },
+        "confidenceVersion": {
+            "description": "Version of confidence measure software used to calculate quality. This is required for theoretical models.",
+            "type": "string"
+        },
+        "confidenceAvgLocalScore": {
+            "description": "Average of the confidence measures in the range of [0,1] for QMEANDisCo and [0,100] for pLDDT. Please contact 3D-Beacons developers if other estimates are to be added. This is required for theoretical models.",
+            "type": "number"
+        },
         "gene": {
             "description": "Gene",
             "type": "string"
@@ -88,6 +105,8 @@
         "modelCategory",
         "mappingId",
         "modelType",
-        "mappingDescription"
+        "mappingDescription",
+        "confidenceType",
+        "confidenceAvgLocalScore"
     ]
 }
