@@ -485,6 +485,21 @@ class Metadata(BaseModel):
     modelType: ModelType1 = Field(
         ..., description="Monomeric or complex strutures", example="single"
     )
+    confidenceType: ConfidenceType = Field(
+        None,
+        description="Type of the confidence measure. This is required for  theoretical models.\n",
+        example="QMEANDisCo",
+    )
+    confidenceVersion: str = Field(
+        None,
+        description="Version of confidence measure software used to calculate quality.  This is required for theoretical models.\n",
+        example="v1.0.2",
+    )
+    confidenceAvgLocalScore: float = Field(
+        None,
+        description="Average of the confidence measures in the range of [0,1]. Please  contact 3D-Beacons developers if other estimates are to be added. This is required for theoretical models.\n",
+        example=0.95,
+    )
 
 
 class UniprotKeyed(BaseModel):
