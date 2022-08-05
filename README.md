@@ -4,6 +4,11 @@ This is an implementation of 3D-Beacons client which provides various tools and 
 
 More about 3D-Beacons can be found in the [WikiPages](https://github.com/3D-Beacons/3D-Beacons/wiki)
 
+## Publication
+**3D-Beacons: Decreasing the gap between protein sequences and structures through a federated network of protein structure data resources**<br> 
+[Mihaly Varadi](https://github.com/mvaradi), [Sreenath Nair](https://github.com/sreenathnair), [Ian Sillitoe](https://github.com/orgs/3D-Beacons/people/sillitoe), [Gerardo Tauriello](https://github.com/orgs/3D-Beacons/people/gtauriello), Stephen Anyango, [Stefan Bienert](https://github.com/orgs/3D-Beacons/people/bienchen), Clemente Borges, Mandar Deshpande, Tim Green, Demis Hassabis, Andras Hatos, Tamas Hegedus, Maarten L Hekkelman, Robbie Joosten, John Jumper, Agata Laydon, Dmitry Molodenskiy, Damiano Piovesan, Edoardo Salladini, Steven L. Salzberg, Markus J Sommer, Martin Steinegger, Erzsebet Suhajda, Dmitri Svergun, Luiggi Tenorio-Ku, Silvio Tosatto, Kathryn Tunyasuvunakool, [Andrew Mark Waterhouse](https://github.com/orgs/3D-Beacons/people/awaterho), Augustin Žídek, Torsten Schwede, Christine Orengo, Sameer Velankar<br>
+3 August 2022; BioRxiv https://doi.org/10.1101/2022.08.01.501973
+
 ## Requirements
 
 The 3D-Beacons Client has been made available as a series of docker containers, so the following software must be available:
