@@ -47,7 +47,10 @@ cat tests/data/metadata/P38398_1jm7.1.A_1_103.json
   "modelCategory": "TEMPLATE-BASED",
   "modelType": "single",
   "confidenceType": "pLDDT",
-  "confidenceAvgLocalScore": 98.76
+  "confidenceAvgLocalScore": 98.76,
+  "createdDate": "2023-02-23",
+  "sequenceIdentity": 1,
+  "coverage": 0.115
 }
 cp tests/data/metadata/P38398_1jm7.1.A_1_103.json ./data/metadata/
 ```
@@ -123,16 +126,40 @@ curl -X 'GET' \
   -H 'accept: application/json'
 
 {
-  "uniprot_entry": {"ac":"P38398","id":"BRCA1_HUMAN"},
-  "structures":[{
-    "model_identifier":"P38398_1jm7.1.A_1_103",
-    "model_category":"TEMPLATE-BASED",
-    "model_url":"/static/cif/P38398_1jm7.1.A_1_103.cif",
-    "provider":"GENOME3D",
-    "uniprot_start":1,
-    "uniprot_end":103,
-    "model_format":"MMCIF"
-  }]
+  "uniprot_entry": {
+    "ac": "P38398",
+    "id": "BRCA1_HUMAN"
+  },
+  "structures": [
+    {
+      "summary": {
+        "model_identifier": "P38398_1jm7.1.A_1_103",
+        "model_category": "TEMPLATE-BASED",
+        "model_url": "/static/cif/P38398_1jm7.1.A_1_103.cif",
+        "model_format": "MMCIF",
+        "provider": "CHESS",
+        "created": "2023-02-23",
+        "sequence_identity": 1,
+        "uniprot_start": 1,
+        "uniprot_end": 103,
+        "coverage": 0.115,
+        "entities": [
+          {
+            "entity_type": "POLYMER",
+            "description": "",
+            "chain_ids": [
+              "A-p"
+            ]
+          },
+          {
+            "entity_type": "NON-POLYMER",
+            "description": "",
+            "chain_ids": []
+          }
+        ]
+      }
+    }
+  ]
 }
 ```
 
@@ -176,7 +203,10 @@ cat ./data/metadata/P38398_1jm7.1.A_1_103.json   # you need to generate this fil
     "start": 1,
     "end": 103,
     "modelCategory": "TEMPLATE-BASED",
-    "modelType": "single"
+    "modelType": "single",
+    "createdDate": "2023-02-23",
+    "sequenceIdentity": 1,
+    "coverage": 0.115
 }
 
 # create index JSON from CIF
@@ -259,8 +289,6 @@ An index JSON is required for each model which can be loaded to the Mongo DB for
 
 For example, if there is a field in CIF `_exptl.method` which maps to `experimentalMethod` in index JSON, this will be overwritten if there is an `experimentalMethod` field in metadata JSON.
 
-The field mappings in CIF file to index JSON is configured via `cif_json_mapping` section in `bio3dbeacons/config/conf.ini`
-
 **NOTE:** The metadata JSON should be named the same as that of CIF file except the file extension.
 
 Below is an example metadata JSON with all mandatory fields. Description for each of these fields are available in `resources/schema.json`
@@ -274,7 +302,10 @@ Below is an example metadata JSON with all mandatory fields. Description for eac
   "start": 1,
   "end": 103,
   "modelCategory": "TEMPLATE-BASED",
-  "modelType": "single"
+  "modelType": "single",
+  "createdDate": "2023-02-23",
+  "sequenceIdentity": 1,
+  "coverage": 0.115
 }
 ```
 

@@ -92,6 +92,19 @@
         "_id": {
             "description": "Unique identifier for the model, same as entryId",
             "type": "string"
+        },
+        "createdDate": {
+            "description": "Date when the model was created",
+            "type": "string",
+            "format": "YYYY-MM-DD"
+        },
+        "sequenceIdentity": {
+            "description": "Sequence identity of the model",
+            "type": "number"
+        },
+        "coverage": {
+            "description": "Coverage of the model",
+            "type": "number"
         }
     },
     "required": [
@@ -107,6 +120,9 @@
         "modelType",
         "mappingDescription",
         "confidenceType",
-        "confidenceAvgLocalScore"
+        "confidenceAvgLocalScore",
+        "createdDate",
+        "sequenceIdentity",
+        "coverage"
     ]
 }
