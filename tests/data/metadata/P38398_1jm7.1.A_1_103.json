@@ -6,5 +6,8 @@
     "modelCategory": "TEMPLATE-BASED",
     "modelType": "single",
     "confidenceType": "pLDDT",
-    "confidenceAvgLocalScore": 98.76
+    "confidenceAvgLocalScore": 98.76,
+    "createdDate": "2023-02-23",
+    "sequenceIdentity": 1,
+    "coverage": 0.115
 }

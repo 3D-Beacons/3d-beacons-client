@@ -1,0 +1,829 @@
+info:
+  title: 3D Beacons API
+  version: 2.0.0
+  description: >-
+    OpenAPI 3 description of the 3D-Beacons service. The service returns a
+    list of homology models, PDB structures and the target sequence for a
+    UniProtKB Accession.
+openapi: 3.0.1
+paths:
+  '/uniprot/{qualifier}.json':
+    get:
+      parameters:
+        - name: qualifier
+          description: UniProtKB accession number (AC) or entry name (ID)
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: provider
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: true
+        - name: template
+          description: >-
+            Template is 4 letter PDB code, or 4 letter code with assembly ID and
+            chain for SMTL entries
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: range
+          description: Specify a UniProt sequence residue range
+          in: query
+          required: false
+          schema:
+            type: string
+            example: '1-100'
+      responses:
+        '200':
+          description: >-
+            Response includes query parameter, UniProt sequence summary and list
+            of structures which may be empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/uniprot_details'
+  '/uniprot/summary/{qualifier}.json':
+    get:
+      parameters:
+        - name: qualifier
+          description: UniProtKB accession number (AC) or entry name (ID)
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: provider
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: true
+        - name: template
+          description: >-
+            Template is 4 letter PDB code, or 4 letter code with assembly ID and
+            chain for SMTL entries
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: range
+          description: Specify a UniProt sequence residue range
+          in: query
+          required: false
+          schema:
+            type: string
+            example: '1-100'
+      responses:
+        '200':
+          description: >-
+            Response includes query parameter, UniProt sequence summary and list
+            of structures which may be empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/uniprot_summary'
+  '/pdb/summary/{qualifier}-{chain}.json':
+    get:
+      parameters:
+        - name: qualifier
+          description: PDB entry identifier
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: chain
+          description: PDB chain identifier
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: provider
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: true
+        - name: template
+          description: >-
+            Template is 4 letter PDB code, or 4 letter code with assembly ID and
+            chain for SMTL entries
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: range
+          description: Specify a PDB sequence residue range
+          in: query
+          required: false
+          schema:
+            type: string
+            example: '1-100'
+      responses:
+        '200':
+          description: >-
+            Response includes query parameter, PDB sequence summary and list of
+            structures which may be empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pdb_summary'
+  '/metadata/{qualifier}.json':
+    get:
+      parameters:
+        - name: qualifier
+          description: Any identifier
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >-
+            Response show the data structure of the metadata as it is expected by
+            the 3D-Beacons Client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/metadata'
+  '/pdbe-kb/annotations/uniprot/{accession}.json':
+    get:
+      parameters:
+        - name: accession
+          description: UniProtKB accession number (AC)
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: range
+          description: Specify a UniProt sequence residue range
+          in: query
+          required: false
+          schema:
+            type: string
+            example: '1-100'
+      responses:
+        '200':
+          description: >-
+            Response includes query parameter, UniProt sequence summary and list
+            of structures which may be empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/annotations'
+servers:
+  - url: 'https://3dbeacons.org'
+    description: 3D Beacons server
+components:
+  schemas:
+    uniprot_summary:
+      type: object
+      properties:
+        uniprot_entry:
+          $ref: '#/components/schemas/uniprot_entry'
+        structures:
+          type: array
+          items:
+            $ref: '#/components/schemas/overview'
+    uniprot_details:
+      type: object
+      properties:
+        uniprot_entry:
+          $ref: '#/components/schemas/uniprot_entry'
+        structures:
+          type: array
+          items:
+            $ref: '#/components/schemas/detailed'
+    pdb_summary:
+      type: object
+      properties:
+        uniprot_entry:
+          $ref: '#/components/schemas/pdb_entry'
+        structures:
+          type: array
+          items:
+            $ref: '#/components/schemas/overview'
+    uniprot_entry:
+      type: object
+      description: Information on the UniProt accession the data corresponds to
+      properties:
+        ac:
+          type: string
+          description: UniProt accession
+          example: P00520
+        id:
+          type: string
+          description: UniProt identifier
+          example: ABL1_MOUSE
+        uniprot_checksum:
+          type: string
+          description: CRC64 checksum of the UniProt sequence
+          example: 5F9BA1D4C7DE6925
+        sequence_length:
+          type: integer
+          description: Length of the UniProt sequence
+          example: 76
+        segment_start:
+          type: integer
+          description: 1-indexed first residue of the UniProt sequence segment
+          example: 1
+        segment_end:
+          type: integer
+          description: 1-indexed last residue of the UniProt sequence segment
+          example: 86
+      required:
+        - ac
+    pdb_entry:
+      type: object
+      description: Information on the PDB entry the data corresponds to
+      properties:
+        entry_id:
+          type: string
+          description: PDB entry identifier
+          example: 3bow
+        chain_id:
+          type: string
+          description: PDB chain identifier
+          example: A
+        mapped_uniprot:
+          type: string
+          description: UniProt accession mapped to the PDB entry
+          example: P12345
+        uniprot_start:
+          type: integer
+          description: 1-indexed first residue in the mapped UniProt
+          example: 1
+        uniprot_end:
+          type: integer
+          description: 1-indexed last residue in the mapped UniProt
+          example: 100
+      required:
+        - entry_id
+        - chain_id
+        - uniprot_start
+        - uniprot_end
+    detailed:
+      type: object
+      properties:
+        summary: 
+          $ref: '#/components/schemas/summary_items'
+        chains: 
+          $ref: '#/components/schemas/chains'
+      required:
+        - summary
+        - chains
+    overview:
+      type: object
+      properties:
+        summary: 
+          $ref: '#/components/schemas/summary_items'
+      required:
+        - summary
+    summary_items:
+      type: object
+      properties:
+        model_identifier:
+          type: string
+          description: 'Identifier of the model, such as PDB id'
+          example: 8kfa
+        model_category:
+          type: string
+          description: Category of the model
+          enum:
+            - EXPERIMENTALLY DETERMINED
+            - TEMPLATE-BASED
+            - AB-INITIO
+            - CONFORMATIONAL ENSEMBLE
+          example: TEMPLATE-BASED
+        model_url:
+          type: string
+          description: URL of the model coordinates
+          example: 'https://www.ebi.ac.uk/pdbe/static/entry/1t29_updated.cif'
+        model_format:
+          type: string
+          description: File format of the coordinates
+          enum:
+            - PDB
+            - MMCIF
+            - BCIF
+          example: MMCIF
+        model_type:
+          type: string
+          description: >
+            Defines if the coordinates are atomic-level or contains  dummy atoms
+            (e.g. SAXS models), or a mix of both (e.g. hybrid models)
+          enum:
+            - ATOMIC
+            - DUMMY
+            - MIX
+          example: ATOMIC
+        model_page_url:
+          type: string
+          description: URL of a web page of the data provider that show the model
+          example: 'https://alphafold.ebi.ac.uk/entry/Q5VSL9'
+        provider:
+          type: string
+          description: Name of the model provider
+          example: SWISS-MODEL
+        number_of_conformers:
+          type: number
+          description: The number of conformers in a conformational ensemble
+          example: 42
+        ensemble_sample_url:
+          type: string
+          description: URL of a sample of conformations from a conformational ensemble
+          example: 'https://proteinensemble.org/api/ensemble_sample/PED00001e001'
+        ensemble_sample_format:
+          type: string
+          description: 'File format of the sample coordinates, e.g. PDB'
+          enum:
+            - PDB
+            - MMCIF
+            - BCIF
+          example: PDB
+        created:
+          type: string
+          description: Date of release of model generation in the format of YYYY-MM-DD
+          example: '2021-12-21'
+        sequence_identity:
+          type: number
+          description: >
+            Sequence identity in the range of [0,1] of the model to the UniProt
+            sequence
+          example: 0.97
+        uniprot_start:
+          type: integer
+          description: >
+            1-indexed first residue of the model according to UniProt sequence
+            numbering
+          example: 1
+        uniprot_end:
+          type: integer
+          description: >
+            1-indexed last residue of the model according to UniProt sequence
+            numbering
+          example: 142
+        coverage:
+          type: number
+          description: >
+            Fraction in range of [0, 1] of the UniProt sequence covered by the
+            model.  This is calculated as (uniprot_end - uniprot_start + 1) /
+            uniprot_sequence_length
+          example: 0.4
+        experimental_method:
+          type: string
+          enum:
+            - ELECTRON CRYSTALLOGRAPHY
+            - ELECTRON MICROSCOPY
+            - EPR
+            - FIBER DIFFRACTION
+            - FLUORESCENCE TRANSFER
+            - INFRARED SPECTROSCOPY
+            - NEUTRON DIFFRACTION
+            - X-RAY POWDER DIFFRACTION
+            - SOLID-STATE NMR
+            - SOLUTION NMR
+            - X-RAY SOLUTION SCATTERING
+            - THEORETICAL MODEL
+            - X-RAY DIFFRACTION
+            - HYBRID
+          description: 'Experimental method used to determine the structure, if applicable'
+        resolution:
+          type: number
+          description: 'The resolution of the model in Angstrom, if applicable'
+          example: 1.4
+        confidence_type:
+          type: string
+          description: >
+            Type of the confidence measure. This is required for  theoretical
+            models.
+          example: QMEANDisCo
+          enum:
+            - pLDDT
+            - QMEANDisCo
+        confidence_version:
+          type: string
+          description: >
+            Version of confidence measure software used to calculate quality. 
+            This is required for theoretical models.
+          example: v1.0.2
+        confidence_avg_local_score:
+          type: number
+          description: >
+            Average of the confidence measures in the range of [0,1] for QMEANDisCo 
+            and [0,100] for pLDDT. Please contact 3D-Beacons developers if other 
+            estimates are to be added. This is required for theoretical models.
+          example: 0.95
+        oligomeric_state:
+          type: string
+          description: Oligomeric state of the model
+          enum:
+            - MONOMER
+            - HOMODIMER
+            - HETERODIMER
+            - HOMO-OLIGOMER
+            - HETERO-OLIGOMER
+          example: MONOMER
+        preferred_assembly_id:
+          type: string
+          description: Identifier of the preferred assembly in the model
+          example: 1A
+        entities:
+          type: array
+          description: A list of molecular entities in the model
+          items:
+            type: object
+            properties:
+              entity_type:
+                type: string
+                description: >-
+                  The type of the molecular entity; similar to _entity.type in
+                  mmCIF
+                enum:
+                  - BRANCHED
+                  - MACROLIDE
+                  - NON-POLYMER
+                  - POLYMER
+                  - WATER
+                example: POLYMER
+              entity_poly_type:
+                type: string
+                description: >-
+                  The type of the molecular entity; similar to _entity_poly.type
+                  in mmCIF
+                enum:
+                  - CYCLIC-PSEUDO-PEPTIDE
+                  - PEPTIDE NUCLEIC ACID
+                  - POLYDEOXYRIBONUCLEOTIDE
+                  - POLYDEOXYRIBONUCLEOTIDE/POLYRIBONUCLEOTIDE HYBRID
+                  - POLYPEPTIDE(D)
+                  - POLYPEPTIDE(L)
+                  - POLYRIBONUCLEOTIDE
+                  - OTHER
+                example: PEPTIDE NUCLEIC ACID
+              identifier:
+                type: string
+                description: Identifier of the molecule
+                example: Q13033
+              identifier_category:
+                type: string
+                enum:
+                  - UNIPROT
+                  - RFAM
+                  - CCD
+                  - SMILES
+                  - INCHI
+                  - INCHIKEY
+                description: Category of the identifier
+                example: UNIPROT
+              description:
+                type: string
+                description: A textual label of the molecule
+                example: Striatin-3
+              chain_ids:
+                type: array
+                items:
+                  type: string
+                  description: A list of chain identifiers of the molecule; this is label_asym_id in mmCIF
+                  example: A
+            required:
+              - entity_type
+              - description
+              - chain_ids
+      required:
+        - model_identifier
+        - model_category
+        - model_url
+        - model_format
+        - provider
+        - created
+        - sequence_identity
+        - coverage
+        - uniprot_start
+        - uniprot_end
+        - entities
+    chains:
+      type: array
+      items:
+        type: object
+        properties:
+          chain_id:
+            type: string
+          segments:
+            type: array
+            items:
+              type: object
+              properties:
+                templates:
+                  type: array
+                  description: Information on the template(s) used for the model
+                  items:
+                    type: object
+                    properties:
+                      template_id:
+                        type: string
+                        description: Identifier of the template
+                        example: 2aqa
+                      chain_id:
+                        type: string
+                        description: Identifier of the chain of the template; this is label_asym_id in mmCIF
+                        example: C
+                      template_sequence_identity:
+                        type: number
+                        description: >
+                          Sequence identity of the template with the 
+                          UniProt accession, in the range of [0,1]
+                        example: 0.97
+                      last_updated:
+                        type: string
+                        description: >
+                          Date of release of the last update in  the format
+                          of YYYY-MM-DD
+                        example: '2021-08-06'
+                      provider:
+                        type: string
+                        description: Provider of the template
+                        example: PDB
+                      experimental_method:
+                        type: string
+                        enum:
+                          - ELECTRON CRYSTALLOGRAPHY
+                          - ELECTRON MICROSCOPY
+                          - EPR
+                          - FIBER DIFFRACTION
+                          - FLUORESCENCE TRANSFER
+                          - INFRARED SPECTROSCOPY
+                          - NEUTRON DIFFRACTION
+                          - POWDER DIFFRACTION
+                          - SOLID-STATE NMR
+                          - SOLUTION NMR
+                          - SOLUTION SCATTERING
+                          - THEORETICAL MODEL
+                          - X-RAY DIFFRACTION
+                          - HYBRID
+                        description: Experimental method used to determine the template
+                        example: HYBRID
+                      resolution:
+                        type: number
+                        description: 'Resolution of the template, in Angstrom'
+                        example: 2.1
+                      preferred_assembly_id:
+                        type: string
+                        description: >-
+                          Identifier of the preferred assembly of the
+                          template
+                        example: '1'
+                    required:
+                      - template_id
+                      - chain_id
+                      - last_updated
+                      - provider
+                      - experimental_method
+                      - resolution
+                      - template_sequence_identity
+                seqres:
+                  type: object
+                  description: Information on the sequence of the model
+                  properties:
+                    aligned_sequence:
+                      type: string
+                      description: Sequence of the model
+                      example: AAGTGHLKKKYT...
+                    from:
+                      type: integer
+                      description: 1-indexed first residue
+                      example: 32
+                    to:
+                      type: integer
+                      description: 1-indexed last residue
+                      example: 976
+                  required:
+                    - aligned_sequence
+                    - from
+                    - to
+                uniprot:
+                  type: object
+                  properties:
+                    aligned_sequence:
+                      type: string
+                      description: Sequence of the UniProt accession
+                      example: AAGTGHLKKKYTAAGTGHLKKKYT...
+                    from:
+                      type: integer
+                      description: 1-indexed first residue
+                      example: 23
+                    to:
+                      type: integer
+                      description: 1-indexed last residue
+                      example: 868
+                  required:
+                    - aligned_sequence
+                    - from
+                    - to
+                residues:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      confidence:
+                        type: number
+                        description: 'Confidence score in the range of [0,1]'
+                        example: 0.99
+                      model_residue_label:
+                        type: integer
+                        description: Model residue index
+                        example: 1
+                      uniprot_residue_number:
+                        type: integer
+                        description: UniProt residue index
+                        example: 1
+                    required:
+                      - model_residue_label
+                      - uniprot_residue_number
+              required:
+                - seqres
+                - uniprot
+                - residues
+        required:
+          - chain_id
+    annotations:
+      type: object
+      description: Contains annotations for a UniProt accession
+      required:
+        - accession
+        - sequence
+      properties:
+        accession:
+          type: string
+          description: A UniProt accession
+          example: P00734
+        id:
+          type: string
+          description: A UniProt identifier
+          example: FGFR2_HUMAN
+        sequence:
+          type: string
+          description: The sequence of the protein
+          example: AFFGVAATRKL
+        ligand:
+          type: array
+          description: Contains ligand annotations
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Three-letter code of the ligand
+                example: IHP
+              name:
+                type: string
+                description: Name of the small ligand
+                example: INOSITOL HEXAKISPHOSPHATE
+              formula:
+                type: string
+                description: Chemical composition formula of the ligand
+                example: C6 H18 O24 P6
+              inchikey:
+                type: string
+                description: InChIKey of the ligand
+                example: IMQLKJBTEOYOSI-GPIVLXJGSA-N
+            required:
+              - id
+              - name
+              - formula
+              - inchikey
+        secondary_structure:
+          type: array
+          items:
+            type: object
+            description: Contains secondary structure annotations
+            properties:
+              type:
+                type: string
+                description: Type of the secondary structure element
+                enum:
+                  - HELIX
+                  - SHEET
+                  - COIL
+                example: HELIX
+              region:
+                type: array
+                items:
+                  type: object
+                  description: Start and end residue indices
+                  required:
+                    - start
+                    - end
+                  properties:
+                    start:
+                      type: integer
+                      description: The first position of the annotation
+                      example: 23
+                    end:
+                      type: integer
+                      description: The last position of the annotation
+                      example: 42
+            required:
+              - type
+              - regions
+        feature:
+          type: array
+          items:
+            type: object
+            description: Contains feature annotations
+            properties:
+              type:
+                type: string
+                description: Type of the annotation
+                enum:
+                  - CARBOHYD
+                  - DOMAIN
+                  - CA_BIND
+                  - DNA_BIND
+                  - NP_BIND
+                  - ACT_SITE
+                  - METAL
+                  - BINDING
+                  - NON_STD
+                  - MOD_RES
+                  - DISULFID
+                  - MUTAGEN
+                example: ACT_SITE
+              description:
+                type: string
+                description: Description/Label of the annotation
+                example: Pfam N1221 (PF07923)
+              residues:
+                type: array
+                description: An array of residue indices
+                items:
+                  type: integer
+                  description: A residue index
+                  example: 42
+              regions:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - start
+                    - end
+                  properties:
+                    start:
+                      type: integer
+                      description: The first position of the annotation
+                      example: 23
+                    end:
+                      type: integer
+                      description: The last position of the annotation
+                      example: 42
+            required:
+              - type
+              - description
+    metadata:
+      type: object
+      properties:
+        mappingAccession:
+          type: string
+          description: Accession/identifier of the entity the model is mapped to
+          example: P38398
+        mappingAccessionType:
+          type: string
+          description: The name of the data provider the model is mapped to
+          enum:
+            - uniprot
+            - pfam
+          example: uniprot
+        start:
+          type: integer
+          description: The index of the first residue of the model according to the mapping
+          example: 1
+        end:
+          type: integer
+          description: The index of the last residue of the model according to the mapping
+          example: 103
+        modelCategory:
+          type: string
+          description: Category of the model
+          enum:
+            - EXPERIMENTALLY DETERMINED
+            - TEMPLATE-BASED
+            - AB-INITIO
+            - CONFORMATIONAL ENSEMBLE
+            - DEEP-LEARNING
+          example: TEMPLATE-BASED
+        modelType:
+          type: string
+          description: Monomeric or complex strutures
+          enum:
+            - single
+            - complex
+          example: single
+      required:
+        - mappingAccession
+        - mappingAccessionType
+        - start
+        - end
+        - modelCategory
+        - modelType

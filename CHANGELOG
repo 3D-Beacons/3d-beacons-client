@@ -1,0 +1,14 @@
+v2.0.0 * 2023*03*01
+
+### Major Changes
+* [BREAKING] Added support for API v2
+* [BREAKING] Added mandatory fields to index schema JSON
+* Added a utility for generating data dictionary from CIF
+* Added v2 API specification yaml to resources
+* Bumped version to 2.0.0
+
+
+### Minor Changes
+* Updated README
+* Removed isort version pinning in setup.cfg
+

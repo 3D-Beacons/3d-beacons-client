@@ -12,6 +12,7 @@ from bio3dbeacons.cli.utils import (
     get_uniprot_xml,
     prepare_data_dictionary,
     prepare_data_dictionary_from_json,
+    prepare_data_dictionary_from_cif,
 )
 from gemmi import cif
 
@@ -41,8 +42,7 @@ class Cif2Json:
             block = doc.sole_block()  # mmCIF has exactly one block
 
             # run the mapping from CIF
-            entry = prepare_data_dictionary(block, "cif_json_mapping")
-
+            entry = prepare_data_dictionary_from_cif(block)
             self.interim_entry.update(entry)
 
         except Exception as e:
@@ -101,10 +101,11 @@ class Cif2Json:
         """Performs transformation on the fields"""
 
         self.interim_entry["entryId"] = self.interim_entry["entryId"].strip(
-            "'")
-        self.interim_entry["experimentalMethod"] = self.interim_entry[
-            "experimentalMethod"
-        ].strip("'")
+            "'")    
+        if self.interim_entry["experimentalMethod"]:
+            self.interim_entry["experimentalMethod"] = self.interim_entry[
+                "experimentalMethod"
+            ].strip("'")
 
         # add unique ID
         self.interim_entry["_id"] = self.interim_entry["entryId"]

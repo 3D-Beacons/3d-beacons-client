@@ -43,6 +43,39 @@ def get_avg_plddt_from_pdb(pdb_path) -> float:
     return avg_plddt
 
 
+def prepare_data_dictionary_from_cif(cif_block: Any) -> Dict:
+    """Returns a Python object from a CIF block (read by GEMMI)
+
+    Args:
+        cif_block (Any): CIF block for the data
+
+    Returns:
+        Dict: Python object which maps the configuration from CIF block.
+    """
+    data_dict = dict()
+    
+    data_dict["entryId"] = cif_block.find_value("_entry.id")
+    data_dict["experimentalMethod"] = cif_block.find_value("_exptl.method")
+    
+    entity_dict = dict()
+    entity_mmcif_cat = cif_block.find_mmcif_category("_entity.")
+    
+    for row in entity_mmcif_cat:
+        entity_dict[row["id"]] = {
+            "entityType": row["type"],
+            "entityDescription": row["pdbx_description"] if "pdbx_description" in entity_mmcif_cat.tags else "",
+            "chainIds": [],
+        }
+    for row in cif_block.find_mmcif_category("_struct_asym."):
+        chain_id = row["id"]
+        entity_dict[row["entity_id"]]["chainIds"].append(chain_id)
+    
+    
+    data_dict["entities"] = list(entity_dict.values())
+
+    return data_dict
+    
+
 def prepare_data_dictionary(cif_block: Any, config_section: str) -> Dict:
     """Returns a Python object from a CIF block (read by GEMMI) from a config
 
