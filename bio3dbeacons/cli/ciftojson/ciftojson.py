@@ -71,10 +71,16 @@ class Cif2Json:
             namespace = "{http://uniprot.org/uniprot}"
             # fetch accession related data
             ac_id = xml_root.find(f"./{namespace}entry/{namespace}name").text
-            description = xml_root.find(
-                f"./{namespace}entry/{namespace}protein/{namespace}recommendedName"
-                f"/{namespace}fullName"
-            ).text
+            try:
+                description = xml_root.find(
+                    f"./{namespace}entry/{namespace}protein/{namespace}recommendedName"
+                    f"/{namespace}fullName"
+                ).text
+            except:
+                description = xml_root.find(
+                    f"./{namespace}entry/{namespace}protein/{namespace}submittedName"
+                    f"/{namespace}fullName"
+                ).text
 
             # fetch gene related data
             gene = xml_root.find(
